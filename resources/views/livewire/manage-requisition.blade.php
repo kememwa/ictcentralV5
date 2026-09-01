@@ -74,7 +74,7 @@
                             <td class="px-4 py-3">
                                 <div class="flex items-center justify-end gap-1.5">
                                     <button type="button"
-                                        wire:click="approve({{ $requisition->id }})"
+                                        wire:click="approveRequest({{ $requisition->id }})"
                                         wire:confirm="Approve this requisition?"
                                         class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md text-xs font-medium text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm transition">
                                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>

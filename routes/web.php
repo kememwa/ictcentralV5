@@ -26,6 +26,7 @@ use App\Livewire\DtcPayment;
 use App\Livewire\Departments;
 use App\Livewire\Designations;
 use App\Livewire\Divisions;
+use App\Http\Controllers\ContractController;
 
 
 Route::get('/', Login::class)->name('login');
@@ -65,4 +66,5 @@ Route::middleware(['auth'])->group(function(){
  Route::get('/departments', Departments::class)->name('departments');
  Route::get('/designations', Designations::class)->name('designations');
  Route::get('/divisions', Divisions::class)->name('divisions');
+ Route::get('/contracts/print/{requisitionId}',[ContractController::class, 'print'])->name('contracts.print');
 });
