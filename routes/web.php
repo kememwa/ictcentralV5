@@ -27,6 +27,7 @@ use App\Livewire\Departments;
 use App\Livewire\Designations;
 use App\Livewire\Divisions;
 use App\Http\Controllers\ContractController;
+use App\Livewire\EditProfile;
 
 
 Route::get('/', Login::class)->name('login');
@@ -67,4 +68,5 @@ Route::middleware(['auth'])->group(function(){
  Route::get('/designations', Designations::class)->name('designations');
  Route::get('/divisions', Divisions::class)->name('divisions');
  Route::get('/contracts/print/{requisitionId}',[ContractController::class, 'print'])->name('contracts.print');
+ Route::get('edit-profile', EditProfile::class)->name('edit-profile');
 });
