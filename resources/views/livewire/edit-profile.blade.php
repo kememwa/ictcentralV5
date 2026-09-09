@@ -16,7 +16,7 @@
                 <!-- Profile Picture -->
                 <div class="relative">
                     <img
-                        src="{{ asset('images/default-avatar.png') }}"
+                        src="{{ $existingProfilePicture ? Storage::url($existingProfilePicture) : asset('images/default-avatar.png') }}"
                         alt="Profile Picture"
                         class="w-20 h-20 rounded-full object-cover border-4 border-white shadow"
                     >
@@ -178,105 +178,131 @@
                 </p>
             </div>
 
-
-            <!-- Profile Picture -->
-            <div class="flex items-center justify-between p-4 border border-gray-200
-                        rounded-lg mb-4">
-
+            <!-- ============ PROFILE PICTURE ============ -->
+            <div
+                x-data="imageCropper({ aspectRatio: 1, target: 'profile', wireSaveMethod: 'saveProfilePicture' })"
+                class="flex items-center justify-between p-4 border border-gray-200 rounded-lg mb-4"
+            >
                 <div class="flex items-center gap-4">
-
-                    <div class="w-12 h-12 rounded-full overflow-hidden bg-gray-100">
+                    <div class="w-16 h-16 rounded-full overflow-hidden bg-gray-100 border border-gray-200">
                         <img
-                            src="{{ asset('images/default-avatar.png') }}"
+                            src="{{ $existingProfilePicture ? Storage::url($existingProfilePicture) : asset('images/default-avatar.png') }}"
                             alt="Profile Picture"
                             class="w-full h-full object-cover"
+                            wire:key="profile-pic-{{ $existingProfilePicture }}"
                         >
                     </div>
-
                     <div>
-                        <h4 class="text-sm font-semibold text-gray-800">
-                            Profile Picture
-                        </h4>
-
-                        <p class="text-xs text-gray-500 mt-1">
-                            JPG, PNG or WEBP. Maximum size 2MB.
-                        </p>
+                        <h4 class="text-sm font-semibold text-gray-800">Profile Picture</h4>
+                        <p class="text-xs text-gray-500 mt-1">JPG, PNG or WEBP. Maximum size 2MB.</p>
                     </div>
-
                 </div>
 
-                <label
-                    for="profile_picture_2"
-                    class="px-4 py-2 text-sm font-medium text-blue-600
-                           border border-blue-600 rounded-lg cursor-pointer
-                           hover:bg-blue-50 transition"
-                >
-                    Change
-                </label>
+                <div class="flex items-center gap-2">
+                    <label class="px-4 py-2 text-sm font-medium text-blue-600 border border-blue-600 rounded-lg cursor-pointer hover:bg-blue-50 transition">
+                        {{ $existingProfilePicture ? 'Change' : 'Upload' }}
+                        <input type="file" class="hidden" accept="image/png,image/jpeg,image/webp" x-on:change="handleFileSelect($event)">
+                    </label>
 
-                <input
-                    type="file"
-                    id="profile_picture_2"
-                    class="hidden"
-                    accept="image/png,image/jpeg,image/webp"
-                >
+                    @if ($existingProfilePicture)
+                        <button type="button" wire:click="deleteProfilePicture" wire:confirm="Remove your profile picture?"
+                            class="px-3 py-2 text-sm text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition">
+                            Remove
+                        </button>
+                    @endif
+                </div>
 
+                <!-- Cropper Modal -->
+                <div x-show="showModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+                    <div class="bg-white rounded-xl shadow-xl w-full max-w-lg" @click.outside="closeModal()">
+                        <div class="p-4 border-b border-gray-200 flex justify-between items-center">
+                            <h3 class="font-semibold text-gray-800">Crop Profile Picture</h3>
+                            <button type="button" @click="closeModal()" class="text-gray-400 hover:text-gray-600">&times;</button>
+                        </div>
+
+                        <div class="p-4">
+                            <div class="max-h-96 overflow-hidden">
+                                <img x-ref="cropperImage" :src="imageSrc" style="max-width:100%; display:block;">
+                            </div>
+                        </div>
+
+                        <div class="p-4 border-t border-gray-200 flex justify-between items-center">
+                            <div class="flex gap-2">
+                                <button type="button" @click="cropper.rotate(-90)" class="px-3 py-1.5 text-sm border rounded-lg hover:bg-gray-50">⟲ Rotate</button>
+                                <button type="button" @click="cropper.rotate(90)" class="px-3 py-1.5 text-sm border rounded-lg hover:bg-gray-50">⟳ Rotate</button>
+                                <button type="button" @click="cropper.zoom(0.1)" class="px-3 py-1.5 text-sm border rounded-lg hover:bg-gray-50">+</button>
+                                <button type="button" @click="cropper.zoom(-0.1)" class="px-3 py-1.5 text-sm border rounded-lg hover:bg-gray-50">−</button>
+                            </div>
+                            <div class="flex gap-2">
+                                <button type="button" @click="closeModal()" class="px-4 py-2 text-sm border rounded-lg hover:bg-gray-50">Cancel</button>
+                                <button type="button" @click="crop()" class="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700">Save</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-
-            <!-- Signature -->
-            <div class="p-4 border border-gray-200 rounded-lg">
-
+            <!-- ============ SIGNATURE ============ -->
+            <div
+                x-data="imageCropper({ aspectRatio: NaN, target: 'signature', wireSaveMethod: 'saveSignature' })"
+                class="p-4 border border-gray-200 rounded-lg"
+            >
                 <div class="flex items-center justify-between mb-4">
-
                     <div>
-                        <h4 class="text-sm font-semibold text-gray-800">
-                            Digital Signature
-                        </h4>
-
-                        <p class="text-xs text-gray-500 mt-1">
-                            Upload your signature for use on documents and contracts.
-                        </p>
+                        <h4 class="text-sm font-semibold text-gray-800">Digital Signature</h4>
+                        <p class="text-xs text-gray-500 mt-1">Crop tightly around just the signature. Saved as a transparent PNG.</p>
                     </div>
-
                 </div>
 
-                <!-- Signature Preview -->
-                <div class="flex items-center justify-center h-32
-                            rounded-lg border-2 border-dashed border-gray-300
-                            bg-gray-50 mb-4">
-
-                    <span class="text-sm text-gray-400">
-                        No signature uploaded
-                    </span>
-
+                <div class="flex items-center justify-center h-32 rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 mb-4">
+                    @if ($existingSignature)
+                        <img src="{{ Storage::url($existingSignature) }}" alt="Signature" class="max-h-full max-w-full object-contain" wire:key="sig-{{ $existingSignature }}">
+                    @else
+                        <span class="text-sm text-gray-400">No signature uploaded</span>
+                    @endif
                 </div>
 
                 <div class="flex items-center gap-3">
-
-                    <label
-                        for="signature"
-                        class="px-4 py-2 text-sm font-medium text-gray-700
-                               bg-white border border-gray-300 rounded-lg
-                               cursor-pointer hover:bg-gray-50 transition"
-                    >
+                    <label class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition">
                         Upload Signature
+                        <input type="file" class="hidden" accept="image/png,image/jpeg" x-on:change="handleFileSelect($event)">
                     </label>
+                    <span class="text-xs text-gray-500">PNG recommended, transparent background works best</span>
 
-                    <input
-                        type="file"
-                        id="signature"
-                        class="hidden"
-                        accept="image/png,image/jpeg"
-                    >
-
-                    <span class="text-xs text-gray-500">
-                        PNG recommended
-                    </span>
-
+                    @if ($existingSignature)
+                        <button type="button" wire:click="deleteSignature" wire:confirm="Remove your signature?"
+                            class="px-3 py-2 text-sm text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition">
+                            Remove
+                        </button>
+                    @endif
                 </div>
 
+                <!-- Same modal structure as above, reused via the x-data scope -->
+                <div x-show="showModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+                    <div class="bg-white rounded-xl shadow-xl w-full max-w-lg">
+                        <div class="p-4 border-b border-gray-200 flex justify-between items-center">
+                            <h3 class="font-semibold text-gray-800">Crop Signature</h3>
+                            <button type="button" @click="closeModal()" class="text-gray-400 hover:text-gray-600">&times;</button>
+                        </div>
+                        <div class="p-4">
+                            <div class="max-h-96 overflow-hidden">
+                                <img x-ref="cropperImage" :src="imageSrc" style="max-width:100%; display:block;">
+                            </div>
+                        </div>
+                        <div class="p-4 border-t border-gray-200 flex justify-between items-center">
+                            <div class="flex gap-2">
+                                <button type="button" @click="cropper.zoom(0.1)" class="px-3 py-1.5 text-sm border rounded-lg hover:bg-gray-50">+</button>
+                                <button type="button" @click="cropper.zoom(-0.1)" class="px-3 py-1.5 text-sm border rounded-lg hover:bg-gray-50">−</button>
+                            </div>
+                            <div class="flex gap-2">
+                                <button type="button" @click="closeModal()" class="px-4 py-2 text-sm border rounded-lg hover:bg-gray-50">Cancel</button>
+                                <button type="button" @click="crop()" class="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700">Save</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
+
 
         </div>
 
@@ -356,4 +382,88 @@
 
     </div>
 
+
+    
+
 </div>
+
+<script>
+document.addEventListener('alpine:init', () => {
+    Alpine.data('imageCropper', ({ aspectRatio, target, wireSaveMethod }) => ({
+        cropper: null,
+        imageSrc: null,
+        showModal: false,
+
+        handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // basic client-side size guard (mirrors backend limits)
+            const maxMb = target === 'signature' ? 1 : 2;
+            if (file.size > maxMb * 1024 * 1024) {
+                alert(`File too large. Max ${maxMb}MB.`);
+                event.target.value = '';
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                this.imageSrc = e.target.result;
+                this.showModal = true;
+                this.$nextTick(() => this.initCropper());
+            };
+            reader.readAsDataURL(file);
+
+            event.target.value = ''; // allow re-selecting the same file later
+        },
+
+        initCropper() {
+            if (this.cropper) {
+                this.cropper.destroy();
+            }
+
+            const image = this.$refs.cropperImage;
+
+            this.cropper = new Cropper(image, {
+                aspectRatio: aspectRatio,           // 1 = square for profile pic, NaN = free crop for signature
+                viewMode: 1,
+                autoCropArea: 1,
+                dragMode: 'move',
+                background: false,
+                responsive: true,
+                checkOrientation: true,
+            });
+        },
+
+        crop() {
+            if (!this.cropper) return;
+
+            const isSignature = target === 'signature';
+
+            const canvas = this.cropper.getCroppedCanvas({
+                imageSmoothingEnabled: true,
+                imageSmoothingQuality: 'high',
+                // transparent background for signature, white for profile pic
+                fillColor: isSignature ? 'transparent' : '#ffffff',
+                ...(target === 'profile' ? { width: 512, height: 512 } : {}),
+            });
+
+            const mimeType = isSignature ? 'image/png' : 'image/jpeg';
+            const quality = isSignature ? undefined : 0.9;
+            const dataUrl = canvas.toDataURL(mimeType, quality);
+
+            this.$wire.call(wireSaveMethod, dataUrl);
+            this.closeModal();
+        },
+
+        closeModal() {
+            this.showModal = false;
+            this.imageSrc = null;
+            if (this.cropper) {
+                this.cropper.destroy();
+                this.cropper = null;
+            }
+        },
+    }));
+});
+</script>

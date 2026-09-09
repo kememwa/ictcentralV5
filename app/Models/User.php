@@ -29,6 +29,7 @@ class User extends Authenticatable
         'designation_id',
         'password',
         'signature_image_path',
+        'profile_picture',
         'line_manager_id',
     ];
     protected $dates = ['deleted_at'];
