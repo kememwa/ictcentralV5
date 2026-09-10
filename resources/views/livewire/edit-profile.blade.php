@@ -216,7 +216,7 @@
                     </div>
                 </div>
 
-                <div class="flex items-center justify-center h-32 rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 mb-4">
+                <div class="flex items-center justify-center p-2 h-32 rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 mb-4">
                     @if ($existingSignature)
                         <img src="{{ Storage::url($existingSignature) }}" alt="Signature" class="max-h-full max-w-full object-contain" wire:key="sig-{{ $existingSignature }}">
                     @else
