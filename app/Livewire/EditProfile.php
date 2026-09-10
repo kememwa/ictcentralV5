@@ -6,6 +6,9 @@ use Livewire\Component;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Layout;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Auth;
 
 class EditProfile extends Component
 {
@@ -74,7 +77,7 @@ class EditProfile extends Component
     {
         if ($this->existingSignature) {
             Storage::disk('public')->delete($this->existingSignature);
-            auth()->user()->update(['signature' => null]);
+            auth()->user()->update(['signature_image_path' => null]);
             $this->existingSignature = null;
         }
     }
@@ -109,6 +112,57 @@ class EditProfile extends Component
         Storage::disk('public')->put($filename, $decoded);
 
         return $filename;
+    }
+
+
+    public $currentPassword;
+    public $newPassword;
+    public $newPassword_confirmation;
+
+    public function openPasswordModal()
+    {
+        $this->resetValidation();
+
+        $this->reset([
+            'currentPassword',
+            'newPassword',
+            'newPassword_confirmation',
+        ]);
+    }
+
+    public function updatePassword()
+    {
+        $this->validate([
+            'currentPassword' => [
+                'required',
+                'current_password',
+            ],
+
+            'newPassword' => [
+                'required',
+                'string',
+                'min:8',
+                'confirmed',
+            ],
+        ]);
+
+        Auth::user()->update([
+            'password' => Hash::make($this->newPassword),
+        ]);
+
+        $this->reset([
+            'currentPassword',
+            'newPassword',
+            'newPassword_confirmation',
+        ]);
+
+        $this->dispatch('close-password-modal');
+
+        $this->dispatch('notify', 
+            type: 'success',
+            title: 'Password Updated',
+            message: "Your password has been updated successfully."
+        );
     }
 
     #[layout('layouts.dashboard')]
