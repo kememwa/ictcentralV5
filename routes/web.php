@@ -28,6 +28,7 @@ use App\Livewire\Designations;
 use App\Livewire\Divisions;
 use App\Http\Controllers\ContractController;
 use App\Livewire\EditProfile;
+use App\Livewire\Coo\RequisitionApproval;
 
 
 Route::get('/', Login::class)->name('login');
@@ -69,4 +70,5 @@ Route::middleware(['auth'])->group(function(){
  Route::get('/divisions', Divisions::class)->name('divisions');
  Route::get('/contracts/print/{requisitionId}',[ContractController::class, 'print'])->name('contracts.print');
  Route::get('edit-profile', EditProfile::class)->name('edit-profile');
+ Route::get('coo-approval', RequisitionApproval::class)->name('coo-approval');
 });
