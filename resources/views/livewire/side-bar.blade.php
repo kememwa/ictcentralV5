@@ -134,6 +134,13 @@
                 </li>
 
                 <li>
+                    <a wire:navigate href="#"
+                    class="flex items-center gap-2 rounded-md px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-100 hover:text-slate-900">
+                        <span>👔</span> COO Approval
+                    </a>
+                </li>
+
+                <li>
                     <a wire:navigate href="{{route('requisition')}}"
                     class="flex items-center gap-2 rounded-md px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-100 hover:text-slate-900">
                         <span>✅</span> HOD Approve Request
@@ -148,13 +155,13 @@
                 </li>
 
                 <li>
-                    <a href="{{route('hrm.casual.manage')}}"
+                    <a wire:navigate href="{{route('hrm.casual.manage')}}"
                     class="flex items-center gap-2 rounded-md px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-100 hover:text-slate-900">
                         <span>🧾</span> HRM Casual MGMT
                     </a>
                 </li>
                 <li>
-                    <a href="#" 
+                    <a wire:navigate href="#"
                         class="flex items-center gap-2 rounded-md px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-100 hover:text-slate-900">
                             <span>📈</span>Reports
                     </a>
@@ -299,13 +306,6 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                 </svg>
                 Edit Profile
-            </a>
-
-            <a href="#" class="group mt-1 flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 hover:text-slate-900">
-                <svg class="h-5 w-5 text-slate-400 group-hover:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
-                </svg>
-                Change Password
             </a>
         </div>
     </nav>
