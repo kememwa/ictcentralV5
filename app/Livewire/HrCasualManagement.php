@@ -260,8 +260,6 @@ class HrCasualManagement extends Component
         $req->update([
             'daily_rate' => $dailyRate,
             'hr_approval_status' => true,
-            'nhif_rate' => $nhifRate,
-            'sha_rate' => $shaRate,
             'total_amount' => $totalAmount,
         ]);
 
@@ -301,7 +299,7 @@ class HrCasualManagement extends Component
                 $q->whereNull('hr_approval_status');
             })
             ->when($this->view === 'hrm_approved', function ($q) {
-                $q->where('hrm_approval_status', 'approved')
+                $q->where('hrm_approval_status', true)
                 ->where('casual_assignment_status', false);
             })
             ->when($this->view === 'rejected', function ($q) {

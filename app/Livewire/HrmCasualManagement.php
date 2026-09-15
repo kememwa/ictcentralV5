@@ -14,7 +14,7 @@ class HrmCasualManagement extends Component
         $req = Requisition::findOrFail($id);
 
         $req->update([
-            'hrm_approval_status' => 'approved',
+            'hrm_approval_status' => true,
         ]);
 
         // Flash message for Livewire UI
@@ -30,7 +30,7 @@ class HrmCasualManagement extends Component
     {
         return view('livewire.hrm-casual-management',[
             'hrm_requisitions' => Requisition::where('hr_approval_status', true)
-            ->where('hrm_approval_status', 'pending')->latest()->paginate(10)
+            ->where('hrm_approval_status', false)->latest()->paginate(10)
         ]);
     }
 }
