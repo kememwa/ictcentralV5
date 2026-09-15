@@ -8,6 +8,21 @@ use App\Models\Requisition;
 
 class RequisitionApproval extends Component
 {
+    public function approveCoo($id)
+    {
+        $req = Requisition::findOrFail($id);
+
+        $req->update([
+            'coo_approval_status' => true,
+        ]);
+
+        // Flash message for Livewire UI
+        $this->dispatch('notify',
+            type: 'success',
+            title: 'Approved',
+            message: "Requisition approved successfully."
+        );
+    }
 
     #[Layout('layouts.dashboard')]
     public function render()

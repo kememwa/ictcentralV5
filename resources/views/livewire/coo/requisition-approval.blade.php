@@ -70,8 +70,8 @@
                             <td class="px-4 py-3">
                                 <div class="flex items-center justify-end gap-1.5">
                                     <button type="button"
-                                        wire:click="approveHrm({{ $req->id }})"
-                                        wire:confirm="Approve this requisition (KES {{ number_format($total) }})?"
+                                        wire:click="approveCoo({{ $req->id }})"
+                                        wire:confirm="Approve this requisition ?"
                                         class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md text-xs font-medium text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm transition">
                                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
                                         Approve
@@ -89,7 +89,7 @@
                     @empty
                         <tr>
                             <td colspan="7" class="py-16 text-center">
-                                <p class="font-medium text-gray-700 dark:text-gray-200">No requisitions awaiting HRM approval</p>
+                                <p class="font-medium text-gray-700 dark:text-gray-200">No requisitions awaiting COO approval</p>
                                 <p class="text-xs text-gray-500 mt-1">All caught up 🎉</p>
                             </td>
                         </tr>
@@ -111,7 +111,7 @@
                             <div class="min-w-0">
                                 <p class="font-semibold text-gray-900 dark:text-white truncate">{{ $req->requester->name }}</p>
                                 <span class="inline-flex items-center gap-1 mt-0.5 px-2 py-0.5 rounded-full text-[10px] font-medium bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">
-                                    <span class="w-1 h-1 bg-emerald-500 rounded-full"></span> HR Approved
+                                    <span class="w-1 h-1 bg-emerald-500 rounded-full"></span> COO Approved
                                 </span>
                             </div>
                         </div>
@@ -137,7 +137,7 @@
 
                     <div class="flex gap-2">
                         <button type="button"
-                            wire:click="approve({{ $req->id }})"
+                            wire:click="approveCoo({{ $req->id }})"
                             wire:confirm="Approve this requisition (KES {{ number_format($total) }})?"
                             class="flex-1 inline-flex items-center justify-center gap-1 px-3 py-2 rounded-lg text-xs font-medium text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm">
                             ✓ Approve
