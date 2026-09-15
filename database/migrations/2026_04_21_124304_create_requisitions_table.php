@@ -83,6 +83,8 @@ public function up(): void
             |--------------------------------------------------------------------------
             */
             $table->decimal('daily_rate', 10, 2)->nullable();
+            $table->decimal('nhif_rate', 10, 2)->nullable();
+            $table->decimal('sha_rate', 10, 2)->nullable();
 
             $table->decimal('total_amount', 15, 2)->nullable();
             

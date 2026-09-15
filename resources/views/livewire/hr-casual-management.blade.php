@@ -162,20 +162,21 @@
             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-800">
                 <thead class="bg-gray-50 dark:bg-gray-900/60">
                     <tr class="text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                        <th class="px-5 py-3">Requested By</th>
+                        <th class="px-2 py-3">Requested By</th>
                         <th class="px-5 py-3">Casuals</th>
                         <th class="px-5 py-3">Duration</th>
-                        <th class="px-5 py-3 w-48">Daily Rate (KES)</th>
-                        <th class="px-5 py-3">Estimated Total</th>
-                        <th class="px-5 py-3">Status</th>
-                        <th class="px-5 py-3 text-right">Action</th>
+                        <th class="px-2 py-3 w-48">Daily Rate (KES)</th>
+                        <th class="px-2 py-3">NHIF</th>
+                        <th class="px-2 py-3">SHA</th>
+                        <th class="px-2 py-3">Estimated Total</th>
+                        <th class="px-2 py-3 text-right">Action</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
                     @forelse($this->hrRequisitions as $req)
                         <tr class="hover:bg-gray-50/70 dark:hover:bg-gray-800/40 transition-colors">
                             {{-- Requester --}}
-                            <td class="px-5 py-4">
+                            <td class="px-2 py-2">
                                 <div class="flex items-center gap-3 min-w-0">
                                     <div class="h-9 w-9 shrink-0 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center text-sm font-semibold shadow-sm">
                                         {{ strtoupper(substr($req->requester->name, 0, 1)) }}
@@ -192,14 +193,14 @@
                             </td>
 
                             {{-- Casuals --}}
-                            <td class="px-5 py-4">
-                                <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 border border-blue-100 dark:border-blue-900/50">
+                            <td class="px-5 py-2">
+                                <span class="inline-flex items-center px-1  rounded-md text-xs font-medium bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 border border-blue-100 dark:border-blue-900/50">
                                     {{ $req->no_of_casuals }} Casuals
                                 </span>
                             </td>
 
                             {{-- Duration --}}
-                            <td class="px-5 py-4">
+                            <td class="px-5 py-2">
                                 <div class="flex items-center gap-1.5 text-sm text-gray-700 dark:text-gray-300">
                                     <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -207,6 +208,7 @@
                                     {{ $req->duration }} days
                                 </div>
                             </td>
+
 
                             {{-- Rate Input --}}
                             <td class="px-5 py-4">
@@ -232,23 +234,68 @@
                                 @enderror
                             </td>
 
+                            {{-- NHIF Input --}}
+                            <td class="px-5 py-4">
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-xs font-semibold text-gray-400 dark:text-gray-500 pointer-events-none">
+                                        KES
+                                    </span>
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        step="any"
+                                        wire:model.live.debounce.300ms="nhifRates"
+                                        placeholder="0.00"
+                                        class="w-full pl-12 pr-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition @error('rates.'.$req->id) border-red-500 ring-1 ring-red-500 @enderror">
+                                </div>
+                                @error("rates.$req->id")
+                                    <p class="mt-1 flex items-center gap-1 text-xs text-red-600 dark:text-red-400">
+                                        <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M18 10A8 8 0 11 2 10a8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                        </svg>
+                                        {{ $message }}
+                                    </p>
+                                @enderror
+                            </td>
+
+
+                            {{-- SHA Input --}}
+                            <td class="px-5 py-4">
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-xs font-semibold text-gray-400 dark:text-gray-500 pointer-events-none">
+                                        KES
+                                    </span>
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        step="any"
+                                        wire:model.live.debounce.300ms="shaRates"
+                                        placeholder="0.00"
+                                        class="w-full pl-12 pr-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition @error('rates.'.$req->id) border-red-500 ring-1 ring-red-500 @enderror">
+                                </div>
+                                @error("rates.$req->id")
+                                    <p class="mt-1 flex items-center gap-1 text-xs text-red-600 dark:text-red-400">
+                                        <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M18 10A8 8 0 11 2 10a8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                        </svg>
+                                        {{ $message }}
+                                    </p>
+                                @enderror
+                            </td>
+
+
                             {{-- Estimated Total --}}
                             <td class="px-5 py-4">
                                 @if(!empty($rates[$req->id]) && is_numeric($rates[$req->id]))
                                     <span class="text-sm font-semibold text-emerald-600 dark:text-emerald-400 whitespace-nowrap">
-                                        KES {{ number_format((float) $rates[$req->id] * (int) $req->no_of_casuals * (int) $req->duration) }}
+                                        KES {{ number_format(
+                                            ((float) $rates[$req->id] * (int) $req->no_of_casuals * (int) $req->duration)
+                                            - (((float) $nhifRates + (float) $shaRates) * (int) $req->no_of_casuals)
+                                        ) }}
                                     </span>
                                 @else
                                     <span class="text-gray-400 dark:text-gray-500 italic text-sm">—</span>
                                 @endif
-                            </td>
-
-                            {{-- Status --}}
-                            <td class="px-5 py-4">
-                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300 border border-amber-200/60 dark:border-amber-800/50 whitespace-nowrap">
-                                    <span class="w-1.5 h-1.5 bg-amber-500 rounded-full mr-1.5 animate-pulse"></span>
-                                    Awaiting Rate
-                                </span>
                             </td>
 
                             {{-- Action --}}
