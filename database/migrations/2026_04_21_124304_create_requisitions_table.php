@@ -38,6 +38,19 @@ public function up(): void
                 ->restrictOnDelete();
             $table->timestamp('hod_approval_date')->nullable();
 
+
+            /*
+            |--------------------------------------------------------------------------
+            | COO Approval
+            |--------------------------------------------------------------------------
+            */
+            $table->boolean('coo_approval_status')->default(false);
+            $table->foreignId('coo_id')
+                ->nullable()
+                ->constrained('users')
+                ->restrictOnDelete();
+            $table->timestamp('coo_approval_date')->nullable();
+
             /*
             |--------------------------------------------------------------------------
             | HR Approval
@@ -55,7 +68,7 @@ public function up(): void
             | HRM Approval
             |--------------------------------------------------------------------------
             */
-            $table->string('hrm_approval_status')->default('pending');
+            $table->string('hrm_approval_status')->default('false');
             $table->foreignId('hrm_id')
                 ->nullable()
                 ->constrained('users')
