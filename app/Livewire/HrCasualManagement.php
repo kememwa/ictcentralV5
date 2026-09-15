@@ -278,6 +278,7 @@ class HrCasualManagement extends Component
     {
         return Requisition::query()
             ->where('hod_approval_status', '1')
+            ->where('coo_approval_status', '1')
             ->when($this->view === 'pending', function ($q) {
                 $q->whereNull('hr_approval_status');
             })
