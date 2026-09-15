@@ -41,18 +41,6 @@ public function up(): void
 
             /*
             |--------------------------------------------------------------------------
-            | COO Approval
-            |--------------------------------------------------------------------------
-            */
-            $table->boolean('coo_approval_status')->default(false);
-            $table->foreignId('coo_id')
-                ->nullable()
-                ->constrained('users')
-                ->restrictOnDelete();
-            $table->timestamp('coo_approval_date')->nullable();
-
-            /*
-            |--------------------------------------------------------------------------
             | HR Approval
             |--------------------------------------------------------------------------
             */
