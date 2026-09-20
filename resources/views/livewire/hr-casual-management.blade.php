@@ -589,7 +589,7 @@
                                             <input
                                                 id="first_name"
                                                 type="text"
-                                                wire:model.blur="first_name"
+                                                wire:model="fname"
                                                 autocomplete="given-name"
                                                 class="w-full p-2 rounded-lg border border-gray-300
                                                     bg-white text-gray-900 placeholder-gray-400
@@ -598,7 +598,7 @@
                                                 placeholder="Enter first name"
                                             >
 
-                                            @error('first_name')
+                                            @error('fname')
                                                 <span class="mt-1 block text-sm text-red-500">
                                                     {{ $message }}
                                                 </span>
@@ -615,7 +615,7 @@
                                             <input
                                                 id="last_name"
                                                 type="text"
-                                                wire:model.blur="last_name"
+                                                wire:model="lname"
                                                 autocomplete="family-name"
                                                 class="w-full p-2 rounded-lg border border-gray-300
                                                     bg-white text-gray-900 placeholder-gray-400
@@ -624,7 +624,7 @@
                                                 placeholder="Enter last name"
                                             >
 
-                                            @error('last_name')
+                                            @error('lname')
                                                 <span class="mt-1 block text-sm text-red-500">
                                                     {{ $message }}
                                                 </span>
@@ -635,7 +635,7 @@
 
                                     <!-- Casual Phone Number -->
                                     <div>
-                                        <label for="next_of_kin_phone"
+                                        <label for="phone_number"
                                             class="block text-sm font-medium text-gray-700">
                                             Phone Number <span class="text-red-500">*</span>
                                         </label>
@@ -653,9 +653,9 @@
 
                                             <!-- Phone Number -->
                                             <input
-                                                id="next_of_kin_phone"
+                                                id="phone_number"
                                                 type="tel"
-                                                wire:model.blur="next_of_kin_phone"
+                                                wire:model.blur="phone_number"
                                                 inputmode="numeric"
                                                 autocomplete="tel"
                                                 maxlength="9"
@@ -667,7 +667,7 @@
                                             >
                                         </div>
 
-                                        @error('next_of_kin_phone')
+                                        @error('phone_number')
                                             <span class="mt-1 block text-sm text-red-500">
                                                 {{ $message }}
                                             </span>
@@ -714,7 +714,7 @@
                                             <input
                                                 id="id_number"
                                                 type="text"
-                                                wire:model.blur="id_number"
+                                                wire:model="id_number"
                                                 inputmode="numeric"
                                                 autocomplete="off"
                                                 class="w-full p-2 rounded-lg border border-gray-300
@@ -733,15 +733,15 @@
 
                                         <!-- SHA Number -->
                                         <div>
-                                            <label for="nssf_number"
+                                            <label for="sha_number"
                                                 class="block text-sm font-medium text-gray-700">
                                                 SHA Number <span class="text-red-500">*</span>
                                             </label>
 
                                             <input
-                                                id="nssf_number"
+                                                id="sha_number"
                                                 type="text"
-                                                wire:model.blur="nssf_number"
+                                                wire:model="sha_number"
                                                 inputmode="numeric"
                                                 autocomplete="off"
                                                 class="w-full p-2 rounded-lg border border-gray-300
@@ -751,13 +751,38 @@
                                                 placeholder="Enter SHA number"
                                             >
 
-                                            @error('nssf_number')
+                                            @error('sha_number')
                                                 <span class="mt-1 block text-sm text-red-500">
                                                     {{ $message }}
                                                 </span>
                                             @enderror
                                         </div>
 
+                                    </div>
+                                    <div>
+                                        <label for="nssf_number"
+                                            class="block text-sm font-medium text-gray-700">
+                                            NSSF Number <span class="text-red-500">*</span>
+                                        </label>
+
+                                        <input
+                                            id="nssf_number"
+                                            type="text"
+                                            wire:model="nssf_number"
+                                            inputmode="numeric"
+                                            autocomplete="off"
+                                            class="w-full p-2 rounded-lg border border-gray-300
+                                                bg-white text-gray-900 placeholder-gray-400
+                                                focus:ring-2 focus:ring-emerald-500/20
+                                                focus:border-emerald-500 transition"
+                                            placeholder="Enter SHA number"
+                                        >
+
+                                        @error('nssf_number')
+                                            <span class="mt-1 block text-sm text-red-500">
+                                                {{ $message }}
+                                            </span>
+                                        @enderror
                                     </div>
                                 </div>
 
@@ -803,7 +828,7 @@
                                             <input
                                                 id="next_of_kin_first_name"
                                                 type="text"
-                                                wire:model.blur="next_of_kin_first_name"
+                                                wire:model="nlname"
                                                 autocomplete="given-name"
                                                 class="w-full p-2 rounded-lg border border-gray-300
                                                     bg-white text-gray-900 placeholder-gray-400
@@ -812,7 +837,7 @@
                                                 placeholder="Enter first name"
                                             >
 
-                                            @error('next_of_kin_first_name')
+                                            @error('nfname')
                                                 <span class="mt-1 block text-sm text-red-500">
                                                     {{ $message }}
                                                 </span>
@@ -829,7 +854,7 @@
                                             <input
                                                 id="next_of_kin_last_name"
                                                 type="text"
-                                                wire:model.blur="next_of_kin_last_name"
+                                                wire:model="nlname"
                                                 autocomplete="family-name"
                                                 class="w-full p-2 rounded-lg border border-gray-300
                                                     bg-white text-gray-900 placeholder-gray-400
@@ -838,7 +863,7 @@
                                                 placeholder="Enter last name"
                                             >
 
-                                            @error('next_of_kin_last_name')
+                                            @error('nlname')
                                                 <span class="mt-1 block text-sm text-red-500">
                                                     {{ $message }}
                                                 </span>
@@ -869,7 +894,7 @@
                                             <input
                                                 id="next_of_kin_phone"
                                                 type="tel"
-                                                wire:model.blur="next_of_kin_phone"
+                                                wire:model="nphone_number"
                                                 inputmode="numeric"
                                                 autocomplete="tel"
                                                 maxlength="9"
@@ -881,7 +906,7 @@
                                             >
                                         </div>
 
-                                        @error('next_of_kin_phone')
+                                        @error('nphone_number')
                                             <span class="mt-1 block text-sm text-red-500">
                                                 {{ $message }}
                                             </span>

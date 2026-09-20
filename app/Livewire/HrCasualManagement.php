@@ -109,6 +109,10 @@ class HrCasualManagement extends Component
     public $last_name;
     public $id_number;
     public $nssf_number;
+    public $phone_number;
+    public $nfname;
+    public $nlname;
+    public $nphone_number;
 
     public string $view = 'pending';
     protected $queryString = ['view'];
