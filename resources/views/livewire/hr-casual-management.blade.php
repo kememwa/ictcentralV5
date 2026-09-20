@@ -1200,7 +1200,7 @@
 
 
 @elseif($view === 'hrm_approved')
-<div class="bg-white dark:bg-gray-900 shadow-2xl border border-gray-200/50 dark:border-gray-800/50 overflow-hidden backdrop-blur-sm bg-opacity-95 dark:bg-opacity-95">
+<div class="space-y-5">
     {{-- ===== Header Card ===== --}}
     <div class="relative overflow-hidden rounded-2xl border border-gray-200/70 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm">
         <div class="absolute inset-0 bg-gradient-to-r from-blue-50 via-indigo-50 to-transparent dark:from-blue-950/30 dark:via-indigo-950/20 dark:to-transparent pointer-events-none"></div>
@@ -1232,13 +1232,6 @@
                     </span>
                     <span class="text-xs font-medium text-amber-800 dark:text-amber-300 whitespace-nowrap">
                         Awaiting Casual Assignment
-                    </span>
-                </div>
-
-                <div class="flex flex-col items-end leading-tight">
-                    <span class="text-[11px] uppercase tracking-wide text-gray-500 dark:text-gray-400">Awaiting</span>
-                    <span class="text-xl font-bold text-gray-900 dark:text-white">
-                        {{ $this->hrRequisitions->count() }}
                     </span>
                 </div>
             </div>
