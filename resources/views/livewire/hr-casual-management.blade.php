@@ -60,47 +60,164 @@
 
     {{-- ===== Segmented Tabs ===== --}}
     <div class="relative pb-3">
-        <div class="flex gap-1 overflow-x-auto scrollbar-none rounded-2xl bg-gray-100 p-1.5 dark:bg-gray-800/60 ring-1 ring-gray-200/70 dark:ring-gray-700/50">
+
+        {{-- Loading indicator --}}
+        <div
+            wire:loading
+            wire:target="setView"
+            class="absolute -top-1 left-0 right-0 h-0.5 overflow-hidden rounded-full bg-gray-200"
+        >
+            <div class="h-full w-1/3 animate-[loading_1s_ease-in-out_infinite] rounded-full bg-blue-500"></div>
+        </div>
+
+        <div class="flex gap-1 overflow-x-auto scrollbar-none rounded-2xl
+                    bg-gray-100 p-1.5 ring-1 ring-gray-200/70">
 
             {{-- Pending --}}
-            <button wire:click="setView('pending')"
-                class="relative flex shrink-0 items-center gap-2 rounded-xl px-4 sm:px-5 py-2.5 text-sm font-medium transition-all duration-200
+            <button
+                wire:click="setView('pending')"
+                wire:loading.attr="disabled"
+                wire:target="setView('pending')"
+                class="relative flex shrink-0 items-center gap-2 rounded-xl px-4 sm:px-5 py-2.5
+                    text-sm font-medium transition-all duration-200
+                    disabled:cursor-wait disabled:opacity-70
                     {{ $view === 'pending'
-                        ? 'bg-white dark:bg-gray-900 text-blue-600 shadow-md ring-1 ring-gray-200/70 dark:ring-gray-700'
-                        : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white' }}">
+                            ? 'bg-white text-blue-600 shadow-md ring-1 ring-gray-200/70'
+                            : 'text-gray-600 hover:text-gray-900' }}"
+            >
                 <span>Pending</span>
+
                 @if($pendingCount ?? 0)
-                    <span class="inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-amber-500 px-1.5 text-[10px] font-bold text-white">
+                    <span class="inline-flex h-5 min-w-[1.25rem] items-center justify-center
+                                rounded-full bg-amber-500 px-1.5 text-[10px] font-bold text-white">
                         {{ $pendingCount }}
                     </span>
                 @endif
+
+                {{-- Active indicator --}}
                 @if($view === 'pending')
-                    <span class="h-1.5 w-1.5 rounded-full bg-blue-500 animate-pulse"></span>
+                    <span
+                        wire:loading.remove
+                        wire:target="setView('pending')"
+                        class="h-1.5 w-1.5 rounded-full bg-blue-500 animate-pulse">
+                    </span>
                 @endif
+
+                {{-- Loading spinner --}}
+                <svg
+                    wire:loading
+                    wire:target="setView('pending')"
+                    class="h-4 w-4 animate-spin text-blue-500"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                >
+                    <circle
+                        class="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        stroke-width="4">
+                    </circle>
+
+                    <path
+                        class="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z">
+                    </path>
+                </svg>
             </button>
 
             {{-- HRM Approved --}}
-            <button wire:click="setView('hrm_approved')"
-                class="relative flex shrink-0 items-center gap-2 rounded-xl px-4 sm:px-5 py-2.5 text-sm font-medium transition-all duration-200
+            <button
+                wire:click="setView('hrm_approved')"
+                wire:loading.attr="disabled"
+                wire:target="setView('hrm_approved')"
+                class="relative flex shrink-0 items-center gap-2 rounded-xl px-4 sm:px-5 py-2.5
+                    text-sm font-medium transition-all duration-200
+                    disabled:cursor-wait disabled:opacity-70
                     {{ $view === 'hrm_approved'
-                        ? 'bg-white dark:bg-gray-900 text-emerald-600 shadow-md ring-1 ring-gray-200/70 dark:ring-gray-700'
-                        : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white' }}">
+                            ? 'bg-white text-emerald-600 shadow-md ring-1 ring-gray-200/70'
+                            : 'text-gray-600 hover:text-gray-900' }}"
+            >
                 <span>HRM Approved</span>
+
                 @if($view === 'hrm_approved')
-                    <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span
+                        wire:loading.remove
+                        wire:target="setView('hrm_approved')"
+                        class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse">
+                    </span>
                 @endif
+
+                <svg
+                    wire:loading
+                    wire:target="setView('hrm_approved')"
+                    class="h-4 w-4 animate-spin text-emerald-500"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                >
+                    <circle
+                        class="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        stroke-width="4">
+                    </circle>
+
+                    <path
+                        class="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z">
+                    </path>
+                </svg>
             </button>
 
             {{-- Rejected --}}
-            <button wire:click="setView('rejected')"
-                class="relative flex shrink-0 items-center gap-2 rounded-xl px-4 sm:px-5 py-2.5 text-sm font-medium transition-all duration-200
+            <button
+                wire:click="setView('rejected')"
+                wire:loading.attr="disabled"
+                wire:target="setView('rejected')"
+                class="relative flex shrink-0 items-center gap-2 rounded-xl px-4 sm:px-5 py-2.5
+                    text-sm font-medium transition-all duration-200
+                    disabled:cursor-wait disabled:opacity-70
                     {{ $view === 'rejected'
-                        ? 'bg-white dark:bg-gray-900 text-rose-600 shadow-md ring-1 ring-gray-200/70 dark:ring-gray-700'
-                        : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white' }}">
+                            ? 'bg-white text-rose-600 shadow-md ring-1 ring-gray-200/70'
+                            : 'text-gray-600 hover:text-gray-900' }}"
+            >
                 <span>Rejected</span>
+
                 @if($view === 'rejected')
-                    <span class="h-1.5 w-1.5 rounded-full bg-rose-500 animate-pulse"></span>
+                    <span
+                        wire:loading.remove
+                        wire:target="setView('rejected')"
+                        class="h-1.5 w-1.5 rounded-full bg-rose-500 animate-pulse">
+                    </span>
                 @endif
+
+                <svg
+                    wire:loading
+                    wire:target="setView('rejected')"
+                    class="h-4 w-4 animate-spin text-rose-500"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                >
+                    <circle
+                        class="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        stroke-width="4">
+                    </circle>
+
+                    <path
+                        class="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z">
+                    </path>
+                </svg>
             </button>
         </div>
     </div>

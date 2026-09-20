@@ -290,8 +290,9 @@ class HrCasualManagement extends Component
         );
     }
 
+
     public function setView($view)
-    {
+    {  
         $this->view = $view;
         $this->resetPage();
     }
