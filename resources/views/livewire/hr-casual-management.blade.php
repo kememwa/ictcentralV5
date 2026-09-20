@@ -143,13 +143,6 @@
                         Awaiting Rate Input
                     </span>
                 </div>
-
-                <div class="flex flex-col items-end leading-tight">
-                    <span class="text-[11px] uppercase tracking-wide text-gray-500 dark:text-gray-400">Awaiting</span>
-                    <span class="text-xl font-bold text-gray-900 dark:text-white">
-                        {{ $this->hrRequisitions->count() }}
-                    </span>
-                </div>
             </div>
         </div>
     </div>
