@@ -432,7 +432,7 @@
 <div class="space-y-6">
 
     {{-- ===== Device Inventory Card ===== --}}
-    <x-data-card title="Device Inventory" subtitle="All devices currently tracked">
+    <x-data-card title="Casual Staff" subtitle="All casual staff records in the system">
         <x-slot name="actions">
             
             {{-- Search + filter --}}
