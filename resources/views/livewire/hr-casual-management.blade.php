@@ -1201,32 +1201,51 @@
 
 @elseif($view === 'hrm_approved')
 <div class="bg-white dark:bg-gray-900 shadow-2xl border border-gray-200/50 dark:border-gray-800/50 overflow-hidden backdrop-blur-sm bg-opacity-95 dark:bg-opacity-95">
-    <!-- Header with gradient -->
-    <div class="p-2 bg-gradient-to-r from-emerald-600 via-green-500 to-emerald-700">
-        <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-            <div class="space-y-2">
-                <div class="flex items-center gap-3">
-                    <div class="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    {{-- ===== Header Card ===== --}}
+    <div class="relative overflow-hidden rounded-2xl border border-gray-200/70 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm">
+        <div class="absolute inset-0 bg-gradient-to-r from-blue-50 via-indigo-50 to-transparent dark:from-blue-950/30 dark:via-indigo-950/20 dark:to-transparent pointer-events-none"></div>
+
+        <div class="relative flex flex-col gap-4 p-3 sm:flex-row sm:items-center sm:justify-between">
+            {{-- Title --}}
+            <div class="flex items-start gap-3">
+                <div class="hidden sm:flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white shadow-md">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                    </div>
-                    <h2 class="text-2xl font-bold text-white">Approved Requisitions</h2>
+                    </svg>
                 </div>
-                <p class="text-emerald-100/90 text-sm md:text-base">Ready for casual worker assignment</p>
+                <div class="min-w-0">
+                    <h2 class="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">
+                        Approved Requisitions by HRM
+                    </h2>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                        These are the requisitions that have been approved by the HR Manager and are ready for casual worker assignment.
+                    </p>
+                </div>
             </div>
-            
-            <!-- Stats Card -->
-            <div class="bg-white/20 backdrop-blur-sm rounded-xl p-1 min-w-[140px] border border-white/10">
-                <div class="text-sm font-medium text-emerald-100/90">Total Approved</div>
-                <div class="flex items-end gap-2">
-                    <div class="text-3xl md:text-4xl font-bold text-white">{{ $this->hrRequisitions->count() }}</div>
-                    <div class="text-emerald-100/70 text-sm mb-1">requests</div>
+
+            {{-- Right-side stats --}}
+            <div class="flex items-center gap-3">
+                <div class="flex items-center gap-2 px-3 py-2 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200/70 dark:border-amber-800/50">
+                    <span class="relative flex h-2 w-2">
+                        <span class="absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75 animate-ping"></span>
+                        <span class="relative inline-flex h-2 w-2 rounded-full bg-amber-500"></span>
+                    </span>
+                    <span class="text-xs font-medium text-amber-800 dark:text-amber-300 whitespace-nowrap">
+                        Awaiting Casual Assignment
+                    </span>
+                </div>
+
+                <div class="flex flex-col items-end leading-tight">
+                    <span class="text-[11px] uppercase tracking-wide text-gray-500 dark:text-gray-400">Awaiting</span>
+                    <span class="text-xl font-bold text-gray-900 dark:text-white">
+                        {{ $this->hrRequisitions->count() }}
+                    </span>
                 </div>
             </div>
         </div>
     </div>
 
+    
     <!-- Table Container -->
     <div class="overflow-x-auto">
         <table class="w-full">
