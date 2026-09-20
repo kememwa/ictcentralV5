@@ -655,7 +655,7 @@
                                             <input
                                                 id="phone_number"
                                                 type="tel"
-                                                wire:model.blur="phone_number"
+                                                wire:model="phone_number"
                                                 inputmode="numeric"
                                                 autocomplete="tel"
                                                 maxlength="9"
@@ -775,7 +775,7 @@
                                                 bg-white text-gray-900 placeholder-gray-400
                                                 focus:ring-2 focus:ring-emerald-500/20
                                                 focus:border-emerald-500 transition"
-                                            placeholder="Enter SHA number"
+                                            placeholder="Enter NSSF number"
                                         >
 
                                         @error('nssf_number')
@@ -828,7 +828,7 @@
                                             <input
                                                 id="next_of_kin_first_name"
                                                 type="text"
-                                                wire:model="nlname"
+                                                wire:model="nfname"
                                                 autocomplete="given-name"
                                                 class="w-full p-2 rounded-lg border border-gray-300
                                                     bg-white text-gray-900 placeholder-gray-400
@@ -987,176 +987,196 @@
 
     </div>
 
-    <!-- Casuals Grid -->
+        <x-data-card title="Device Inventory" subtitle="All devices currently tracked">
+        <x-slot name="actions">
+            {{-- Search + filter --}}
+            <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                <div class="relative flex-1 sm:w-72">
+                    <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"/>
+                    </svg>
+                    <input type="text" wire:model.live.debounce.300ms="search" placeholder="Search devices…"
+                        class="w-full pl-10 pr-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500">
+                </div>
+
+                @if($search)
+                    <button wire:click="$set('search', ''); $set('actionFilter', '')"
+                        class="inline-flex items-center justify-center gap-1 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-600 hover:bg-slate-50">
+                        Clear
+                    </button>
+                @endif
+            </div>
+        </x-slot>
     
-    <div class="overflow-x-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800">
-    <table class="min-w-full text-sm text-left">
-        <thead class="bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
+
+    {{-- ===== DESKTOP TABLE (lg and up) ===== --}}
+<div class="hidden lg:block overflow-x-auto">
+    <table class="w-full text-xs">
+        <thead class="bg-gray-50 text-left uppercase tracking-wider text-[11px] text-gray-500">
             <tr>
-                <th class="px-6 py-4 font-semibold">Name</th>
-                <th class="px-6 py-4 font-semibold">Status</th>
-                <th class="px-6 py-4 font-semibold">Department</th>
-                <th class="px-6 py-4 font-semibold">Phone</th>
-                <th class="px-6 py-4 font-semibold">Email</th>
-                <th class="px-6 py-4 font-semibold">Location</th>
-                <th class="px-6 py-4 font-semibold">Assignment</th>
-                <th class="px-6 py-4 font-semibold text-right">Actions</th>
+                <th class="px-3 py-2">Casual Name</th>
+                <th class="px-3 py-2">Id Number</th>
+                <th class="px-3 py-2 hidden xl:table-cell">NSSF Number</th>
+                <th class="px-3 py-2 hidden xl:table-cell">SHA Number</th>
+                <th class="px-3 py-2 hidden xl:table-cell">Phone Number</th>
+                <th class="px-3 py-2">Next of Kin Name</th>
+                <th class="px-3 py-2 hidden xl:table-cell">Next of Kin Phone</th>
+                <th class="px-3 py-2">Status</th>
+                <th class="px-3 py-2 text-right">Actions</th>
             </tr>
         </thead>
 
-        <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
-        @forelse($this->casualsData as $casual)
-            <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/60 transition">
+        <tbody class="divide-y divide-gray-100">
+            @forelse($this->casualsData as $casual)
+                <tr class="hover:bg-gray-50 transition">
+                    
+                    {{-- Casual Name --}}
+                    <td class="px-3 py-2">
+                        <p class="font-medium text-gray-900 truncate max-w-[140px]">
+                            {{ $casual->name }}
+                        </p>
+                    </td>
 
-                {{-- Name --}}
-                <td class="px-6 py-2">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 bg-gradient-to-br from-emerald-500 to-green-600 rounded-lg flex items-center justify-center text-white font-bold">
-                            {{ substr($casual->name, 0, 1) }}
-                        </div>
-                        <div>
-                            <div class="font-semibold text-gray-900 dark:text-white">
-                                {{ $casual->name }}
-                            </div>
-                            <div class="text-xs text-gray-500 dark:text-gray-400">
-                                Added {{ $casual->created_at->diffForHumans() }}
-                            </div>
-                        </div>
-                    </div>
-                </td>
+                    {{-- Casual Id Number --}}
+                    <td class="px-3 py-2 capitalize text-gray-700">
+                        {{ $casual->id_number }}
+                    </td>
 
-                {{-- Status --}}
-                <td class="px-6 py-2">
-                    <div class="flex gap-2">
-                        <span class="px-2 py-1 text-xs font-medium rounded-full
-                            @if($casual->status === 'active') bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300
-                            @elseif($casual->status === 'inactive') bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300
-                            @elseif($casual->status === 'pending') bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300
-                            @else bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300 @endif">
-                            {{ ucfirst($casual->status) }}
+                    {{-- NSSF Number --}}
+                    <td class="px-3 py-2 hidden xl:table-cell text-gray-500">
+                        {{ $casual->nssf_number }}
+                    </td>
+
+                    {{-- SHA Number --}}
+                    <td class="px-3 py-2 hidden xl:table-cell text-gray-700">
+                        {{ $casual->sha_number }}
+                    </td>
+
+                    {{-- Casual Phone Number --}}
+                    <td class="px-3 py-2 hidden xl:table-cell text-gray-700 truncate max-w-[120px]">
+                        {{ $casual->phone_number }}
+                    </td>
+
+                    {{-- Next of Kin Name --}}
+                    <td class="px-3 py-2">
+                        <span class="font-mono text-[10px] px-1.5 py-0.5 rounded bg-gray-100 text-gray-700">
+                            {{ $casual->n_name }}
                         </span>
+                    </td>
 
-                        @if($casual->is_assigned)
-                            <span class="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
-                                Assigned
+                    {{-- Next of Kin Phone Number --}}
+                    <td class="px-3 py-2 hidden xl:table-cell font-mono text-[10px] text-gray-500">
+                        {{ $casual->n_phone }}
+                    </td>
+
+                    {{-- Status --}}
+                    <td class="px-3 py-2">
+                        @if($casual->is_active)
+                            <span class="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium rounded-full bg-green-100 text-green-700">
+                                <span class="w-1 h-1 bg-green-500 rounded-full"></span> Active
+                            </span>
+                        @else
+                            <span class="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium rounded-full bg-rose-100 text-rose-700">
+                                <span class="w-1 h-1 bg-rose-500 rounded-full"></span> Inactive
                             </span>
                         @endif
-                    </div>
-                </td>
+                    </td>
 
-                {{-- Department --}}
-                <td class="px-6 py-2 text-gray-700 dark:text-gray-300">
-                    {{ $casual->department ?? '—' }}
-                </td>
+                    {{-- Actions --}}
+                    <td class="px-3 py-2 text-right">
+                        actions
+                    </td>
 
-                {{-- Phone --}}
-                <td class="px-6 py-2 text-gray-700 dark:text-gray-300">
-                    {{ $casual->phone ?? '—' }}
-                </td>
-
-                {{-- Email --}}
-                <td class="px-6 py-2 text-gray-700 dark:text-gray-300 truncate max-w-xs">
-                    {{ $casual->email ?? '—' }}
-                </td>
-
-                {{-- Location --}}
-                <td class="px-6 py-2 text-gray-700 dark:text-gray-300">
-                    {{ $casual->location ?? '—' }}
-                </td>
-
-                {{-- Assignment --}}
-                <td class="px-6 py-2">
-                    @if($casual->current_assignment)
-                        <div class="text-xs">
-                            <div class="font-medium text-gray-900 dark:text-white">
-                                {{ $casual->current_assignment->requisition->department ?? 'N/A' }}
-                            </div>
-                            <div class="text-gray-500 dark:text-gray-400">
-                                {{ $casual->current_assignment->start_date->format('M d') }}
-                                –
-                                {{ $casual->current_assignment->end_date->format('M d') }}
-                            </div>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="9" class="py-12 text-center">
+                        <div class="flex flex-col items-center gap-2 text-gray-500">
+                            <svg class="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                      d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0l-2 7H6l-2-7m16 0H4"/>
+                            </svg>
+                            <p class="font-medium text-gray-700 text-sm">No casual workers found</p>
+                            <p class="text-[11px]">Try adjusting your search or add a new casual worker</p>
                         </div>
-                    @else
-                        <span class="text-gray-400 dark:text-gray-500">None</span>
-                    @endif
-                    @if($casual->current_assignment)
-                        <div class="text-xs">
-                            <div class="font-medium text-gray-900 dark:text-white">
-                                {{ $casual->current_assignment->requisition->department ?? 'N/A' }}
-                            </div>
-                            <div class="text-gray-500 dark:text-gray-400">
-                                {{ $casual->current_assignment->start_date->format('M d') }}
-                                –
-                                {{ $casual->current_assignment->end_date->format('M d') }}
-                            </div>
-                        </div>
-                    @else
-                        <span class="text-gray-400 dark:text-gray-500">None</span>
-                    @endif
-                </td>
-
-                {{-- Actions --}}
-                <td class="px-6 py-2 text-right relative">
-                    <button
-                        wire:click="$set('selectedCasualId', {{ $casual->id }})"
-                        class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
-                    >
-                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M12 6v.01M12 12v.01M12 18v.01"/>
-                        </svg>
-                    </button>
-
-                    @if($selectedCasualId == $casual->id)
-                        <div class="absolute right-6 mt-2 w-48 bg-white dark:bg-gray-900 rounded-xl shadow-xl border border-gray-200 dark:border-gray-800 z-20">
-                            <div class="py-1">
-                                <button wire:click="editCasual({{ $casual->id }})" class="dropdown-item">
-                                    Edit Details
-                                </button>
-                                <button wire:click="viewAssignments({{ $casual->id }})" class="dropdown-item">
-                                    View Assignments
-                                </button>
-
-                                @if($casual->status === 'active')
-                                    <button wire:click="deactivateCasual({{ $casual->id }})" class="dropdown-item text-amber-600">
-                                        Deactivate
-                                    </button>
-                                @else
-                                    <button wire:click="activateCasual({{ $casual->id }})" class="dropdown-item text-green-600">
-                                        Activate
-                                    </button>
-                                @endif
-
-                                <hr class="my-1 border-gray-200 dark:border-gray-800">
-
-                                <button wire:click="confirmDeleteCasual({{ $casual->id }})" class="dropdown-item text-red-600">
-                                    Delete
-                                </button>
-                            </div>
-                        </div>
-                    @endif
-                </td>
-            </tr>
-        @empty
-            <tr>
-                <td colspan="8" class="py-16 text-center text-gray-500 dark:text-gray-400">
-                    No Casual Workers Found
-                </td>
-            </tr>
-        @endforelse
+                    </td>
+                </tr>
+            @endforelse
         </tbody>
     </table>
 </div>
 
+    {{-- ===== MOBILE / TABLET CARDS (below lg) ===== --}}
+    <div class="lg:hidden divide-y divide-gray-100">
+        @forelse ($this->casualsData as $casual)
+            <div class="p-4 hover:bg-gray-50 transition">
+                {{-- Header row --}}
+                <div class="flex items-start justify-between gap-3 mb-3">
+                    <div class="flex items-center gap-3 min-w-0">
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center font-semibold text-sm shrink-0">
+                            {{ strtoupper(substr($casual->name, 0, 2)) }}
+                        </div>
+                        <div class="min-w-0">
+                            <p class="font-semibold text-gray-900 truncate">{{ $casual->name }}</p>
+                            <p class="text-xs text-gray-500 capitalize">{{ $casual->id_number }}</p>
+                        </div>
+                    </div>
+                    @if($casual->is_active)
+                        <span class="shrink-0 inline-flex items-center gap-1.5 px-2 py-0.5 text-xs font-medium rounded-full bg-green-100 text-green-700">
+                            <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span> Active
+                        </span>
+                    @else
+                        <span class="shrink-0 inline-flex items-center gap-1.5 px-2 py-0.5 text-xs font-medium rounded-full bg-rose-100 text-rose-700">
+                            <span class="w-1.5 h-1.5 bg-rose-500 rounded-full"></span> Inactive
+                        </span>
+                    @endif
+                </div>
+
+                {{-- Detail grid --}}
+                <dl class="grid grid-cols-2 gap-x-4 gap-y-2 text-xs">
+                    <div>
+                        <dt class="text-gray-500">SHA Number</dt>
+                        <dd class="font-medium text-gray-900">{{ $casual->sha_number }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-gray-500">NSSF Number</dt>
+                        <dd class="font-mono text-gray-700">{{ $casual->nssf_number }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-gray-500">Phone</dt>
+                        <dd class="text-gray-700 truncate">{{ $casual->phone_number ?? 'Not specified' }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-gray-500">Next of Kin Name</dt>
+                        <dd class="text-gray-700 truncate">{{ $casual->n_name ?? 'Not specified' }}</dd>
+                    </div>
+                    <div class="col-span-2">
+                        <dt class="text-gray-500">Next of Kin Phone</dt>
+                        <dd class="font-mono text-gray-700 truncate">{{ $casual->n_phone ?? 'Not specified' }}</dd>
+                    </div>
+                </dl>
+
+                {{-- Actions --}}
+                <div class="mt-3 pt-3 border-t border-gray-100 flex justify-end">
+                    actions
+                </div>
+            </div>
+        @empty
+            <div class="py-16 text-center">
+                <p class="font-medium text-gray-700">No casuals found</p>
+                <p class="text-xs text-gray-500 mt-1">Try adjusting your search or add a new casual</p>
+            </div>
+        @endforelse
     </div>
 
-    <!-- Pagination -->
     @if($this->casualsData->hasPages())
-    <div class="mt-6">
-        {{ $this->casualsData->links() }}
-    </div>
+        <div class="px-4 sm:px-6 py-4 border-t border-gray-100">
+            {{ $this->casualsData->links() }}
+        </div>
     @endif
+</x-data-card>
+
+   
 </div>
 
    

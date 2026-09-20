@@ -105,10 +105,11 @@ class HrCasualManagement extends Component
     }
 
     // For adding new casuals
-    public $first_name;
-    public $last_name;
+    public $fname;
+    public $lname;
     public $id_number;
     public $nssf_number;
+    public $sha_number;
     public $phone_number;
     public $nfname;
     public $nlname;
@@ -134,30 +135,41 @@ class HrCasualManagement extends Component
     public function addCasual()
     {
         $this->validate([
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
+            'fname' => 'required|string|max:255',
+            'lname' => 'required|string|max:255',
             'id_number' => 'required|string|unique:casuals,id_number',
             'nssf_number' => 'required|string|unique:casuals,nssf_number',
+            'sha_number' => 'required|string|unique:casuals,sha_number',
+            'phone_number' => 'required|string|max:9|unique:casuals,phone_number',
+            'nfname' => 'required|string|max:255',
+            'nlname' => 'required|string|max:255',
+            'nphone_number' => 'required|string|max:9',
+        
         ]);
 
         $casual = Casual::create([
-            'name' => $this->first_name . ' ' . $this->last_name,
+            'name' => trim($this->fname) . ' ' . trim($this->lname),
             'id_number' => $this->id_number,
-            'nssf_number' => $this->nssf_number,
-            // Add default values for email and phone if your model requires them
-            'email' => strtolower($this->first_name . '.' . $this->last_name . '@example.com'),
-            'phone' => '0000000000', // Default value
+            'nssf_number' => trim($this->nssf_number),
+            'sha_number' => trim($this->sha_number),
+            'phone_number' => '254'.trim($this->phone_number),
+            'n_name' => trim($this->nfname) . ' ' . trim($this->nlname),
+            'n_phone' => '254'.trim($this->nphone_number), // Default value
         ]);
 
         // Refresh the casuals list
         $this->loadAllCasuals();
 
         // Reset input fields
-        $this->first_name = '';
-        $this->last_name = '';
+        $this->fname = '';
+        $this->lname = '';
         $this->id_number = '';
         $this->nssf_number = '';
-
+        $this->sha_number = '';
+        $this->phone_number = '';
+        $this->nfname = '';
+        $this->nlname = '';
+        $this->nphone_number = '';
         // Flash message for Livewire UI
         $this->dispatch('notify',
             type: 'success',

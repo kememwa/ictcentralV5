@@ -16,6 +16,10 @@ return new class extends Migration
             $table->string('name');
             $table->string('id_number')->unique();
             $table->string('nssf_number')->unique();
+            $table->string('sha_number')->unique();
+            $table->string('phone_number')->unique();
+            $table->string('n_name');
+            $table->string('n_phone');
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });

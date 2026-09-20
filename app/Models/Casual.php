@@ -14,6 +14,10 @@ class Casual extends Model
         'name',
         'id_number',
         'nssf_number',
+        'sha_number',
+        'phone_number',
+        'n_name',
+        'n_phone',
         'is_active',
     ];
 }
