@@ -59,7 +59,7 @@
     </x-page-header>
 
     {{-- ===== Segmented Tabs ===== --}}
-    <div class="relative">
+    <div class="relative pb-3">
         <div class="flex gap-1 overflow-x-auto scrollbar-none rounded-2xl bg-gray-100 p-1.5 dark:bg-gray-800/60 ring-1 ring-gray-200/70 dark:ring-gray-700/50">
 
             {{-- Pending --}}
@@ -107,14 +107,14 @@
 </div>
 
     <!-- Main Content -->
-    @if($view === 'pending')
-<div class="space-y-5 mt-3">
+@if($view === 'pending')
+<div class="space-y-5">
 
     {{-- ===== Header Card ===== --}}
     <div class="relative overflow-hidden rounded-2xl border border-gray-200/70 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm">
         <div class="absolute inset-0 bg-gradient-to-r from-blue-50 via-indigo-50 to-transparent dark:from-blue-950/30 dark:via-indigo-950/20 dark:to-transparent pointer-events-none"></div>
 
-        <div class="relative flex flex-col gap-4 p-5 sm:p-6 sm:flex-row sm:items-center sm:justify-between">
+        <div class="relative flex flex-col gap-4 p-3 sm:flex-row sm:items-center sm:justify-between">
             {{-- Title --}}
             <div class="flex items-start gap-3">
                 <div class="hidden sm:flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white shadow-md">
@@ -437,25 +437,6 @@
 @elseif($view === 'casual_management')
 
 <div class="space-y-6">
-    <!-- Header Card -->
-    <div class="bg-gradient-to-r from-emerald-500 to-green-600 p-2 text-white shadow-xl">
-        <div class="flex items-center justify-between">
-            <div>
-                <h2 class="text-2xl font-bold mb-2">Casual Workers Management</h2>
-                <p class="text-emerald-100 opacity-90">Manage all casual workers, their details, assignments and status</p>
-            </div>
-            <div class="flex items-center gap-4">
-                <div class="text-right">
-                    <div class="text-sm text-emerald-200">Total Casuals</div>
-                    <div class="text-3xl font-bold">{{ $totalcasualsData ?? 0 }}</div>
-                </div>
-                <div class="text-right">
-                    <div class="text-sm text-emerald-200">Active</div>
-                    <div class="text-3xl font-bold">{{ $activecasualsData ?? 0 }}</div>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- Search and Filters -->
     <div class="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6 items-center">
@@ -463,17 +444,11 @@
         <!-- Search input takes 5/12 -->
         <div class="md:col-span-5">
             <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                </div>
                 <input
                     wire:model.live.debounce.300ms="casualSearch"
                     type="text"
                     placeholder="Search by name, phone, or department..."
-                    class="w-full pl-10 pr-4 py-3 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:focus:ring-emerald-600 dark:focus:border-emerald-600 transition-all duration-200 placeholder:text-gray-500 dark:placeholder:text-gray-400"
+                    class="w-full p-2 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:focus:ring-emerald-600 dark:focus:border-emerald-600 transition-all duration-200 placeholder:text-gray-500 dark:placeholder:text-gray-400"
                 >
             </div>
         </div>
@@ -483,7 +458,7 @@
             <div class="relative">
                 <select
                     wire:model.live="casualStatusFilter"
-                    class="w-full px-4 py-3 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:focus:ring-emerald-600 dark:focus:border-emerald-600 transition-all duration-200 appearance-none"
+                    class="w-full p-2 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:focus:ring-emerald-600 dark:focus:border-emerald-600 transition-all duration-200 appearance-none"
                 >
                     <option value="">All Status</option>
                     <option value="active">Active</option>
@@ -510,7 +485,7 @@
             <!-- Trigger Button -->
             <button
                 @click="isOpen = true"
-                class="w-full px-6 py-3 bg-gradient-to-r from-emerald-500 to-green-600
+                class="w-full p-2 bg-gradient-to-r from-emerald-500 to-green-600
                     hover:from-emerald-600 hover:to-green-700 text-white rounded-xl
                     font-medium transition-all duration-200 shadow-md hover:shadow-lg
                     flex items-center justify-center gap-2 group">
