@@ -535,169 +535,430 @@
                 <div
                     @click.away="isOpen = false"
                     x-transition.scale.origin.center.duration.300ms
-                    class="relative w-full max-w-md"
+                    class="relative w-full max-w-md max-h-[90vh] overflow-hidden"
                 >
-                    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden">
+
+                    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
 
                         <!-- Modal Header -->
-                        <div class="px-6 py-5 bg-gradient-to-r from-emerald-50 to-green-50
+                        <div class="shrink-0 px-6 py-5 bg-gradient-to-r from-emerald-50 to-green-50
                                     dark:from-gray-700 dark:to-gray-800
                                     border-b border-gray-200 dark:border-gray-700">
+
                             <div class="flex items-center justify-between">
+
                                 <div>
                                     <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
                                         Add Casual Staff
                                     </h3>
+
                                     <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">
                                         Fill in the casual staff details below
                                     </p>
                                 </div>
 
                                 <button
+                                    type="button"
                                     @click="isOpen = false"
                                     class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300
                                         hover:bg-gray-100 dark:hover:bg-gray-700
                                         rounded-full w-8 h-8 flex items-center justify-center
                                         transition-colors"
                                 >
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor"
+                                    <svg class="w-5 h-5"
+                                        fill="none"
+                                        stroke="currentColor"
                                         viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+
+                                        <path stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
                                             d="M6 18L18 6M6 6l12 12" />
                                     </svg>
                                 </button>
+
                             </div>
                         </div>
 
-                        <!-- Modal Form -->
-                        <form wire:submit.prevent="addCasual" class="p-6 space-y-6">
 
-                            <!-- Personal Details -->
-                            <div class="space-y-4">
-                                <h4 class="font-medium text-gray-900 dark:text-white flex items-center gap-2">
-                                    <svg class="w-5 h-5 text-emerald-500"
-                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0z
-                                                M12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                    </svg>
-                                    Personal Details
-                                </h4>
+                        <!-- Scrollable Modal Content -->
+                        <div class="flex-1 min-h-0 overflow-y-auto">
+                            <!-- Modal Form -->
+                            <form wire:submit.prevent="addCasual" class="p-6 space-y-7">
 
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                        <label class="block text-sm font-medium mb-1.5">
-                                            First Name *
-                                        </label>
-                                        <input type="text" wire:model.live="first_name"
-                                            class="w-full px-4 py-2.5 rounded-lg border
-                                                    bg-white dark:bg-gray-700
-                                                    border-gray-300 dark:border-gray-600
-                                                    focus:ring-2 focus:ring-emerald-500
+                                <!-- Personal Details -->
+                                <div class="space-y-5">
+                                    <div class="flex items-center gap-3 pb-1 border-b border-gray-200">
+                                        <div class="flex items-center justify-center w-9 h-9 rounded-lg bg-emerald-50 text-emerald-600">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    stroke-width="2"
+                                                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0z
+                                                        M12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                            </svg>
+                                        </div>
+
+                                        <div>
+                                            <h4 class="text-base font-semibold text-gray-900">
+                                                Personal Details
+                                            </h4>
+                                            <p class="text-xs text-gray-500">
+                                                Enter the casual staff member's personal information.
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+                                        <!-- First Name -->
+                                        <div>
+                                            <label for="first_name"
+                                                class="block text-sm font-medium text-gray-700">
+                                                First Name <span class="text-red-500">*</span>
+                                            </label>
+
+                                            <input
+                                                id="first_name"
+                                                type="text"
+                                                wire:model.blur="first_name"
+                                                autocomplete="given-name"
+                                                class="w-full p-2 rounded-lg border border-gray-300
+                                                    bg-white text-gray-900 placeholder-gray-400
+                                                    focus:ring-2 focus:ring-emerald-500/20
                                                     focus:border-emerald-500 transition"
-                                            placeholder="John Doe">
-                                        @error('first_name')
-                                            <span class="text-sm text-red-500 mt-1 block">{{ $message }}</span>
+                                                placeholder="Enter first name"
+                                            >
+
+                                            @error('first_name')
+                                                <span class="mt-1 block text-sm text-red-500">
+                                                    {{ $message }}
+                                                </span>
+                                            @enderror
+                                        </div>
+
+                                        <!-- Last Name -->
+                                        <div>
+                                            <label for="last_name"
+                                                class="block text-sm font-medium text-gray-700">
+                                                Last Name <span class="text-red-500">*</span>
+                                            </label>
+
+                                            <input
+                                                id="last_name"
+                                                type="text"
+                                                wire:model.blur="last_name"
+                                                autocomplete="family-name"
+                                                class="w-full p-2 rounded-lg border border-gray-300
+                                                    bg-white text-gray-900 placeholder-gray-400
+                                                    focus:ring-2 focus:ring-emerald-500/20
+                                                    focus:border-emerald-500 transition"
+                                                placeholder="Enter last name"
+                                            >
+
+                                            @error('last_name')
+                                                <span class="mt-1 block text-sm text-red-500">
+                                                    {{ $message }}
+                                                </span>
+                                            @enderror
+                                        </div>
+
+                                    </div>
+
+                                    <!--Casual Phone Number-->
+                                    <div>
+                                        <label for="next_of_kin_phone"
+                                            class="block text-sm font-medium text-gray-700">
+                                            Phone Number <span class="text-red-500">*</span>
+                                        </label>
+
+                                        <input
+                                            id="next_of_kin_phone"
+                                            type="tel"
+                                            wire:model.blur="next_of_kin_phone"
+                                            inputmode="tel"
+                                            autocomplete="tel"
+                                            class="w-full p-2 rounded-lg border border-gray-300
+                                                bg-white text-gray-900 placeholder-gray-400
+                                                focus:ring-2 focus:ring-emerald-500/20
+                                                focus:border-emerald-500 transition"
+                                            placeholder="e.g. 0712 345 678"
+                                        >
+
+                                        @error('next_of_kin_phone')
+                                            <span class="mt-1 block text-sm text-red-500">
+                                                {{ $message }}
+                                            </span>
                                         @enderror
                                     </div>
 
-                                    <div>
-                                        <label class="block text-sm font-medium mb-1.5">
-                                            Last Name *
-                                        </label>
-                                        <input type="tel" wire:model.live="last_name"
-                                            class="w-full px-4 py-2.5 rounded-lg border
-                                                    bg-white dark:bg-gray-700
-                                                    border-gray-300 dark:border-gray-600
-                                                    focus:ring-2 focus:ring-emerald-500
+                                </div>
+
+
+                                <!-- Government Details -->
+                                <div class="space-y-5">
+
+                                    <div class="flex items-center gap-3 border-b border-gray-200">
+                                        <div class="flex items-center justify-center w-9 h-9 rounded-lg bg-blue-50 text-blue-600">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    stroke-width="2"
+                                                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586
+                                                        a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19
+                                                        a2 2 0 01-2 2z" />
+                                            </svg>
+                                        </div>
+
+                                        <div>
+                                            <h4 class="text-base font-semibold text-gray-900">
+                                                Government Details
+                                            </h4>
+                                            <p class="text-xs text-gray-500">
+                                                Provide the staff member's statutory identification details.
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+                                        <!-- ID Number -->
+                                        <div>
+                                            <label for="id_number"
+                                                class="block text-sm font-medium text-gray-700">
+                                                ID Number <span class="text-red-500">*</span>
+                                            </label>
+
+                                            <input
+                                                id="id_number"
+                                                type="text"
+                                                wire:model.blur="id_number"
+                                                inputmode="numeric"
+                                                autocomplete="off"
+                                                class="w-full p-2 rounded-lg border border-gray-300
+                                                    bg-white text-gray-900 placeholder-gray-400
+                                                    focus:ring-2 focus:ring-emerald-500/20
                                                     focus:border-emerald-500 transition"
-                                            placeholder="0712 345 678">
-                                        @error('last_name')
-                                            <span class="text-sm text-red-500 mt-1 block">{{ $message }}</span>
-                                        @enderror
+                                                placeholder="Enter ID number"
+                                            >
+
+                                            @error('id_number')
+                                                <span class="mt-1 block text-sm text-red-500">
+                                                    {{ $message }}
+                                                </span>
+                                            @enderror
+                                        </div>
+
+                                        <!-- SHA Number -->
+                                        <div>
+                                            <label for="nssf_number"
+                                                class="block text-sm font-medium text-gray-700">
+                                                SHA Number <span class="text-red-500">*</span>
+                                            </label>
+
+                                            <input
+                                                id="nssf_number"
+                                                type="text"
+                                                wire:model.blur="nssf_number"
+                                                inputmode="numeric"
+                                                autocomplete="off"
+                                                class="w-full p-2 rounded-lg border border-gray-300
+                                                    bg-white text-gray-900 placeholder-gray-400
+                                                    focus:ring-2 focus:ring-emerald-500/20
+                                                    focus:border-emerald-500 transition"
+                                                placeholder="Enter SHA number"
+                                            >
+
+                                            @error('nssf_number')
+                                                <span class="mt-1 block text-sm text-red-500">
+                                                    {{ $message }}
+                                                </span>
+                                            @enderror
+                                        </div>
+
                                     </div>
                                 </div>
 
 
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                        <label class="block text-sm font-medium mb-1.5">
-                                            ID Number *
-                                        </label>
-                                        <input type="text" wire:model.live="id_number"
-                                            class="w-full px-4 py-2.5 rounded-lg border
-                                                    bg-white dark:bg-gray-700
-                                                    border-gray-300 dark:border-gray-600
-                                                    focus:ring-2 focus:ring-emerald-500
+                                <!-- Next of Kin Details -->
+                                <div class="space-y-5">
+
+                                    <div class="flex items-center gap-3 border-b border-gray-200">
+                                        <div class="flex items-center justify-center w-9 h-9 rounded-lg bg-purple-50 text-purple-600">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    stroke-width="2"
+                                                    d="M17 20h5v-2a3 3 0 00-5.356-1.857
+                                                        M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857
+                                                        M7 20H2v-2a3 3 0 015.356-1.857
+                                                        M7 20v-2c0-.656.126-1.283.356-1.857
+                                                        m0 0a5.002 5.002 0 019.288 0
+                                                        M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0
+                                                        2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                            </svg>
+                                        </div>
+
+                                        <div>
+                                            <h4 class="text-base font-semibold text-gray-900">
+                                                Next of Kin Details
+                                            </h4>
+                                            <p class="text-xs text-gray-500">
+                                                Provide the emergency contact information.
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+                                        <!-- Next of Kin First Name -->
+                                        <div>
+                                            <label for="next_of_kin_first_name"
+                                                class="block text-sm font-medium text-gray-700">
+                                                First Name <span class="text-red-500">*</span>
+                                            </label>
+
+                                            <input
+                                                id="next_of_kin_first_name"
+                                                type="text"
+                                                wire:model.blur="next_of_kin_first_name"
+                                                autocomplete="given-name"
+                                                class="w-full p-2 rounded-lg border border-gray-300
+                                                    bg-white text-gray-900 placeholder-gray-400
+                                                    focus:ring-2 focus:ring-emerald-500/20
                                                     focus:border-emerald-500 transition"
-                                            placeholder="John Doe">
-                                        @error('id_number')
-                                            <span class="text-sm text-red-500 mt-1 block">{{ $message }}</span>
+                                                placeholder="Enter first name"
+                                            >
+
+                                            @error('next_of_kin_first_name')
+                                                <span class="mt-1 block text-sm text-red-500">
+                                                    {{ $message }}
+                                                </span>
+                                            @enderror
+                                        </div>
+
+                                        <!-- Next of Kin Last Name -->
+                                        <div>
+                                            <label for="next_of_kin_last_name"
+                                                class="block text-sm font-medium text-gray-700">
+                                                Last Name <span class="text-red-500">*</span>
+                                            </label>
+
+                                            <input
+                                                id="next_of_kin_last_name"
+                                                type="text"
+                                                wire:model.blur="next_of_kin_last_name"
+                                                autocomplete="family-name"
+                                                class="w-full p-2 rounded-lg border border-gray-300
+                                                    bg-white text-gray-900 placeholder-gray-400
+                                                    focus:ring-2 focus:ring-emerald-500/20
+                                                    focus:border-emerald-500 transition"
+                                                placeholder="Enter last name"
+                                            >
+
+                                            @error('next_of_kin_last_name')
+                                                <span class="mt-1 block text-sm text-red-500">
+                                                    {{ $message }}
+                                                </span>
+                                            @enderror
+                                        </div>
+
+                                    </div>
+
+                                    <!-- Next of Kin Phone -->
+                                    <div>
+                                        <label for="next_of_kin_phone"
+                                            class="block text-sm font-medium text-gray-700">
+                                            Phone Number <span class="text-red-500">*</span>
+                                        </label>
+
+                                        <input
+                                            id="next_of_kin_phone"
+                                            type="tel"
+                                            wire:model.blur="next_of_kin_phone"
+                                            inputmode="tel"
+                                            autocomplete="tel"
+                                            class="w-full p-2 rounded-lg border border-gray-300
+                                                bg-white text-gray-900 placeholder-gray-400
+                                                focus:ring-2 focus:ring-emerald-500/20
+                                                focus:border-emerald-500 transition"
+                                            placeholder="e.g. 0712 345 678"
+                                        >
+
+                                        @error('next_of_kin_phone')
+                                            <span class="mt-1 block text-sm text-red-500">
+                                                {{ $message }}
+                                            </span>
                                         @enderror
                                     </div>
 
-                                    <div>
-                                        <label class="block text-sm font-medium mb-1.5">
-                                            NSSF Number *
-                                        </label>
-                                        <input type="tel" wire:model.live="nssf_number"
-                                            class="w-full px-4 py-2.5 rounded-lg border
-                                                    bg-white dark:bg-gray-700
-                                                    border-gray-300 dark:border-gray-600
-                                                    focus:ring-2 focus:ring-emerald-500
-                                                    focus:border-emerald-500 transition"
-                                            placeholder="0712 345 678">
-                                        @error('nssf_number')
-                                            <span class="text-sm text-red-500 mt-1 block">{{ $message }}</span>
-                                        @enderror
-                                    </div>
                                 </div>
 
 
+                                <!-- Submit -->
+                                <div class="pt-2 border-t border-gray-200">
 
-                                
-
-                                <div>
-                                    <label class="block text-sm font-medium mb-1.5">
-                                        Department *
-                                    </label>
-                                    <select wire:model.live="department"
-                                            class="w-full px-4 py-2.5 rounded-lg border
-                                                bg-white dark:bg-gray-700
-                                                border-gray-300 dark:border-gray-600
-                                                focus:ring-2 focus:ring-emerald-500
-                                                focus:border-emerald-500 transition">
-                                        <option value="">Select Department</option>
-                                        <option value="operations">Operations</option>
-                                        <option value="logistics">Logistics</option>
-                                        <option value="warehouse">Warehouse</option>
-                                        <option value="administration">Administration</option>
-                                    </select>
-                                    @error('department')
-                                        <span class="text-sm text-red-500 mt-1 block">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            <!-- Submit -->
-                            <div class="pt-4">
-                                <button type="submit"
-                                        class="w-full px-6 py-3.5 bg-gradient-to-r
-                                            from-emerald-500 to-green-600
+                                    <button
+                                        type="submit"
+                                        wire:loading.attr="disabled"
+                                        wire:target="addCasual"
+                                        class="w-full p-2
+                                            bg-gradient-to-r from-emerald-500 to-green-600
                                             hover:from-emerald-600 hover:to-green-700
-                                            text-white font-medium rounded-lg
-                                            shadow-md hover:shadow-lg
-                                            flex items-center justify-center gap-2 group">
-                                    <svg class="w-5 h-5 transition-transform group-hover:scale-110"
-                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M5 13l4 4L19 7" />
-                                    </svg>
-                                    Add Casual Staff
-                                </button>
-                            </div>
+                                            disabled:opacity-60 disabled:cursor-not-allowed
+                                            text-white font-semibold rounded-lg
+                                            shadow-sm hover:shadow-md
+                                            transition-all duration-200
+                                            flex items-center justify-center gap-2">
 
-                        </form>
+                                        <!-- Normal State -->
+                                        <span wire:loading.remove wire:target="addCasual"
+                                            class="flex items-center justify-center gap-2">
+
+                                            <svg class="w-5 h-5"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    stroke-width="2"
+                                                    d="M5 13l4 4L19 7" />
+                                            </svg>
+
+                                            Add Casual Staff
+                                        </span>
+
+                                        <!-- Loading State -->
+                                        <span wire:loading wire:target="addCasual"
+                                            class="flex items-center justify-center gap-2">
+
+                                            <svg class="w-5 h-5 animate-spin"
+                                                fill="none"
+                                                viewBox="0 0 24 24">
+                                                <circle class="opacity-25"
+                                                        cx="12"
+                                                        cy="12"
+                                                        r="10"
+                                                        stroke="currentColor"
+                                                        stroke-width="4">
+                                                </circle>
+
+                                                <path class="opacity-75"
+                                                    fill="currentColor"
+                                                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z">
+                                                </path>
+                                            </svg>
+
+                                            Adding Casual Staff...
+                                        </span>
+
+                                    </button>
+
+                                </div>
+
+                            </form>
+                        </div>
+
                     </div>
                 </div>
             </div>
