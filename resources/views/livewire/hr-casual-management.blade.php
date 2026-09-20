@@ -1828,17 +1828,27 @@
 </div>
 
 @elseif($view === 'rejected')
-    <div class="bg-white dark:bg-gray-900 shadow-lg border border-gray-200 dark:border-gray-800 overflow-hidden">
-        <!-- Header -->
-        <div class="p-2 bg-gradient-to-r from-rose-600 to-red-600">
-            <div class="flex items-center justify-between">
-                <div>
-                    <h2 class="text-2xl font-bold text-white mb-2">Rejected Requisitions</h2>
-                    <p class="text-rose-100">View rejected requests and reasons</p>
-                </div>
-                <div class="text-right">
-                    <div class="text-sm text-rose-200">Total Rejected</div>
-                    <div class="text-3xl font-bold text-white">{{ $this->hrRequisitions->count() }}</div>
+    <div class="space-y-5">
+        {{-- ===== Header Card ===== --}}
+        <div class="relative overflow-hidden rounded-2xl border border-gray-200/70 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm">
+            <div class="absolute inset-0 bg-gradient-to-r from-blue-50 via-indigo-50 to-transparent dark:from-blue-950/30 dark:via-indigo-950/20 dark:to-transparent pointer-events-none"></div>
+
+            <div class="relative flex flex-col gap-4 p-3 sm:flex-row sm:items-center sm:justify-between">
+                {{-- Title --}}
+                <div class="flex items-start gap-3">
+                    <div class="hidden sm:flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white shadow-md">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V6m0 12v-2m0-8a3 3 0 013 3M9 10a3 3 0 013-3"/>
+                        </svg>
+                    </div>
+                    <div class="min-w-0">
+                        <h2 class="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">
+                            Rejected Requisitions
+                        </h2>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">
+                            These are the requisitions that have been rejected. You can view the reasons for rejection here.
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
