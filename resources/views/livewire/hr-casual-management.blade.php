@@ -633,25 +633,39 @@
 
                                     </div>
 
-                                    <!--Casual Phone Number-->
+                                    <!-- Casual Phone Number -->
                                     <div>
                                         <label for="next_of_kin_phone"
                                             class="block text-sm font-medium text-gray-700">
                                             Phone Number <span class="text-red-500">*</span>
                                         </label>
 
-                                        <input
-                                            id="next_of_kin_phone"
-                                            type="tel"
-                                            wire:model.blur="next_of_kin_phone"
-                                            inputmode="tel"
-                                            autocomplete="tel"
-                                            class="w-full p-2 rounded-lg border border-gray-300
-                                                bg-white text-gray-900 placeholder-gray-400
-                                                focus:ring-2 focus:ring-emerald-500/20
-                                                focus:border-emerald-500 transition"
-                                            placeholder="e.g. 0712 345 678"
-                                        >
+                                        <div class="mt-1 flex rounded-lg border border-gray-300 bg-white
+                                                    focus-within:ring-2 focus-within:ring-emerald-500/20
+                                                    focus-within:border-emerald-500 transition overflow-hidden">
+
+                                            <!-- Country Prefix -->
+                                            <span class="inline-flex items-center px-3
+                                                        bg-gray-50 text-gray-700 text-sm font-medium
+                                                        border-r border-gray-300">
+                                                254
+                                            </span>
+
+                                            <!-- Phone Number -->
+                                            <input
+                                                id="next_of_kin_phone"
+                                                type="tel"
+                                                wire:model.blur="next_of_kin_phone"
+                                                inputmode="numeric"
+                                                autocomplete="tel"
+                                                maxlength="9"
+                                                pattern="[7][0-9]{8}"
+                                                class="flex-1 p-2 border-0 outline-none
+                                                    bg-white text-gray-900 placeholder-gray-400
+                                                    focus:ring-0"
+                                                placeholder="7** *** ***"
+                                            >
+                                        </div>
 
                                         @error('next_of_kin_phone')
                                             <span class="mt-1 block text-sm text-red-500">
@@ -833,25 +847,39 @@
 
                                     </div>
 
-                                    <!-- Next of Kin Phone -->
+                                    <!-- Next of Kin Phone Number -->
                                     <div>
                                         <label for="next_of_kin_phone"
                                             class="block text-sm font-medium text-gray-700">
                                             Phone Number <span class="text-red-500">*</span>
                                         </label>
 
-                                        <input
-                                            id="next_of_kin_phone"
-                                            type="tel"
-                                            wire:model.blur="next_of_kin_phone"
-                                            inputmode="tel"
-                                            autocomplete="tel"
-                                            class="w-full p-2 rounded-lg border border-gray-300
-                                                bg-white text-gray-900 placeholder-gray-400
-                                                focus:ring-2 focus:ring-emerald-500/20
-                                                focus:border-emerald-500 transition"
-                                            placeholder="e.g. 0712 345 678"
-                                        >
+                                        <div class="mt-1 flex rounded-lg border border-gray-300 bg-white
+                                                    focus-within:ring-2 focus-within:ring-emerald-500/20
+                                                    focus-within:border-emerald-500 transition overflow-hidden">
+
+                                            <!-- Country Prefix -->
+                                            <span class="inline-flex items-center px-3
+                                                        bg-gray-50 text-gray-700 text-sm font-medium
+                                                        border-r border-gray-300">
+                                                254
+                                            </span>
+
+                                            <!-- Phone Number -->
+                                            <input
+                                                id="next_of_kin_phone"
+                                                type="tel"
+                                                wire:model.blur="next_of_kin_phone"
+                                                inputmode="numeric"
+                                                autocomplete="tel"
+                                                maxlength="9"
+                                                pattern="[7][0-9]{8}"
+                                                class="flex-1 p-2 border-0 outline-none
+                                                    bg-white text-gray-900 placeholder-gray-400
+                                                    focus:ring-0"
+                                                placeholder="7** *** ***"
+                                            >
+                                        </div>
 
                                         @error('next_of_kin_phone')
                                             <span class="mt-1 block text-sm text-red-500">
