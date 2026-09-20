@@ -1238,112 +1238,409 @@
         </div>
     </div>
 
-    
-    <!-- Table Container -->
-    <div class="overflow-x-auto">
-        <table class="w-full">
-            <thead class="bg-gradient-to-r from-gray-50/50 to-gray-100/30 dark:from-gray-800/50 dark:to-gray-900/30">
-                <tr>
-                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider border-b border-gray-200/50 dark:border-gray-700/50">
-                        <div class="flex items-center gap-2">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                            </svg>
-                            Requester
-                        </div>
-                    </th>
-                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider border-b border-gray-200/50 dark:border-gray-700/50">
-                        <div class="flex items-center gap-2">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
-                            </svg>
+    {{-- ===== Data Container ===== --}}
+    <div class="rounded-2xl border border-gray-200/70 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm overflow-hidden">
+
+        {{-- ===== Desktop / Tablet Table (md+) ===== --}}
+        <div class="hidden md:block overflow-x-auto">
+
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-800">
+
+                {{-- Table Header --}}
+                <thead class="bg-gray-50 dark:bg-gray-900/60">
+
+                    <tr class="text-left text-xs font-semibold uppercase tracking-wider
+                            text-gray-500 dark:text-gray-400">
+
+                        <th class="px-5 py-3.5">
+                            Requested By
+                        </th>
+
+                        <th class="px-5 py-3.5">
                             Casuals
-                        </div>
-                    </th>
-                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider border-b border-gray-200/50 dark:border-gray-700/50">
-                        <div class="flex items-center gap-2">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
+                        </th>
+
+                        <th class="px-5 py-3.5">
                             Duration
-                        </div>
-                    </th>
-                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider border-b border-gray-200/50 dark:border-gray-700/50">
-                        Status
-                    </th>
-                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider border-b border-gray-200/50 dark:border-gray-700/50">
-                        Action
-                    </th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-200/50 dark:divide-gray-800/50">
-                @forelse($this->hrRequisitions as $req)
-                <tr class="group hover:bg-gradient-to-r hover:from-emerald-50/30 hover:to-green-50/10 dark:hover:from-gray-800/30 dark:hover:to-gray-900/30 transition-all duration-300">
-                    <td class="px-6 py-2">
-                        <div class="flex items-center gap-3">
-                            <div class="relative">
-                                <div class="w-10 h-10 bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl flex items-center justify-center text-white font-semibold shadow-lg">
-                                    {{ substr($req->requester->name, 0, 1) }}
+                        </th>
+
+                        <th class="px-5 py-3.5 text-right">
+                            Action
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                {{-- Table Body --}}
+                <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+
+                    @forelse($this->hrRequisitions as $req)
+
+                        <tr class="hover:bg-gray-50/70 dark:hover:bg-gray-800/40
+                                transition-colors duration-150">
+
+                            {{-- Requested By --}}
+                            <td class="px-5 py-3.5">
+
+                                <div class="flex items-center gap-3 min-w-0">
+
+                                    {{-- Avatar --}}
+                                    <div class="h-10 w-10 shrink-0 rounded-full
+                                                bg-gradient-to-br from-blue-500 to-indigo-600
+                                                text-white
+                                                flex items-center justify-center
+                                                text-sm font-semibold
+                                                shadow-sm">
+
+                                        {{ strtoupper(substr($req->requester->name, 0, 1)) }}
+
+                                    </div>
+
+
+                                    {{-- Requester Details --}}
+                                    <div class="min-w-0">
+
+                                        <p class="text-sm font-semibold
+                                                text-gray-900 dark:text-white truncate">
+
+                                            {{ $req->requester->name }}
+
+                                        </p>
+
+                                        <p class="mt-0.5 text-xs
+                                                text-gray-500 dark:text-gray-400 truncate">
+
+                                            {{ $req->requester->department->name ?? 'Department' }}
+
+                                        </p>
+
+                                    </div>
+
                                 </div>
-                                <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-400 rounded-full border-2 border-white dark:border-gray-900"></div>
-                            </div>
-                            <div>
-                                <div class="font-medium text-gray-900 dark:text-white group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors">{{ $req->requester->name }}</div>
-                                <div class="text-xs text-gray-500 dark:text-gray-400">{{ $req->department ?? 'Department' }}</div>
-                            </div>
+
+                            </td>
+
+
+                            {{-- Casuals --}}
+                            <td class="px-5 py-3.5">
+
+                                <span class="inline-flex items-center
+                                            px-2.5 py-1
+                                            rounded-md
+                                            text-xs font-medium
+                                            bg-blue-50 text-blue-700
+                                            dark:bg-blue-900/30
+                                            dark:text-blue-300
+                                            border border-blue-100
+                                            dark:border-blue-900/50">
+
+                                    {{ $req->no_of_casuals }} Casuals
+
+                                </span>
+
+                            </td>
+
+
+                            {{-- Duration --}}
+                            <td class="px-5 py-3.5">
+
+                                <div class="inline-flex items-center gap-1.5
+                                            text-sm font-medium
+                                            text-gray-700 dark:text-gray-300">
+
+                                    <svg class="w-4 h-4 text-gray-400 shrink-0"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24">
+
+                                        <path stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0
+                                                9 9 0 0118 0z"/>
+
+                                    </svg>
+
+                                    {{ $req->duration }} days
+
+                                </div>
+
+                            </td>
+
+
+                            {{-- Action --}}
+                            <td class="px-5 py-3.5">
+
+                                <div class="flex justify-end">
+
+                                    <button
+                                        type="button"
+                                        wire:click="assignCasuals({{ $req->id }})"
+                                        class="inline-flex items-center justify-center
+                                            gap-2
+                                            px-4 py-2.5
+                                            text-sm font-medium
+                                            text-white
+                                            bg-gradient-to-r
+                                            from-emerald-600 to-green-600
+                                            hover:from-emerald-700
+                                            hover:to-green-700
+                                            rounded-lg
+                                            transition-all duration-200
+                                            shadow-sm hover:shadow-md
+                                            focus:outline-none
+                                            focus:ring-2
+                                            focus:ring-emerald-500
+                                            focus:ring-offset-2
+                                            group/btn">
+
+                                        <svg class="w-4 h-4
+                                                    group-hover/btn:rotate-12
+                                                    transition-transform"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24">
+
+                                            <path stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M12 4.354a4 4 0 110 5.292
+                                                    M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1
+                                                    a6 6 0 00-9-5.197
+                                                    m13.46 5.197a4 4 0 00-5.16-3.754"/>
+
+                                        </svg>
+
+                                        Assign Workers
+
+                                    </button>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                    @empty
+
+                        {{-- Empty State --}}
+                        <tr>
+
+                            <td colspan="4" class="px-6 py-16 text-center">
+
+                                <div class="flex flex-col items-center gap-3">
+
+                                    <div class="h-14 w-14 rounded-full
+                                                bg-gray-100 dark:bg-gray-800
+                                                flex items-center justify-center">
+
+                                        <svg class="w-6 h-6 text-gray-400"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24">
+
+                                            <path stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0
+                                                    9 9 0 0118 0z"/>
+
+                                        </svg>
+
+                                    </div>
+
+                                    <p class="text-sm font-semibold
+                                            text-gray-900 dark:text-white">
+
+                                        No Pending Requisitions
+
+                                    </p>
+
+                                    <p class="text-xs
+                                            text-gray-500 dark:text-gray-400">
+
+                                        All requisitions have been processed
+
+                                    </p>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                    @endforelse
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        {{-- ===== Mobile Cards (< md) ===== --}}
+        <div class="md:hidden divide-y divide-gray-100 dark:divide-gray-800">
+
+            @forelse($this->hrRequisitions as $req)
+
+                <div class="p-4 space-y-4">
+
+                    {{-- Requester --}}
+                    <div class="flex items-center gap-3 min-w-0">
+
+                        <div class="h-10 w-10 shrink-0 rounded-full
+                                    bg-gradient-to-br from-blue-500 to-indigo-600
+                                    text-white flex items-center justify-center
+                                    text-sm font-semibold shadow-sm">
+                            {{ strtoupper(substr($req->requester->name, 0, 1)) }}
                         </div>
-                    </td>
-                    <td class="px-6 py-2">
-                        <div class="flex items-center gap-2">
-                            <span class="px-3 py-1.5 text-sm font-semibold rounded-lg bg-gradient-to-r from-emerald-100/80 to-green-100/80 text-emerald-800 dark:from-emerald-900/40 dark:to-green-900/40 dark:text-emerald-300 border border-emerald-200/50 dark:border-emerald-800/50">
-                                {{ $req->no_of_casuals }} workers
-                            </span>
+
+                        <div class="min-w-0">
+                            <p class="text-sm font-semibold text-gray-900 dark:text-white truncate">
+                                {{ $req->requester->name }}
+                            </p>
+
+                            <p class="text-xs text-gray-500 dark:text-gray-400 truncate">
+                                {{ $req->requester->department->name ?? 'Department' }}
+                            </p>
                         </div>
-                    </td>
-                    <td class="px-6 py-2">
-                        <div class="flex items-center gap-2">
-                            <div class="font-medium text-gray-900 dark:text-white">{{ $req->duration }} days</div>
-                            <div class="text-xs text-gray-500 dark:text-gray-400">• {{ now()->addDays($req->duration)->format('M d') }}</div>
+
+                    </div>
+
+
+                    {{-- Casuals & Duration --}}
+                    <div class="grid grid-cols-2 gap-3">
+
+                        {{-- Casuals --}}
+                        <div class="rounded-lg bg-gray-50 dark:bg-gray-800/60 px-3 py-2.5">
+
+                            <p class="text-[11px] uppercase tracking-wide
+                                    text-gray-500 dark:text-gray-400">
+                                Casuals
+                            </p>
+
+                            <p class="mt-0.5 text-sm font-semibold text-gray-900 dark:text-white">
+                                {{ $req->no_of_casuals }} Casuals
+                            </p>
+
                         </div>
-                    </td>
-                    <td class="px-6 py-2">
-                        <span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-gradient-to-r from-emerald-100/80 to-green-100/80 text-emerald-800 dark:from-emerald-900/40 dark:to-green-900/40 dark:text-emerald-300 border border-emerald-200/50 dark:border-emerald-800/50 shadow-sm">
-                            <svg class="w-3 h-3 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                            </svg>
-                            Approved
-                        </span>
-                    </td>
-                    <td class="px-6 py-2">
-                        <button
-                            wire:click="assignCasuals({{ $req->id }})"
-                            class="px-5 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center gap-2 group/btn border border-emerald-700/20">
-                            <svg class="w-4 h-4 group-hover/btn:rotate-12 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.46 5.197a4 4 0 00-5.16-3.754"/>
-                            </svg>
-                            Assign Workers
-                        </button>
-                    </td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="5" class="px-6 py-16 text-center">
-                        <div class="max-w-md mx-auto">
-                            <div class="w-24 h-24 mx-auto mb-6 text-gray-300 dark:text-gray-700">
-                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="opacity-50">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+
+
+                        {{-- Duration --}}
+                        <div class="rounded-lg bg-gray-50 dark:bg-gray-800/60 px-3 py-2.5">
+
+                            <p class="text-[11px] uppercase tracking-wide
+                                    text-gray-500 dark:text-gray-400">
+                                Duration
+                            </p>
+
+                            <div class="mt-0.5 flex items-center gap-1.5
+                                        text-sm font-semibold text-gray-900 dark:text-white">
+
+                                <svg class="w-4 h-4 text-gray-400 shrink-0"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0
+                                            9 9 0 0118 0z"/>
                                 </svg>
+
+                                {{ $req->duration }} days
+
                             </div>
-                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">All Caught Up!</h3>
-                            <p class="text-gray-500 dark:text-gray-400 mb-6">No approved requisitions pending assignment</p>
-                            <div class="w-32 h-1 bg-gradient-to-r from-emerald-400/20 to-green-400/20 rounded-full mx-auto"></div>
+
                         </div>
-                    </td>
-                </tr>
-                @endforelse
-            </tbody>
-        </table>
+
+                    </div>
+
+
+                    {{-- Action --}}
+                    <button
+                        type="button"
+                        wire:click="assignCasuals({{ $req->id }})"
+                        class="w-full px-4 py-2.5
+                            text-sm font-medium text-white
+                            bg-gradient-to-r from-emerald-600 to-green-600
+                            hover:from-emerald-700 hover:to-green-700
+                            rounded-lg
+                            transition-all duration-200
+                            shadow-sm hover:shadow-md
+                            flex items-center justify-center gap-2
+                            group/btn">
+
+                        <svg class="w-4 h-4 group-hover/btn:rotate-12 transition-transform"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24">
+
+                            <path stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M12 4.354a4 4 0 110 5.292
+                                    M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1
+                                    a6 6 0 00-9-5.197
+                                    m13.46 5.197a4 4 0 00-5.16-3.754"/>
+
+                        </svg>
+
+                        Assign Workers
+
+                    </button>
+
+                </div>
+
+            @empty
+
+                {{-- Empty State --}}
+                <div class="py-14 text-center">
+
+                    <div class="mx-auto h-14 w-14 rounded-full
+                                bg-gray-100 dark:bg-gray-800
+                                flex items-center justify-center mb-3">
+
+                        <svg class="w-6 h-6 text-gray-400"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24">
+
+                            <path stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0
+                                    9 9 0 0118 0z"/>
+
+                        </svg>
+
+                    </div>
+
+                    <p class="text-sm font-semibold text-gray-900 dark:text-white">
+                        No Pending Requisitions
+                    </p>
+
+                    <p class="text-xs text-gray-500 dark:text-gray-400">
+                        All requisitions have been processed
+                    </p>
+
+                </div>
+
+            @endforelse
+
+        </div>
+
+
     </div>
+
+    {{-- Pagination --}}
+    @if($this->hrRequisitions->hasPages())
+        <div class="px-1">
+            {{ $this->hrRequisitions->links() }}
+        </div>
+    @endif
+
 </div>
 
 <div x-data="{ 
