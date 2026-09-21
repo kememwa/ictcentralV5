@@ -318,7 +318,7 @@ class HrCasualManagement extends Component
                 $q->whereNull('hr_approval_status');
             })
             ->when($this->view === 'hrm_approved', function ($q) {
-                $q->where('hrm_approval_status', true)
+                $q->where('hrm_approval_status', 'approved')
                 ->where('casual_assignment_status', false);
             })
             ->when($this->view === 'rejected', function ($q) {
