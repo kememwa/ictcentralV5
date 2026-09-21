@@ -56,7 +56,7 @@ public function up(): void
             | HRM Approval
             |--------------------------------------------------------------------------
             */
-            $table->string('hrm_approval_status')->default('false');
+            $table->enum('hrm_approval_status', ['approved', 'rejected', 'pending'])->default('pending');
             $table->foreignId('hrm_id')
                 ->nullable()
                 ->constrained('users')
