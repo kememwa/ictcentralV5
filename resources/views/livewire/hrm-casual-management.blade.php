@@ -31,7 +31,7 @@
                     <tr>
                         <th class="px-3 py-2.5 whitespace-nowrap">Requested By</th>
                         <th class="px-3 py-2.5 whitespace-nowrap text-center">No. of Casuals</th>
-                        <th class="px-3 py-2.5 whitespace-nowrap">Duration</th>
+                        <th class="px-3 py-2.5 whitespace-nowrap">Days</th>
                         <th class="px-3 py-2.5 w-2/5 min-w-[280px]">Reason</th>
                         <th class="px-3 py-2.5 whitespace-nowrap text-right">Daily Rate</th>
                         <th class="px-3 py-2.5 whitespace-nowrap text-right">NSSF Rate</th>

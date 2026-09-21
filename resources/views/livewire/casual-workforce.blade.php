@@ -94,57 +94,95 @@
             </div>
         </x-slot:actions>
 
+        @php
+            $statusDots = [
+                'approved'    => 'bg-emerald-500',
+                'rejected'    => 'bg-rose-500',
+                'in-progress' => 'bg-amber-500',
+            ];
+        @endphp
+
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-slate-100 text-sm">
-                <thead class="bg-slate-50">
-                    <tr class="text-left text-xs font-medium uppercase tracking-wider text-slate-500">
-                        <th class="px-5 sm:px-6 py-3">Requested By</th>
-                        <th class="px-5 sm:px-6 py-3 text-center">Casuals</th>
-                        <th class="px-5 sm:px-6 py-3">Reason</th>
-                        <th class="px-5 sm:px-6 py-3 text-center">Days</th>
-                        <th class="px-5 sm:px-6 py-3">Start</th>
-                        <th class="px-5 sm:px-6 py-3">End</th>
-                        <th class="px-5 sm:px-6 py-3">Submitted</th>
-                        <th class="px-5 sm:px-6 py-3">Status</th>
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="border-b border-slate-200 text-left text-[11px] uppercase tracking-wider text-slate-400">
+                        <th class="px-5 sm:px-6 py-3 font-medium whitespace-nowrap">Requested By</th>
+                        <th class="px-5 sm:px-6 py-3 font-medium text-center">Casuals</th>
+                        <th class="px-5 sm:px-6 py-3 font-medium w-2/5 min-w-[260px]">Reason</th>
+                        <th class="px-5 sm:px-6 py-3 font-medium text-center">Days</th>
+                        <th class="px-5 sm:px-6 py-3 font-medium whitespace-nowrap">Period</th>
+                        <th class="px-5 sm:px-6 py-3 font-medium whitespace-nowrap">Submitted</th>
+                        <th class="px-5 sm:px-6 py-3 font-medium">Status</th>
                     </tr>
                 </thead>
+
                 <tbody class="divide-y divide-slate-100">
                     @forelse($MyRequisitions as $req)
-                        <tr class="hover:bg-slate-50/60 transition">
-                            <td class="px-5 sm:px-6 py-4">
-                                <div class="flex items-center gap-2.5">
-                                    <div class="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-100 text-xs font-semibold text-indigo-700">
-                                        {{ strtoupper(substr($req->requester->name, 0, 1)) }}
-                                    </div>
-                                    <span class="font-medium text-slate-900">{{ $req->requester->name }}</span>
-                                </div>
+                        <tr class="align-top hover:bg-slate-50/60 transition">
+
+                            {{-- Requested By --}}
+                            <td class="px-5 sm:px-6 py-4 whitespace-nowrap font-medium text-slate-900">
+                                {{ $req->requester->name }}
                             </td>
-                            <td class="px-5 sm:px-6 py-4 text-center font-medium text-slate-900">{{ $req->no_of_casuals }}</td>
-                            <td class="px-5 sm:px-6 py-4 max-w-xs truncate text-slate-600" title="{{ $req->reason }}">{{ $req->reason }}</td>
-                            <td class="px-5 sm:px-6 py-4 text-center text-slate-700">{{ $req->duration }}</td>
-                            <td class="px-5 sm:px-6 py-4 whitespace-nowrap text-slate-600">{{ \Carbon\Carbon::parse($req->start_date)->format('d M Y') }}</td>
-                            <td class="px-5 sm:px-6 py-4 whitespace-nowrap text-slate-600">{{ \Carbon\Carbon::parse($req->end_date)->format('d M Y') }}</td>
-                            <td class="px-5 sm:px-6 py-4 whitespace-nowrap text-slate-600">{{ $req->created_at->format('d M Y') }}</td>
+
+                            {{-- Casuals --}}
+                            <td class="px-5 sm:px-6 py-4 text-center text-slate-700 tabular-nums">
+                                {{ $req->no_of_casuals }}
+                            </td>
+
+                            {{-- Reason (wide, wraps, expandable) --}}
                             <td class="px-5 sm:px-6 py-4">
-                                @php
-                                    $tones = [
-                                        'approved'    => ['bg-emerald-50','text-emerald-700','ring-emerald-200','bg-emerald-500'],
-                                        'rejected'    => ['bg-rose-50','text-rose-700','ring-rose-200','bg-rose-500'],
-                                        'in-progress' => ['bg-amber-50','text-amber-700','ring-amber-200','bg-amber-500'],
-                                    ];
-                                    $t = $tones[$req->status] ?? ['bg-slate-100','text-slate-700','ring-slate-200','bg-slate-400'];
-                                @endphp
-                                <span class="inline-flex items-center gap-1 rounded-full {{ $t[0] }} px-2.5 py-0.5 text-xs font-medium {{ $t[1] }} ring-1 {{ $t[2] }}">
-                                    <span class="h-1.5 w-1.5 rounded-full {{ $t[3] }}"></span>
-                                    {{ ucfirst($req->status) }}
+                                @if($req->reason)
+                                    <div x-data="{ open: false }" class="max-w-xl">
+                                        <p
+                                            class="text-slate-600 leading-relaxed break-words"
+                                            :class="open ? '' : 'line-clamp-2'"
+                                        >{{ $req->reason }}</p>
+
+                                        @if(mb_strlen($req->reason) > 110)
+                                            <button
+                                                type="button"
+                                                @click="open = !open"
+                                                class="mt-1 text-xs text-slate-400 hover:text-slate-700 transition"
+                                                x-text="open ? 'Show less' : 'Read more'"
+                                            ></button>
+                                        @endif
+                                    </div>
+                                @else
+                                    <span class="text-xs italic text-slate-300">No reason provided</span>
+                                @endif
+                            </td>
+
+                            {{-- Days --}}
+                            <td class="px-5 sm:px-6 py-4 text-center text-slate-700 tabular-nums">
+                                {{ $req->duration }}
+                            </td>
+
+                            {{-- Period --}}
+                            <td class="px-5 sm:px-6 py-4 whitespace-nowrap text-slate-600 tabular-nums">
+                                {{ \Carbon\Carbon::parse($req->start_date)->format('d M Y') }}
+                                <span class="mx-1 text-slate-300">–</span>
+                                {{ \Carbon\Carbon::parse($req->end_date)->format('d M Y') }}
+                            </td>
+
+                            {{-- Submitted --}}
+                            <td class="px-5 sm:px-6 py-4 whitespace-nowrap text-slate-400 tabular-nums">
+                                {{ $req->created_at->format('d M Y') }}
+                            </td>
+
+                            {{-- Status --}}
+                            <td class="px-5 sm:px-6 py-4 whitespace-nowrap">
+                                <span class="inline-flex items-center gap-1.5 text-xs text-slate-600">
+                                    <span class="h-1.5 w-1.5 rounded-full {{ $statusDots[$req->status] ?? 'bg-slate-300' }}"></span>
+                                    {{ ucfirst(str_replace('-', ' ', $req->status)) }}
                                 </span>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" class="px-6 py-16 text-center">
+                            <td colspan="7" class="px-6 py-16 text-center">
                                 <p class="text-sm font-medium text-slate-900">No requisitions yet</p>
-                                <p class="mt-1 text-xs text-slate-500">Submit your first request using the cards above.</p>
+                                <p class="mt-1 text-xs text-slate-400">Submit your first request using the cards above.</p>
                             </td>
                         </tr>
                     @endforelse
