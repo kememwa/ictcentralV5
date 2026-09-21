@@ -118,7 +118,7 @@ class HrCasualManagement extends Component
     public string $view = 'pending';
     protected $queryString = ['view'];
     public array $rates = [];
-    public $nhifRates;
+    public $nssfRates;
     public $shaRates;
 
     public $casualSearch = '';
@@ -252,14 +252,14 @@ class HrCasualManagement extends Component
     {
         $this->validate([
             "rates.$id" => 'required|numeric|min:1',
-            "nhifRates" => 'required|numeric|min:0',
+            "nssfRates" => 'required|numeric|min:0',
             "shaRates" => 'required|numeric|min:0',
         ]);
 
         $req = Requisition::findOrFail($id);
 
         $dailyRate = (float) $this->rates[$id];
-        $nhifRate = (float) $this->nhifRates;
+        $nssfRate = (float) $this->nssfRates;
         $shaRate = (float) $this->shaRates;
         $casuals = (int) $req->no_of_casuals;
         $duration = (int) $req->duration;
@@ -267,8 +267,8 @@ class HrCasualManagement extends Component
         // Gross amount before deductions
         $grossAmount = $dailyRate * $duration * $casuals;
 
-        // NHIF + SHA deductions
-        $deductions = ($nhifRate + $shaRate) * $casuals;
+        // NSSF + SHA deductions
+        $deductions = ($nssfRate + $shaRate) * $casuals;
 
         // Final amount
         $totalAmount = $grossAmount - $deductions;

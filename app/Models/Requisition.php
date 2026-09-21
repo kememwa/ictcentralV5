@@ -25,7 +25,7 @@ class Requisition extends Model
         'hod_id',
         'hod_approval_date',
         'daily_rate',
-        'nhif_rate',
+        'nssf_rate',
         'sha_rate',
         'total_amount',
         'hr_approval_status',

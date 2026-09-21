@@ -24,67 +24,75 @@
             </span>
         </div>
 
-        {{-- ===== DESKTOP TABLE ===== --}}
+        {{-- ===== DESKTOP TABLE (lg and up) ===== --}}
         <div class="hidden lg:block overflow-x-auto">
-            <table class="w-full text-sm">
-                <thead class="bg-gray-50 dark:bg-gray-800/50 text-left text-xs uppercase tracking-wider text-gray-500">
+            <table class="w-full text-xs">
+                <thead class="bg-gray-50 text-left uppercase tracking-wider text-[11px] text-gray-500">
                     <tr>
-                        <th class="px-4 py-3">Requested By</th>
-                        <th class="px-4 py-3 text-center">Casuals</th>
-                        <th class="px-4 py-3">Duration</th>
-                        <th class="px-4 py-3 text-right">Daily Rate</th>
-                        <th class="px-4 py-3 text-right">Estimated Total</th>
-                        <th class="px-4 py-3">HR Status</th>
-                        <th class="px-4 py-3 text-right">HRM Action</th>
+                        <th class="px-3 py-2">Requested By</th>
+                        <th class="px-3 py-2">No of Casuals</th>
+                        <th class="px-3 py-2">Duration</th>
+                        <th class="px-3 py-2">Reason</th>
+                        <th class="px-3 py-2">Daily Rate</th>
+                        <th class="px-3 py-2">NSSF Rate</th>
+                        <th class="px-3 py-2">SHA Rate</th>
+                        <th class="px-3 py-2">Estimated Total</th>
+                        <th class="px-3 py-2 text-right">Actions</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+
+                <tbody class="divide-y divide-gray-100">
                     @forelse($hrm_requisitions as $req)
-                        @php $total = $req->daily_rate * $req->no_of_casuals * $req->duration; @endphp
-                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/40 transition">
-                            <td class="px-4 py-3">
-                                <div class="flex items-center gap-3 min-w-0">
-                                    <div class="w-9 h-9 rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-600 text-white flex items-center justify-center font-semibold text-xs shrink-0">
-                                        {{ strtoupper(substr($req->requester->name, 0, 1)) }}
-                                    </div>
-                                    <div class="min-w-0">
-                                        <p class="font-medium text-gray-900 dark:text-white truncate">{{ $req->requester->name }}</p>
-                                    </div>
-                                </div>
+                        <tr class="hover:bg-gray-50 transition">
+                            
+                            {{-- Casual Name --}}
+                            <td class="px-3 py-2">
+                                <p class="font-medium text-gray-900 truncate max-w-[140px]">
+                                    {{ $req->requester->name }}
+                                </p>
                             </td>
-                            <td class="px-4 py-3 text-center">
-                                <span class="inline-flex items-center justify-center min-w-[2rem] px-2 py-1 rounded-lg text-xs font-semibold bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300">
-                                    {{ $req->no_of_casuals }}
-                                </span>
+
+                            {{-- No of Casuals --}}
+                            <td class="px-3 py-2 capitalize text-gray-700">
+                                {{ $req->no_of_casuals }}
                             </td>
-                            <td class="px-4 py-3 whitespace-nowrap text-gray-700 dark:text-gray-300">{{ $req->duration }} days</td>
-                            <td class="px-4 py-3 whitespace-nowrap text-right text-gray-700 dark:text-gray-300">KES {{ number_format($req->daily_rate, 2) }}</td>
-                            <td class="px-4 py-3 whitespace-nowrap text-right">
-                                <span class="font-semibold text-gray-900 dark:text-white">KES {{ number_format($total) }}</span>
+
+                            {{-- Duration --}}
+                            <td class="px-3 py-2 text-gray-500">
+                                {{ $req->duration }}
                             </td>
-                            <td class="px-4 py-3">
-                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-300 dark:ring-emerald-800">
-                                    <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span> HR Approved
-                                </span>
+
+                            {{-- Reason --}}
+                            <td class="px-3 py-2 text-gray-700">
+                                {{ $req->reason }}
                             </td>
-                            <td class="px-4 py-3">
-                                <div class="flex items-center justify-end gap-1.5">
-                                    <button type="button"
-                                        wire:click="approveHrm({{ $req->id }})"
-                                        wire:confirm="Approve this requisition (KES {{ number_format($total) }})?"
-                                        class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md text-xs font-medium text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm transition">
-                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
-                                        Approve
-                                    </button>
-                                    <button type="button"
-                                        wire:click="reject({{ $req->id }})"
-                                        wire:confirm="Reject this requisition?"
-                                        class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md text-xs font-medium text-white bg-rose-600 hover:bg-rose-700 shadow-sm transition">
-                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
-                                        Reject
-                                    </button>
-                                </div>
+
+                            {{-- Daily Rate --}}
+                            <td class="px-3 py-2">
+                                {{ $req->daily_rate }}
                             </td>
+
+                            {{-- NSSF Rate --}}
+                            <td class="px-3 py-2">
+                                {{ $req->nssf_rate }}
+                            </td>
+                    
+                            {{-- NSSF Rate --}}
+                            <td class="px-3 py-2">
+                                {{ $req->sha_rate }}
+                            </td>
+                            
+
+                            {{-- Estimated Cost --}}
+                            <td class="px-3 py-2 text-gray-700 truncate max-w-[120px]">
+                                {{ $req->total_amount }}
+                            </td>
+
+                            {{-- Actions --}}
+                            <td class="px-3 py-2 text-right">
+                                actions
+                            </td>
+
                         </tr>
                     @empty
                         <tr>

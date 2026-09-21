@@ -276,7 +276,7 @@
                         <th class="px-5 py-3">Casuals</th>
                         <th class="px-5 py-3">Duration</th>
                         <th class="px-2 py-3 w-48">Daily Rate (KES)</th>
-                        <th class="px-2 py-3">NHIF</th>
+                        <th class="px-2 py-3">NSSF</th>
                         <th class="px-2 py-3">SHA</th>
                         <th class="px-2 py-3">Estimated Total</th>
                         <th class="px-2 py-3 text-right">Action</th>
@@ -344,7 +344,7 @@
                                 @enderror
                             </td>
 
-                            {{-- NHIF Input --}}
+                            {{-- NSSF Input --}}
                             <td class="px-5 py-4">
                                 <div class="relative">
                                     <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-xs font-semibold text-gray-400 dark:text-gray-500 pointer-events-none">
@@ -354,11 +354,11 @@
                                         type="number"
                                         min="0"
                                         step="any"
-                                        wire:model.live.debounce.300ms="nhifRates"
+                                        wire:model.live.debounce.300ms="nssfRates"
                                         placeholder="0.00"
                                         class="w-full pl-12 pr-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition @error('rates.'.$req->id) border-red-500 ring-1 ring-red-500 @enderror">
                                 </div>
-                                @error("nhifRates")
+                                @error("nssfRates")
                                     <p class="mt-1 flex items-center gap-1 text-xs text-red-600 dark:text-red-400">
                                         <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
                                             <path fill-rule="evenodd" d="M18 10A8 8 0 11 2 10a8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
@@ -400,7 +400,7 @@
                                     <span class="text-sm font-semibold text-emerald-600 dark:text-emerald-400 whitespace-nowrap">
                                         KES {{ number_format(
                                             ((float) $rates[$req->id] * (int) $req->no_of_casuals * (int) $req->duration)
-                                            - (((float) $nhifRates + (float) $shaRates) * (int) $req->no_of_casuals)
+                                            - (((float) $nssfRates + (float) $shaRates) * (int) $req->no_of_casuals)
                                         ) }}
                                     </span>
                                 @else
