@@ -77,7 +77,7 @@
                                 {{ $req->nssf_rate }}
                             </td>
                     
-                            {{-- NSSF Rate --}}
+                            {{-- SHA Rate --}}
                             <td class="px-3 py-2">
                                 {{ $req->sha_rate }}
                             </td>

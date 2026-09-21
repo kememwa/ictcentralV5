@@ -275,6 +275,8 @@ class HrCasualManagement extends Component
 
         $req->update([
             'daily_rate' => $dailyRate,
+            'nssf_rate' => $nssfRate,
+            'sha_rate' => $shaRate,
             'hr_approval_status' => true,
             'total_amount' => $totalAmount,
         ]);
