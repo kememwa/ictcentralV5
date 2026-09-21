@@ -1,1340 +1,1265 @@
+{{-- =====================================================================
+     KIM-FAY | DAILY CASUAL RECRUITMENT PACK  (prints 3 documents, in order)
+
+       1. Casual Request to Recruit      (1 page)
+       2. Daily Casuals Approval Sheet   (1 page)
+       3. Casual Employment Contract     (2 pages)
+
+     USAGE (DomPDF):
+       use Barryvdh\DomPDF\Facade\Pdf;
+
+       return Pdf::loadView('hr.casual-print', ['c' => $data])
+                 ->setPaper('a4', 'portrait')
+                 ->stream('casual-recruitment-pack.pdf');
+
+     $data is optional – anything you leave out falls back to the sample
+     values in the DATA section below.
+====================================================================== --}}
+
+@php
+    /* ------------------------------------------------------------------
+     | 1. DATA
+     ------------------------------------------------------------------ */
+    $c = array_merge([
+
+        // Casual Request to Recruit
+        'department'            => 'Kimfay Professional',
+        'department_head'       => 'Susan Ngina',
+        'coo'                   => 'James Mwangi',
+        'number_required'       => 1,
+        'reason_for_request'    => 'Additional casual staff are required to support pending installation and operational activities during the engagement period and to ensure timely completion of assigned work.',
+
+        // Shared
+        'days'                  => 4,
+        'start_date'            => '10th August 2026',
+        'end_date'              => '15th August 2026',
+
+        // Daily Casuals Approval Sheet
+        'reference_token'       => '800804',
+        'division'              => 'Technical Services',
+        'applicant'             => 'Berna Piwang',
+        'reason_for_engagement' => 'Installation completion requested to support pending works and ensure timely completion of critical client assignments including Gardaworld, Vertiv, Industrial Solutions Ltd, Biafra Hospital, Treasure Communication and Aurum Iris Ltd.',
+        'budgeted'              => true,
+
+        // Wages (per casual)
+        'daily_rate'            => 3000,
+        'nssf'                  => 216,
+        'sha'                   => 564,
+
+        // Casuals  (name, id_no, sha_no, nssf_no, tel)
+        'casuals' => [
+            [
+                'name'    => 'Moses Okoth Odhiambo',
+                'id_no'   => '36384941',
+                'sha_no'  => 'CR3044103386906-1',
+                'nssf_no' => '2032510376',
+                'tel'     => '0712 345 678',
+            ],
+        ],
+
+        // Approvals  (signature = path relative to /public, or null)
+        'hod_name'       => 'Susan Ngina',
+        'hod_signature'  => null,
+        'hod_date'       => null,
+
+        'hr_name'        => 'Althea Marie',
+        'hr_signature'   => null,
+        'hr_date'        => null,
+
+        'hopc_name'      => 'Alice Mworia',
+        'hopc_signature' => 'dist/signatures/hr_manager_sign.png',
+        'hopc_date'      => '3rd September 2026',
+
+        // Contract
+        'contract_date'  => '5th September 2026',
+
+    ], $c ?? []);
+
+    /* ------------------------------------------------------------------
+     | 2. ASSETS
+     |    $logo must be the Kim-Fay logo ONLY (no address text) – the
+     |    address block is drawn by this template.
+     ------------------------------------------------------------------ */
+    $logo     = public_path('images/kimfay.png');
+    $stamp    = public_path('images/budgeted_circle.png');
+
+    // returns an absolute path only when the file really exists
+    $sig = function ($path) {
+        return ($path && file_exists(public_path($path))) ? public_path($path) : null;
+    };
+    $hodSig  = $sig($c['hod_signature']);
+    $hrSig   = $sig($c['hr_signature']);
+    $hopcSig = $sig($c['hopc_signature']);
+
+    /* ------------------------------------------------------------------
+     | 3. LAYOUT FLAGS & MONEY
+     ------------------------------------------------------------------ */
+    $count       = max(count($c['casuals']), 1);
+
+    // The casual list normally sits at the bottom of contract page 2.
+    // With more than 2 casuals it moves to its own page 3 so nothing overflows.
+    $listOnPage2 = count($c['casuals']) <= 2;
+    $listOnPage3 = ! $listOnPage2;
+    $listPage    = $listOnPage2 ? 2 : 3;
+
+    $showStamp   = $c['budgeted'] && file_exists($stamp);
+
+    $grossEach = $c['daily_rate'] * $c['days'];
+    $dedEach   = $c['nssf'] + $c['sha'];
+
+    $rate      = number_format($c['daily_rate'], 2);
+    $gross     = number_format($grossEach, 2);
+    $nssf      = number_format($c['nssf'], 2);
+    $sha       = number_format($c['sha'], 2);
+    $dedEachF  = number_format($dedEach, 2);
+    $totalDed  = number_format($dedEach * $count, 2);
+    $totalPay  = number_format(($grossEach - $dedEach) * $count, 2);
+@endphp
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-
-    <title>Daily Casuals Approval Sheet | Kim-Fay</title>
+    <title>Daily Casual Recruitment Documents | Kim-Fay</title>
 
     <style>
-        /* =========================================================
-        PAGE SETUP
-        ========================================================= */
-
+        /* =============================================================
+           PAGE
+           A4, 12.7mm (0.5") margins. Documents 1 & 2 add 12.7mm of side
+           padding to give the 1" margins used in the Word originals.
+        ============================================================= */
         @page {
             size: A4 portrait;
-            margin: 20mm 18mm 15mm 18mm;
+            margin: 12.7mm 12.7mm 10mm 12.7mm;
         }
 
-        * {
-            box-sizing: border-box;
-        }
-
-        html,
-        body {
+        html, body {
             margin: 0;
             padding: 0;
             background: #ffffff;
         }
 
         body {
-            font-family: Arial, Helvetica, sans-serif;
-            font-size: 10.5px;
-            line-height: 1.45;
+            font-family: Helvetica, Arial, sans-serif;
+            font-size: 10pt;
+            line-height: 1.3;
             color: #000000;
         }
 
-
-        /* =========================================================
-        MAIN APPROVAL PAGE
-        ========================================================= */
-
-        .page {
-            width: 100%;
-            position: relative;
-        }
-
-
-        /* =========================================================
-        LETTERHEAD
-        ========================================================= */
-
-        .letterhead {
-            width: 100%;
-            height: 32mm;
-            margin-bottom: 7mm;
-        }
-
-        .letterhead img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            object-position: center;
-            display: block;
-        }
-
-
-        /* =========================================================
-        DOCUMENT TITLE
-        ========================================================= */
-
-        .document-title {
-            text-align: center;
-            margin-top: 4mm;
-            margin-bottom: 7mm;
-        }
-
-        .document-title .main-title {
-            font-size: 11px;
-            font-weight: bold;
-            text-decoration: underline;
-            margin-bottom: 5px;
-        }
-
-        .document-title .version {
-            font-size: 10px;
-            font-weight: bold;
-        }
-
-
-        /* =========================================================
-        REFERENCE
-        ========================================================= */
-
-        .reference {
-            font-size: 10px;
-            font-weight: bold;
-            margin-bottom: 7mm;
-        }
-
-
-        /* =========================================================
-        SECTION HEADINGS
-        ========================================================= */
-
-        .section-title {
-            font-size: 10px;
-            font-weight: bold;
-            text-decoration: underline;
-            margin-top: 0;
-            margin-bottom: 5mm;
-        }
-
-
-        /* =========================================================
-        ENGAGEMENT DETAILS
-        ========================================================= */
-
-        .engagement-wrapper {
-            width: 100%;
-            margin-bottom: 9mm;
-        }
-
-        .engagement-table {
-            width: 100%;
+        table {
             border-collapse: collapse;
         }
 
-        .engagement-table td {
-            vertical-align: top;
+        td, th {
             padding: 0;
+            vertical-align: top;
         }
 
-        .engagement-details {
-            width: 68%;
-            padding-right: 8mm !important;
+        img {
+            border: 0;
         }
 
-        .budget-section {
-            width: 32%;
-            text-align: center;
-            vertical-align: middle !important;
-        }
-
-        .detail-line {
-            margin-bottom: 1px;
-        }
-
-        .detail-label {
-            font-weight: bold;
-        }
-
-        .reason {
-            line-height: 1.5;
-            text-align: left;
-        }
-
-        .budget-stamp {
-            width: 39mm;
-            height: 39mm;
-            object-fit: contain;
-            display: inline-block;
-        }
-
-
-        /* =========================================================
-        WAGES
-        ========================================================= */
-
-        .wages {
-            margin-top: 4mm;
-            margin-bottom: 10mm;
-        }
-
-        .wage-line {
-            margin-bottom: 2px;
-        }
-
-
-        /* =========================================================
-        CASUAL APPROVAL TABLE
-        ========================================================= */
-
-        .casual-section {
-            margin-top: 4mm;
-        }
-
-        .casual-table {
-            width: 100%;
-            border-collapse: collapse;
-            table-layout: fixed;
-            font-size: 8px;
-        }
-
-        .casual-table th,
-        .casual-table td {
-            border: 1px solid #000000;
-            padding: 4px 3px;
-            vertical-align: middle;
-        }
-
-        .casual-table th {
-            font-weight: bold;
-            text-align: left;
-            white-space: nowrap;
-        }
-
-        .casual-table td {
-            height: 22px;
-        }
-
-        .casual-table th:nth-child(1),
-        .casual-table td:nth-child(1) {
-            width: 4%;
-            text-align: center;
-        }
-
-        .casual-table th:nth-child(2),
-        .casual-table td:nth-child(2) {
-            width: 19%;
-        }
-
-        .casual-table th:nth-child(3),
-        .casual-table td:nth-child(3) {
-            width: 9%;
-        }
-
-        .casual-table th:nth-child(4),
-        .casual-table td:nth-child(4) {
-            width: 16%;
-        }
-
-        .casual-table th:nth-child(5),
-        .casual-table td:nth-child(5) {
-            width: 13%;
-        }
-
-        .casual-table th:nth-child(6),
-        .casual-table td:nth-child(6) {
-            width: 8%;
-        }
-
-        .casual-table th:nth-child(7),
-        .casual-table td:nth-child(7) {
-            width: 15%;
-        }
-
-        .casual-table th:nth-child(8),
-        .casual-table td:nth-child(8) {
-            width: 16%;
-        }
-
-
-        /* =========================================================
-        APPROVALS
-        ========================================================= */
-
-        .approvals {
-            margin-top: 9mm;
-        }
-
-        .approval-line {
-            width: 100%;
-            margin-bottom: 6mm;
-            white-space: nowrap;
-            font-size: 10px;
-        }
-
-        .approval-role {
-            font-weight: bold;
-        }
-
-        .approval-name {
-            display: inline-block;
-            width: 32mm;
-        }
-
-        .approval-sign-label {
-            font-weight: bold;
-        }
-
-        .signature {
-            display: inline-block;
-            width: 18mm;
-            height: 9mm;
-            vertical-align: middle;
-            object-fit: contain;
-            margin-left: 2mm;
-            margin-right: 2mm;
-        }
-
-        .date-label {
-            font-weight: bold;
-        }
-
-
-        /* =========================================================
-        APPROVAL PAGE FOOTER
-        ========================================================= */
-
-        .page-number {
-            position: fixed;
-            bottom: 5mm;
-            right: 0;
-            font-size: 9px;
-        }
-
-
-        /* =========================================================
-        EMPLOYMENT CONTRACT PAGE
-        ========================================================= */
-
-        .contract-page {
-            width: 100%;
-            position: relative;
-
-            /*
-            * IMPORTANT:
-            * This is the ONLY forced page break.
-            */
+        .new-page {
             page-break-before: always;
         }
 
+        .b  { font-weight: bold; }
+        .u  { text-decoration: underline; }
 
-        /* =========================================================
-        CONTRACT LETTERHEAD
-        ========================================================= */
 
-        .contract-letterhead {
-            width: 100%;
-            height: 32mm;
-            margin-bottom: 6mm;
+        /* =============================================================
+           DOCUMENT 1 – CASUAL REQUEST TO RECRUIT
+        ============================================================= */
+        .req {
+            padding: 4mm 12.7mm 0 12.7mm;
         }
 
-        .contract-letterhead img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            object-position: center;
-            display: block;
-        }
-
-
-        /* =========================================================
-        CONTRACT TITLE
-        ========================================================= */
-
-        .contract-title {
+        .req-logo {
             text-align: center;
-            margin-top: 3mm;
-            margin-bottom: 7mm;
         }
 
-        .contract-title .main-title {
-            font-size: 11px;
+        .req-logo img {
+            width: 46mm;
+        }
+
+        .req-title {
+            text-align: center;
+            font-size: 12pt;
             font-weight: bold;
             text-decoration: underline;
-            margin-bottom: 4px;
+            margin-top: 1mm;
         }
 
-        .contract-title .version {
-            font-size: 10px;
+        .req-version {
+            text-align: center;
+            font-size: 8pt;
+            font-style: italic;
+            margin-top: 1mm;
+            margin-bottom: 11mm;
+        }
+
+        .req-section {
+            margin-bottom: 10mm;
+        }
+
+        .req-heading {
             font-weight: bold;
+            margin-bottom: 0.5mm;
+        }
+
+        /* label + a ruled line that runs to the right margin
+           (separate borders so every ruled line is always drawn) */
+        .field {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .field td {
+            height: 8mm;
+            vertical-align: bottom;
+        }
+
+        .field .fl {
+            width: 1%;
+            white-space: nowrap;
+            padding: 0 1mm 0.8mm 0;
+        }
+
+        .field .fv {
+            border-bottom: 1px solid #000000;
+            padding: 0 1mm 0.8mm 1mm;
+        }
+
+        /* signature rows */
+        .sign-row {
+            width: 100%;
+            margin-bottom: 2mm;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .sign-row td {
+            height: 9mm;
+            vertical-align: bottom;
+        }
+
+        .sign-row .sl {
+            width: 1%;
+            white-space: nowrap;
+            padding: 0 1mm 0.8mm 0;
+        }
+
+        .sign-row .sline {
+            border-bottom: 1px solid #000000;
+        }
+
+        .sign-row .dl {
+            width: 1%;
+            white-space: nowrap;
+            padding: 0 1mm 0.8mm 2mm;
+        }
+
+        .sign-row .dline {
+            width: 34%;
+            border-bottom: 1px solid #000000;
+            padding: 0 1mm 0.8mm 1mm;
         }
 
 
-        /* =========================================================
-        CONTRACT SECTIONS
-        ========================================================= */
+        /* =============================================================
+           DOCUMENT 2 – DAILY CASUALS APPROVAL SHEET
+        ============================================================= */
+        .appr {
+            padding: 0 12.7mm;
+        }
 
-        .contract-section {
-            margin-top: 5mm;
-            margin-bottom: 3mm;
+        /* letterhead box: logo | address | contact  (visible grey borders) */
+        .hb {
+            width: 100%;
+            border: 1px solid #a5a5a5;
+        }
 
-            /*
-            * Prevent a section from being split where possible.
-            */
+        .hb td {
+            width: 33.33%;
+            border: 1px solid #a5a5a5;
+            padding: 2mm 2mm 3mm 2mm;
+            font-size: 8pt;
+            line-height: 1.35;
+        }
+
+        .hb img {
+            width: 42mm;
+        }
+
+        .appr-title {
+            text-align: center;
+            font-size: 11pt;
+            font-weight: bold;
+            text-decoration: underline;
+            margin-top: 7mm;
+        }
+
+        .appr-version {
+            text-align: center;
+            font-size: 10pt;
+            margin-top: 0.5mm;
+            margin-bottom: 2.5mm;
+        }
+
+        /* the light-grey frames that wrap the text blocks */
+        .frame {
+            border: 1px solid #d9d9d9;
+            padding: 1mm 1.5mm 2mm 1.5mm;
             page-break-inside: avoid;
         }
 
-        .contract-section-title {
-            font-size: 10px;
+        .ref {
+            font-size: 11pt;
             font-weight: bold;
-            text-decoration: underline;
-            margin-bottom: 3mm;
-        }
-
-        .contract-text {
-            text-align: justify;
-            line-height: 1.5;
             margin-bottom: 4mm;
         }
 
-        .contract-indent {
-            padding-left: 7mm;
-            text-align: justify;
-            line-height: 1.5;
+        .a-head {
+            font-size: 10pt;
+            font-weight: bold;
+            text-decoration: underline;
+            margin-bottom: 3.5mm;
         }
 
-        .contract-item {
-            margin-bottom: 3mm;
-            text-align: justify;
-        }
-
-
-        /* =========================================================
-        CONTRACT SIGNATURE
-        ========================================================= */
-
-        .contract-signature {
-            margin-top: 5mm;
-            line-height: 1.7;
-        }
-
-
-        /* =========================================================
-        CONTRACT CASUAL TABLE
-        ========================================================= */
-
-        .contract-casual-section {
-            margin-top: 8mm;
-        }
-
-        .contract-casual-table {
+        .eng {
             width: 100%;
-            border-collapse: collapse;
-            table-layout: fixed;
-            font-size: 7.5px;
         }
 
-        .contract-casual-table th,
-        .contract-casual-table td {
-            border: 1px solid #000000;
-            padding: 4px 3px;
+        .eng .eng-left {
+            width: 70%;
+        }
+
+        .eng .eng-right {
+            width: 30%;
+            text-align: center;
             vertical-align: middle;
         }
 
-        .contract-casual-table th {
+        .eng .eng-right img {
+            width: 36mm;
+            height: 36mm;
+        }
+
+        .dl-line {
             font-weight: bold;
+            margin-bottom: 0.6mm;
+        }
+
+        .dl-line span {
+            font-weight: normal;
+        }
+
+        .reason {
+            min-height: 10mm;
+            margin-bottom: 3mm;
+        }
+
+        .wages {
+            margin-bottom: 3mm;
+        }
+
+        .sec-gap {
+            margin-top: 4mm;
+        }
+
+        /* casual details table – solid black grid */
+        .ct {
+            width: 100%;
+            table-layout: fixed;
+            margin-top: 1.5mm;
+            margin-bottom: 4mm;
+        }
+
+        .ct th,
+        .ct td {
+            border: 1px solid #000000;
+            padding: 1.5mm 1.2mm;
+            font-size: 8.5pt;
+            line-height: 1.25;
+        }
+
+        .ct th {
+            font-weight: bold;
+            text-align: left;
+        }
+
+        .ct td {
+            height: 7.5mm;
+            vertical-align: middle;
+        }
+
+        .ct .c-no   { width: 6%; }
+        .ct .c-name { width: 19%; }
+        .ct .c-id   { width: 11%; }
+        .ct .c-sha  { width: 22%; }
+        .ct .c-nssf { width: 12%; }
+        .ct .c-tel  { width: 15%; }
+        .ct .c-sign { width: 15%; }
+
+        /* approvals */
+        .ap {
+            width: 100%;
+            margin-bottom: 3mm;
+        }
+
+        .ap td {
+            height: 9.5mm;
+            vertical-align: middle;
+            font-size: 9pt;
+        }
+
+        .ap .ap-role { width: 46%; }
+        .ap .ap-sign { width: 28%; }
+        .ap .ap-date { width: 26%; }
+
+        .ap img.sig {
+            height: 9mm;
+            vertical-align: middle;
+            margin-left: 1mm;
+        }
+
+
+        /* =============================================================
+           DOCUMENT 3 – CASUAL EMPLOYMENT CONTRACT  (2 pages)
+        ============================================================= */
+        /*
+         * .c-page is a fixed-height box so that the footer sits at the
+         * bottom of each of the two contract pages.
+         */
+        .c-page {
+            height: 254mm;
+            font-size: 8.5pt;
+            line-height: 1.3;
+        }
+
+        .c-hdr {
+            width: 100%;
+        }
+
+        .c-hdr td {
+            font-size: 8pt;
+            line-height: 1.35;
+        }
+
+        .c-hdr .h-logo { width: 42%; }
+        .c-hdr .h-addr { width: 27%; }
+        .c-hdr .h-cont { width: 31%; }
+
+        .c-hdr img {
+            width: 34mm;
+        }
+
+        .c-title {
             text-align: center;
+            font-weight: bold;
+            text-decoration: underline;
+            font-size: 9pt;
+            margin-top: 0.5mm;
+            margin-bottom: 2mm;
         }
 
-        .contract-casual-table td {
-            height: 24px;
+        .c-h {
+            font-weight: bold;
+            text-decoration: underline;
+            margin: 3mm 0 2mm 0;
         }
 
-        .contract-casual-table th:nth-child(1),
-        .contract-casual-table td:nth-child(1) {
-            width: 4%;
-            text-align: center;
+        .c-p {
+            text-align: justify;
+            margin: 0 0 2mm 0;
         }
 
-        .contract-casual-table th:nth-child(2),
-        .contract-casual-table td:nth-child(2) {
-            width: 19%;
+        .c-list {
+            margin: 0 0 2mm 0;
+            padding-left: 8mm;
+            text-align: justify;
         }
 
-        .contract-casual-table th:nth-child(3),
-        .contract-casual-table td:nth-child(3) {
-            width: 10%;
+        .c-list li {
+            margin-bottom: 0.4mm;
         }
 
-        .contract-casual-table th:nth-child(4),
-        .contract-casual-table td:nth-child(4) {
-            width: 14%;
+        .c-sub {
+            margin: 0.4mm 0 0.4mm 0;
         }
 
-        .contract-casual-table th:nth-child(5),
-        .contract-casual-table td:nth-child(5) {
-            width: 13%;
+        .c-sub td {
+            font-size: 8.5pt;
+            line-height: 1.3;
+            text-align: justify;
         }
 
-        .contract-casual-table th:nth-child(6),
-        .contract-casual-table td:nth-child(6) {
-            width: 9%;
+        .c-sub .sn {
+            width: 9mm;
         }
 
-        .contract-casual-table th:nth-child(7),
-        .contract-casual-table td:nth-child(7) {
-            width: 15%;
+        .c-foot {
+            width: 100%;
+            height: 8mm;
         }
 
-        .contract-casual-table th:nth-child(8),
-        .contract-casual-table td:nth-child(8) {
-            width: 16%;
+        .c-foot td {
+            vertical-align: bottom;
         }
 
-        .contract-casual-table tr {
-            page-break-inside: avoid;
+        .c-foot .f-left {
+            font-size: 9pt;
+            font-style: italic;
         }
 
-
-        /* =========================================================
-        CONTRACT FOOTER
-        ========================================================= */
-
-        .contract-footer-page {
-        position: fixed;
-        bottom: 5mm;
-        left: 0;
-        right: 0;
-        width: 100%;
-        text-align: right;
-        font-size: 9px;
-        height: 5mm;
+        .c-foot .f-right {
+            width: 15mm;
+            text-align: right;
+            font-family: "Times New Roman", Times, serif;
+            font-size: 11pt;
         }
 
+        /* annexture block */
+        .c-sig {
+            margin-top: 1mm;
+        }
 
-        /* =========================================================
-        PRINT / DOMPDF
-        ========================================================= */
+        .c-sig td {
+            font-size: 8.5pt;
+            height: 6mm;
+            vertical-align: middle;
+        }
 
-        @media print {
+        .c-sig .s-label { width: 27mm; }
+        .c-sig .s-value { width: 62mm; font-weight: bold; }
+        .c-sig .s-sign  { width: 14mm; font-weight: bold; }
 
-            /*
-            * Do NOT force a break after .page.
-            *
-            * The contract-page handles the single break.
-            */
-            .page {
-                page-break-after: auto;
-                page-break-inside: auto;
-            }
+        .c-sig img.sig {
+            height: 9mm;
+            vertical-align: middle;
+        }
 
-            /*
-            * This is the ONLY forced page break.
-            */
-            .contract-page {
-                page-break-before: always;
-                page-break-after: auto;
-            }
+        /* contract casual details table */
+        .c-ct {
+            width: 100%;
+            table-layout: fixed;
+            margin-top: 1.5mm;
+        }
 
-            /*
-            * Keep the approval table together.
-            */
-            .casual-table {
-                page-break-inside: avoid;
-            }
+        .c-ct th,
+        .c-ct td {
+            border: 1px solid #000000;
+            padding: 1.5mm 1.2mm;
+            font-size: 8.5pt;
+            line-height: 1.25;
+        }
 
-            /*
-            * Keep approval signatures together.
-            */
-            .approvals {
-                page-break-inside: avoid;
-            }
+        .c-ct th {
+            font-weight: bold;
+            text-align: left;
+        }
 
-            /*
-            * Keep contract sections together where possible.
-            */
-            .contract-section {
-                page-break-inside: avoid;
-            }
+        .c-ct td {
+            height: 8mm;
+            vertical-align: middle;
+        }
 
-            /*
-            * Allow the contract table to flow naturally
-            * if it becomes too long.
-            */
-            .contract-casual-table {
-                page-break-inside: auto;
-            }
+        .c-ct .k-no   { width: 7%; }
+        .c-ct .k-name { width: 21%; }
+        .c-ct .k-id   { width: 11%; }
+        .c-ct .k-sha  { width: 22%; }
+        .c-ct .k-nssf { width: 12%; }
+        .c-ct .k-tel  { width: 13%; }
+        .c-ct .k-sign { width: 14%; }
 
-            .contract-casual-table tr {
-                page-break-inside: avoid;
-                page-break-after: auto;
-            }
+        /* paying officer */
+        .pay {
+            width: 100%;
+            margin-top: 3mm;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .pay td {
+            height: 8mm;
+            vertical-align: bottom;
+            font-weight: bold;
+        }
+
+        .pay .p-label {
+            width: 1%;
+            white-space: nowrap;
+            padding-right: 1.5mm;
+            padding-bottom: 0.8mm;
+        }
+
+        .pay .p-line {
+            border-bottom: 1px solid #000000;
+        }
+
+        .pay .p-gap {
+            width: 3mm;
+        }
+
+        .pay .p-date {
+            width: 1%;
+            white-space: nowrap;
+            padding: 0 1.5mm 0.8mm 3mm;
+        }
+
+        .pay .p-dline {
+            width: 40%;
+            border-bottom: 1px solid #000000;
         }
     </style>
 </head>
 
 <body>
 
-<div class="page">
 
-    {{-- =========================================================
-         LETTERHEAD
-         ========================================================= --}}
-    <div class="letterhead">
-        <img
-            src="{{ public_path('images/letterhead.png') }}"
-            alt="Kim-Fay Letterhead"
-        >
+{{-- =====================================================================
+     DOCUMENT 1 : CASUAL REQUEST TO RECRUIT
+====================================================================== --}}
+<div class="req">
+
+    <div class="req-logo">
+        <img src="{{ $logo }}" alt="Kim-Fay">
     </div>
 
-
-    {{-- =========================================================
-         TITLE
-         ========================================================= --}}
-    <div class="document-title">
-
-        <div class="main-title">
-            DAILY CASUALS APPROVAL SHEET
-        </div>
-
-        <div class="version">
-            HR Record - Version 1
-        </div>
-
-    </div>
+    <div class="req-title">CASUAL REQUEST TO RECRUIT</div>
+    <div class="req-version">HR Record - Version 1</div>
 
 
-    {{-- =========================================================
-         REFERENCE
-         ========================================================= --}}
-    <div class="reference">
-        Reference Token : 800804
-    </div>
+    <div class="req-section">
+        <div class="req-heading">General Information</div>
 
-
-    {{-- =========================================================
-         ENGAGEMENT DETAILS
-         ========================================================= --}}
-    <div class="section-title">
-        ENGAGEMENT DETAILS
-    </div>
-
-    <div class="engagement-wrapper">
-
-        <table class="engagement-table">
-
+        <table class="field">
             <tr>
-
-                <td class="engagement-details">
-
-                    <div class="detail-line">
-                        <span class="detail-label">Department :</span>
-                        Kimfay Professional
-                    </div>
-
-                    <div class="detail-line">
-                        <span class="detail-label">Division :</span>
-                        Default
-                    </div>
-
-                    <div class="detail-line">
-                        <span class="detail-label">Applicant :</span>
-                        Berna Piwang
-                    </div>
-
-                    <div class="detail-line">
-                        <span class="detail-label">Start Date :</span>
-                        2026-08-10
-                    </div>
-
-                    <div class="detail-line">
-                        <span class="detail-label">End Date :</span>
-                        2026-08-15
-                    </div>
-
-                    <div class="detail-line">
-                        <span class="detail-label">Duration of Engagement :</span>
-                        4
-                    </div>
-
-                    <div class="detail-line reason">
-                        <span class="detail-label">Reason for Engagement :</span>
-                        Installation completion requested to relieve technician Shadrach
-                        following an accident and sick leave period, towards pending
-                        installation works with crucial client needs - Gardaworld,
-                        Vertiv, Industrial solutions ltd, Biafra hospital,
-                        Treasure communication, Aurum Iris Ltd
-                    </div>
-
-                </td>
-
-
-                <td class="budget-section">
-
-                    <img
-                        src="{{ public_path('images/budgeted_circle.png') }}"
-                        alt="BUDGETED"
-                        class="budget-stamp"
-                    >
-
-                </td>
-
+                <td class="fl">Department:</td>
+                <td class="fv">{{ $c['department'] }}</td>
             </tr>
-
         </table>
 
+        <table class="field">
+            <tr>
+                <td class="fl">Department Head:</td>
+                <td class="fv">{{ $c['department_head'] }}</td>
+            </tr>
+        </table>
     </div>
 
 
-    {{-- =========================================================
-         WAGES DETAILS
-         ========================================================= --}}
-    <div class="wages">
+    <div class="req-section">
+        <div class="req-heading">Position Information</div>
 
-        <div class="section-title">
-            WAGES DETAILS
-        </div>
-
-        <div class="wage-line">
-            <span class="detail-label">Daily Payment Rate :</span>
-            Ksh. 3,000.00
-        </div>
-
-        <div class="wage-line">
-            <span class="detail-label">No of Casuals :</span>
-            1
-        </div>
-
-        <div class="wage-line">
-            <span class="detail-label">Total Deductions :</span>
-            Ksh. 780.00
-        </div>
-
-        <div class="wage-line">
-            <span class="detail-label">Total Amount Payable :</span>
-            Ksh. 11,220.00
-        </div>
-
-    </div>
-
-
-    {{-- =========================================================
-         CASUAL DETAILS
-         ========================================================= --}}
-    <div class="casual-section">
-
-        <div class="section-title">
-            CASUALS DETAILS
-        </div>
-
-        <table class="casual-table">
-
-            <thead>
-                <tr>
-                    <th>No.</th>
-                    <th>Casual Name</th>
-                    <th>I.D No.</th>
-                    <th>NHIF No.</th>
-                    <th>NSSF No.</th>
-                    <th>KRA Pin</th>
-                    <th>Casual Staff Sign</th>
-                    <th>Paying officer Name/Sign</th>
-                </tr>
-            </thead>
-
-            <tbody>
-
-                <tr>
-                    <td>1</td>
-                    <td>Moses Okoth Odhiambo</td>
-                    <td>36384941</td>
-                    <td>CR3044103386906-1</td>
-                    <td>2032510376</td>
-                    <td>0</td>
-                    <td></td>
-                    <td></td>
-                </tr>
-
-            </tbody>
-
+        <table class="field">
+            <tr>
+                <td class="fl">Number required:</td>
+                <td class="fv">{{ $c['number_required'] }}</td>
+            </tr>
         </table>
 
+        <table class="field">
+            <tr>
+                <td class="fl">Reason for request:</td>
+                <td class="fv">{{ $c['reason_for_request'] }}</td>
+            </tr>
+            <tr>
+                <td colspan="2" class="fv">&nbsp;</td>
+            </tr>
+        </table>
+
+        <table class="field">
+            <tr>
+                <td class="fl">Number of days:</td>
+                <td class="fv">{{ $c['days'] }}</td>
+            </tr>
+        </table>
+
+        <table class="field">
+            <tr>
+                <td class="fl">Start date:</td>
+                <td class="fv">{{ $c['start_date'] }}</td>
+            </tr>
+        </table>
     </div>
 
 
-    {{-- =========================================================
-         APPROVALS
-         ========================================================= --}}
-    <div class="approvals">
+    <div class="req-section">
+        <div class="req-heading">Approval signatures</div>
 
-        <div class="section-title">
-            APPROVALS
-        </div>
+        <table class="sign-row">
+            <tr>
+                <td class="sl">Department Head: {{ $c['department_head'] }}</td>
+                <td class="sline">&nbsp;</td>
+                <td class="dl">Date:</td>
+                <td class="dline">&nbsp;</td>
+            </tr>
+        </table>
 
-
-        {{-- HOD --}}
-        <div class="approval-line">
-
-            <span class="approval-role">
-                Head of Department :
-            </span>
-
-            <span class="approval-name">
-                Susan Ngina
-            </span>
-
-            <span class="approval-sign-label">
-                Sign :
-            </span>
-
-            <span class="signature"></span>
-
-            <span class="date-label">
-                Date :
-            </span>
-
-        </div>
-
-
-        {{-- HR REPRESENTATIVE --}}
-        <div class="approval-line">
-
-            <span class="approval-role">
-                H.R Representative :
-            </span>
-
-            <span class="approval-name">
-                Althea Marie
-            </span>
-
-            <span class="approval-sign-label">
-                Sign :
-            </span>
-
-            <span class="signature"></span>
-
-            <span class="date-label">
-                Date :
-            </span>
-
-            Tuesday 1st of September 2026 12:27:57 PM
-
-        </div>
-
-
-        {{-- BUDGET OFFICER --}}
-        <div class="approval-line">
-
-            <span class="approval-role">
-                Budget Officer :
-            </span>
-
-            <span class="approval-name">
-                REUBEN GITHINJI
-            </span>
-
-            <span class="approval-sign-label">
-                Sign :
-            </span>
-
-            <img
-                src="{{ public_path('dist/signatures/budget_signature.png') }}"
-                class="signature"
-                alt="Signature"
-            >
-
-            <span class="date-label">
-                Date :
-            </span>
-
-            Thursday 3rd of September 2026 07:37:41 AM
-
-        </div>
-
-
-        {{-- HR MANAGER --}}
-        <div class="approval-line">
-
-            <span class="approval-role">
-                H.R Manager :
-            </span>
-
-            <span class="approval-name">
-                Alice Mworia
-            </span>
-
-            <span class="approval-sign-label">
-                Sign :
-            </span>
-
-            <img
-                src="{{ public_path('dist/signatures/hr_manager_sign.png') }}"
-                class="signature"
-                alt="Signature"
-            >
-
-            <span class="date-label">
-                Date :
-            </span>
-
-            Thursday 3rd of September 2026 07:38:12 AM
-
-        </div>
-
-    </div>
-
-
-    {{-- =========================================================
-         PAGE NUMBER
-         ========================================================= --}}
-    <div class="page-number">
-        1/1
+        <table class="sign-row">
+            <tr>
+                <td class="sl">Chief Operations Officer: {{ $c['coo'] }}</td>
+                <td class="sline">&nbsp;</td>
+                <td class="dl">Date:</td>
+                <td class="dline">&nbsp;</td>
+            </tr>
+        </table>
     </div>
 
 </div>
 
-<div class="contract-page">
 
-    <!-- =========================
-         LETTERHEAD
-    ========================== -->
-    <div class="letterhead">
-        <img src="{{ public_path('images/letterhead.png') }}" alt="Kim-Fay Letterhead">
+
+{{-- =====================================================================
+     DOCUMENT 2 : DAILY CASUALS APPROVAL SHEET
+====================================================================== --}}
+<div class="appr new-page">
+
+    {{-- LETTERHEAD BOX --}}
+    <table class="hb">
+        <tr>
+            <td>
+                <img src="{{ $logo }}" alt="Kim-Fay">
+            </td>
+            <td>
+                Kim-Fay E.A Ltd<br>
+                Maasai Road, Off Mombasa Road<br>
+                Behind Libra House<br>
+                Box 31437-00600, Nairobi
+            </td>
+            <td>
+                T/+254 20351824/19/24<br>
+                F/ +254 20 6531458, 6533518<br>
+                E/ <u>customercare&#64;kimfay.com</u><br>
+                <br>
+                www.kimfay.com
+            </td>
+        </tr>
+    </table>
+
+    <div class="appr-title">DAILY CASUALS APPROVAL SHEET</div>
+    <div class="appr-version">HR Record &ndash; Version 2</div>
+
+
+    {{-- FRAME 1 : reference, engagement, wages --}}
+    <div class="frame">
+
+        <div class="ref">Reference Token: <span style="font-weight: normal;">{{ $c['reference_token'] }}</span></div>
+
+        <div class="a-head">ENGAGEMENT DETAILS</div>
+
+        <table class="eng">
+            <tr>
+                <td class="eng-left">
+                    <div class="dl-line">Department: <span>{{ $c['department'] }}</span></div>
+                    <div class="dl-line">Division: <span>{{ $c['division'] }}</span></div>
+                    <div class="dl-line">Applicant: <span>{{ $c['applicant'] }}</span></div>
+                    <div class="dl-line">Start Date: <span>{{ $c['start_date'] }}</span></div>
+                    <div class="dl-line">End Date: <span>{{ $c['end_date'] }}</span></div>
+                    <div class="dl-line">Duration of Engagement (Days): <span>{{ $c['days'] }}</span></div>
+                    <div class="dl-line reason">Reason for Engagement: <span>{{ $c['reason_for_engagement'] }}</span></div>
+                </td>
+                <td class="eng-right">
+                    @if($showStamp)
+                        <img src="{{ $stamp }}" alt="BUDGETED">
+                    @endif
+                </td>
+            </tr>
+        </table>
+
+        <div class="a-head sec-gap">WAGES DETAILS</div>
+
+        <div class="wages">
+            <div class="dl-line">Daily Payment Rate: <span>Ksh. {{ $rate }}</span></div>
+            <div class="dl-line">No. of Casuals: <span>{{ $count }}</span></div>
+            <div class="dl-line">Total Deductions: <span>Ksh. {{ $totalDed }}</span></div>
+            <div class="dl-line">Total Amount Payable: <span>Ksh. {{ $totalPay }}</span></div>
+        </div>
+
     </div>
 
 
-    <!-- =========================
-         DOCUMENT TITLE
-    ========================== -->
-    <div class="document-title">
-        Casual Employment Contract
+    {{-- CASUAL DETAILS (black grid) --}}
+    <div class="a-head sec-gap" style="margin-bottom: 0;">CASUAL DETAILS</div>
+
+    <table class="ct">
+        <thead>
+            <tr>
+                <th class="c-no">No.</th>
+                <th class="c-name">Casual Name</th>
+                <th class="c-id">ID No.</th>
+                <th class="c-sha">SHA No.</th>
+                <th class="c-nssf">NSSF No.</th>
+                <th class="c-tel">Tel. No</th>
+                <th class="c-sign">Casual Sign</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($c['casuals'] as $row)
+                <tr>
+                    <td>{{ $loop->iteration }}</td>
+                    <td>{{ $row['name'] }}</td>
+                    <td>{{ $row['id_no'] }}</td>
+                    <td>{{ $row['sha_no'] }}</td>
+                    <td>{{ $row['nssf_no'] }}</td>
+                    <td>{{ $row['tel'] }}</td>
+                    <td>&nbsp;</td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+
+
+    {{-- FRAME 2 : approvals --}}
+    <div class="frame">
+
+        <div class="a-head" style="margin-top: 1mm; margin-bottom: 3mm;">APPROVALS</div>
+
+        <table class="ap">
+            <tr>
+                <td class="ap-role"><span class="b">Head of Department:</span> {{ $c['hod_name'] }}</td>
+                <td class="ap-sign">
+                    <span class="b">Sign:</span>
+                    @if($hodSig)<img class="sig" src="{{ $hodSig }}" alt="Signature">@endif
+                </td>
+                <td class="ap-date"><span class="b">Date:</span> {{ $c['hod_date'] }}</td>
+            </tr>
+        </table>
+
+        <table class="ap">
+            <tr>
+                <td class="ap-role"><span class="b">HR Representative:</span> {{ $c['hr_name'] }}</td>
+                <td class="ap-sign">
+                    <span class="b">Sign:</span>
+                    @if($hrSig)<img class="sig" src="{{ $hrSig }}" alt="Signature">@endif
+                </td>
+                <td class="ap-date"><span class="b">Date:</span> {{ $c['hr_date'] }}</td>
+            </tr>
+        </table>
+
+        <table class="ap">
+            <tr>
+                <td class="ap-role"><span class="b">Head of People &amp; Culture:</span> {{ $c['hopc_name'] }}</td>
+                <td class="ap-sign">
+                    <span class="b">Sign:</span>
+                    @if($hopcSig)<img class="sig" src="{{ $hopcSig }}" alt="Signature">@endif
+                </td>
+                <td class="ap-date"><span class="b">Date:</span> {{ $c['hopc_date'] }}</td>
+            </tr>
+        </table>
+
     </div>
 
-    <div class="document-version">
-        HR Record - Version 1
-    </div>
+</div>
 
 
-    <!-- =========================
-         CONTRACT INFORMATION
-    ========================== -->
-    <table class="contract-info">
+
+{{-- =====================================================================
+     DOCUMENT 3 : CASUAL EMPLOYMENT CONTRACT  –  PAGE 1 OF 2
+====================================================================== --}}
+<div class="c-page new-page">
+
+    <table class="c-hdr">
         <tr>
-            <td class="label">Contract Date:</td>
-            <td>5th September 2026</td>
+            <td class="h-logo"><img src="{{ $logo }}" alt="Kim-Fay"></td>
+            <td class="h-addr">
+                Kim-Fay E.A Ltd<br>
+                Maasai Road, Off Mombasa Road<br>
+                Behind Libra House<br>
+                Box 31437-00600, Nairobi
+            </td>
+            <td class="h-cont">
+                T/+254 20351824/19/24<br>
+                F/ +254 20 6531458, 6533518<br>
+                E/ <u>customercare&#64;kimfay.com</u><br>
+                www.kimfay.com
+            </td>
         </tr>
+    </table>
 
+    <div class="c-title">CASUAL EMPLOYMENT CONTRACT</div>
+
+
+    <div class="c-h" style="margin-top: 4mm;">PARTIES</div>
+
+    <p class="c-p">
+        <span class="b">THIS AGREEMENT</span> is made on the
+        <span class="b">{{ $c['contract_date'] }}</span>
+        <span class="b">BETWEEN; Kim-Fay (E.A) Ltd</span>
+        (hereinafter called &ldquo;the Company&rdquo;)
+        <span class="b">AND (See listed Employees on Page {{ $listPage }})</span>
+        (hereinafter called &ldquo;the employee&rdquo;)
+    </p>
+
+    <p class="c-p" style="margin-top: 4mm;">
+        <span class="b">WHEREAS</span> the company has offered the employee a contract of employment on a temporary
+        basis the employee hereby confirms his/her acceptance of the offer of the employment contract under the
+        following terms and conditions:
+    </p>
+
+
+    <div class="c-h">NATURE OF EMPLOYMENT</div>
+
+    <ul class="c-list">
+        <li>The employee hereby represents and warrants as material warranty to the Company that:</li>
+        <li>He/ She has full power to enter into and perform in terms of this Agreement, has taken and shall take all
+            necessary statutory and other actions to authorize the fulfillment of his/her obligations under this
+            Agreement;</li>
+        <li>That he/she has obtained a Certificate of Good Conduct as evidence of his non involvement of criminal
+            activities whether in the past or currently;</li>
+        <li>That he/she has provided all the educational certificates as requested by the Company;</li>
+        <li>That he/she is of good health and able to take up his training and assignment.</li>
+        <li>That he/she fully understands the nature of her assignment and risks involved and the Company has
+            explained this to him and undertakes his employment knowingly, willingly and voluntarily.</li>
+    </ul>
+
+
+    <div class="c-h">PERIOD OF EMPLOYMENT</div>
+
+    <p class="c-p">
+        The employee shall be engaged for a period of
+        <span class="b">{{ $c['days'] }} days</span> as from
+        <span class="b">{{ $c['start_date'] }}</span> to
+        <span class="b">{{ $c['end_date'] }}.</span>
+    </p>
+
+    <p class="c-p">
+        Terminating thereof without notice BUT SUBJECT always to the provisions as to earlier termination as set out
+        hereinafter. The Company shall not be obliged to employ the employee after the lapse of the period contracted
+        as per this agreement. Should the employee be offered a further period of employment by the company at the
+        expiry of the signed contract, then it shall be on the condition that such other period of employment shall
+        be subject to the terms and conditions of a fresh and separate agreement and shall not in any way be regarded
+        as relating to or as an extension of the old contract. The decision whether or not to sign a new agreement as
+        mentioned in (4.3) hereinabove shall be entirely upon the discretion of the management.
+    </p>
+
+
+    <div class="c-h">NATURE OF DUTIES</div>
+
+    <p class="c-p" style="margin-bottom: 1.5mm;">The employee shall: -</p>
+
+    <ul class="c-list">
+        <li>Undertake to perform such duties and exercise such powers as the company assigns to the employee.</li>
+        <li>Undertake his/her duties in any station or branch of the company within the Republic of Kenya, depending
+            on work availability, as may be required of him/her from time to time.</li>
+        <li>Work for a maximum period of twelve hours daily depending on shift allocations and as required by the
+            company either;
+
+            <table class="c-sub">
+                <tr>
+                    <td class="sn">i.</td>
+                    <td>Reporting at 8:30a.m and handing over at 5:00 p.m. or</td>
+                </tr>
+                <tr>
+                    <td class="sn">ii.</td>
+                    <td>Reporting at ____________ p.m. and handing over at ____________ a.m.</td>
+                </tr>
+                <tr>
+                    <td class="sn">iii.</td>
+                    <td>The hours of reporting and handing over may be altered by the company without notice to the
+                        employee.</td>
+                </tr>
+            </table>
+        </li>
+        <li>Be entitled to one day of rest in every seven (7) consecutive days of duty.</li>
+    </ul>
+
+
+    <div class="c-h">REMUNERATION</div>
+
+    <p class="c-p">
+        The company shall pay to the employee a sum of <span class="b">Kshs. {{ $gross }}</span>
+    </p>
+
+    <p class="c-p">
+        This payment will be paid at the end of the period of contract, being the accumulated daily wages of the
+        aggregate days worked only.
+        A further deduction of <span class="b">Kshs. {{ $nssf }}</span> and
+        <span class="b">Kshs. {{ $sha }}</span> shall be made from your aggregate accumulated wages at the end of
+        this contract and shall be remitted to <span class="b">NSSF</span> and <span class="b">SHA</span>
+        respectively as is our statutory obligation. Therefore, total deductions shall amount to
+        <span class="b">Kshs. {{ $dedEachF }}</span>
+    </p>
+
+    <p class="c-p">
+        Payment of the employee wages as hereinabove shall be deemed as settlement of all his/her claims from the
+        company for the period payable to her/him then and/or in the future.
+    </p>
+
+</div>
+
+<table class="c-foot">
+    <tr>
+        <td class="f-left">HR Record - Version 2</td>
+        <td class="f-right">1</td>
+    </tr>
+</table>
+
+
+
+{{-- =====================================================================
+     DOCUMENT 3 : CASUAL EMPLOYMENT CONTRACT  –  PAGE 2 OF 2
+====================================================================== --}}
+<div class="c-page new-page">
+
+    <table class="c-hdr">
         <tr>
-            <td class="label">Company:</td>
-            <td>Kim-Fay (E.A) Limited</td>
+            <td class="h-logo"><img src="{{ $logo }}" alt="Kim-Fay"></td>
+            <td class="h-addr">
+                Kim-Fay E.A Ltd<br>
+                Maasai Road, Off Mombasa Road<br>
+                Behind Libra House<br>
+                Box 31437-00600, Nairobi
+            </td>
+            <td class="h-cont">
+                T/+254 20351824/19/24<br>
+                F/ +254 20 6531458, 6533518<br>
+                E/ <u>customercare&#64;kimfay.com</u><br>
+                www.kimfay.com
+            </td>
         </tr>
+    </table>
 
+    <div class="c-title">CASUAL EMPLOYMENT CONTRACT</div>
+
+
+    <div class="c-h" style="margin-top: 4mm;">UNIFORMS AND PROTECTIVE GEAR:</div>
+
+    <p class="c-p">
+        The Company shall provide the employee with the uniform and equipment required by the employee for the
+        performance of his duties.
+    </p>
+
+    <p class="c-p">
+        The employee shall be deducted Kshs. 500/= from his/her wages for any damage to or loss of the equipment or
+        uniform as a result by the neglect of the employee.
+    </p>
+
+
+    <div class="c-h">CODE OF CONDUCT:</div>
+
+    <p class="c-p">
+        The employee shall observe and comply with all regulations and conditions of the company and other standing
+        orders and procedures given in the course of employment for the purpose of the efficient and competent
+        discharge of his or her duties.
+    </p>
+
+    <p class="c-p">
+        Non-compliance with the instructions and regulations thereby may lead to the immediate termination of this
+        contract. The employee shall devote the whole of his time and attention during duties to the performance of
+        his duties and shall not engage in any business or occupation directly or indirectly which may in the opinion
+        of the management hinder or otherwise in any way detract from the satisfactory performance of his/her duties
+        under this agreement.
+    </p>
+
+    <p class="c-p">
+        The Work Injury Benefits Act, 2007 and/or any other relevant statute shall apply strictly in relation to
+        injuries sustained by the employee in the course of duty.
+    </p>
+
+    <p class="c-p">
+        The company shall be entitled to claim from the employee indemnity incase of losses and/or damages suffered
+        by the company owing to the employee&rsquo;s negligence either wholly or partly, in the discharge of his
+        duties or otherwise.
+    </p>
+
+    <p class="c-p">
+        The employee shall while in the employment of the company and reasonably thereafter treat with utmost
+        confidentiality all the company&rsquo;s matter not authorized to be disclosed to the public or any other
+        persons.
+    </p>
+
+
+    <div class="c-h">TERMINATION:</div>
+
+    <p class="c-p" style="margin-bottom: 1.5mm;">
+        The contract shall terminate at the expiry of the period hereinabove specified. However, and in addition;
+    </p>
+
+    <ul class="c-list">
+        <li>The employee is entitled to terminate the contract by giving to the Company one days written notice or
+            one day&rsquo;s wages in lieu of notice.</li>
+        <li>The company has authority to summarily terminate the contract without any notice or compensation
+            whatsoever to the employee in the event of gross negligence, absenteeism, drunkenness part and/or
+            suspicion of or commission of a criminal offence of any kind on the part of the employee.</li>
+        <li>The employee&rsquo;s contract with the company is tied to the company&rsquo;s contracts with third
+            parties; the employee&rsquo;s contract may thereof terminate automatically without notice on termination
+            of the company&rsquo;s contract with third parties.</li>
+    </ul>
+
+
+    <div class="c-h">RESTRICTIONS AFTER TERMINATION:</div>
+
+    <p class="c-p">
+        After termination of this contract, you shall not seek to entice away from the company any of its customers
+        nor use for your own benefit or to the possible detriment of the company any information concerning the
+        company&rsquo;s business affairs, customers&rsquo; secrets which you may have acquired in the course of your
+        employment under this contract or as incidental thereto.
+    </p>
+
+
+    <div class="c-h">ANNEXTURES</div>
+
+    <table class="c-sig">
         <tr>
-            <td class="label">Employee:</td>
-            <td>Moses Okoth Odhiambo</td>
+            <td class="s-label">For:</td>
+            <td class="s-value" colspan="3">Kim-Fay (E.A) Ltd</td>
         </tr>
-
         <tr>
-            <td class="label">Employee ID:</td>
-            <td>36384941</td>
+            <td class="s-label">Signed:</td>
+            <td class="s-value">{{ $c['hr_name'] }}</td>
+            <td class="s-sign">Sign:</td>
+            <td>
+                @if($hrSig)<img class="sig" src="{{ $hrSig }}" alt="Signature">@endif
+            </td>
         </tr>
-
         <tr>
-            <td class="label">Engagement Period:</td>
-            <td>10th August 2026 to 15th August 2026</td>
+            <td class="s-label">Name:</td>
+            <td class="s-value" colspan="3">{{ $c['hopc_name'] }}</td>
+        </tr>
+        <tr>
+            <td class="s-label">Designation:</td>
+            <td class="s-value" colspan="3">Head of People &amp; Culture</td>
         </tr>
     </table>
 
 
-    <!-- =========================
-         1. PARTIES
-    ========================== -->
-    <div class="section">
+    @if($listOnPage2)
 
-        <div class="section-title">
-            1. Parties
-        </div>
+    <div class="c-h" style="margin-bottom: 0;">CASUAL DETAILS</div>
 
-        <p>
-            This Casual Employment Contract is made between
-            <strong>Kim-Fay (E.A) Limited</strong>, hereinafter referred to as
-            "the Company", and <strong>Moses Okoth Odhiambo</strong>,
-            hereinafter referred to as "the Employee".
-        </p>
-
-        <p>
-            The Employee agrees to provide casual services to the Company
-            under the terms and conditions set out in this contract.
-        </p>
-
-    </div>
-
-
-    <!-- =========================
-         2. NATURE OF EMPLOYMENT
-    ========================== -->
-    <div class="section">
-
-        <div class="section-title">
-            2. Nature of Employment
-        </div>
-
-        <p>
-            The Employee is engaged as a casual employee for the period
-            specified in this contract. This engagement does not constitute
-            permanent employment and shall be subject to the Company's
-            policies, procedures and applicable employment laws.
-        </p>
-
-    </div>
-
-
-    <!-- =========================
-         3. PERIOD OF EMPLOYMENT
-    ========================== -->
-    <div class="section">
-
-        <div class="section-title">
-            3. Period of Employment
-        </div>
-
-        <table class="details-table">
-
+    <table class="c-ct">
+        <thead>
             <tr>
-                <th>Start Date</th>
-                <th>End Date</th>
-                <th>No. of Days</th>
+                <th class="k-no">NO.</th>
+                <th class="k-name">Casual Name</th>
+                <th class="k-id">ID No.</th>
+                <th class="k-sha">SHA No.</th>
+                <th class="k-nssf">NSSF No.</th>
+                <th class="k-tel">Tel No.</th>
+                <th class="k-sign">Casual Sign</th>
             </tr>
-
-            <tr>
-                <td>10th August 2026</td>
-                <td>15th August 2026</td>
-                <td>4 Days</td>
-            </tr>
-
-        </table>
-
-        <p>
-            The engagement shall automatically terminate upon expiry of the
-            agreed period unless otherwise extended in writing by the Company.
-        </p>
-
-    </div>
-
-
-    <!-- =========================
-         4. NATURE OF DUTIES
-    ========================== -->
-    <div class="section">
-
-        <div class="section-title">
-            4. Nature of Duties
-        </div>
-
-        <p>
-            The Employee shall perform duties assigned by the Company,
-            including general operational support, loading and offloading
-            of goods, cleaning and organization of work areas, movement of
-            materials and any other reasonable duties assigned by the
-            supervisor.
-        </p>
-
-        <p>
-            The Employee shall carry out all duties diligently, responsibly
-            and in accordance with the instructions of the Company.
-        </p>
-
-    </div>
-
-
-    <!-- =========================
-         5. REMUNERATION
-    ========================== -->
-    <div class="section">
-
-        <div class="section-title">
-            5. Remuneration
-        </div>
-
-        <p>
-            The Employee shall be paid a daily casual wage of
-            <strong>KES 3,000.00</strong>.
-        </p>
-
-        <table class="details-table">
-
-            <tr>
-                <th>Description</th>
-                <th class="amount">Amount (KES)</th>
-            </tr>
-
-            <tr>
-                <td>Daily Rate</td>
-                <td class="amount">3,000.00</td>
-            </tr>
-
-            <tr>
-                <td>Number of Days</td>
-                <td class="amount">4</td>
-            </tr>
-
-            <tr>
-                <td class="bold">Gross Pay</td>
-                <td class="amount bold">12,000.00</td>
-            </tr>
-
-            <tr>
-                <td>NSSF</td>
-                <td class="amount">216.00</td>
-            </tr>
-
-            <tr>
-                <td>NHIF / SHIF</td>
-                <td class="amount">564.00</td>
-            </tr>
-
-            <tr>
-                <td>PAYE</td>
-                <td class="amount">0.00</td>
-            </tr>
-
-            <tr>
-                <td class="bold">Total Deductions</td>
-                <td class="amount bold">780.00</td>
-            </tr>
-
-            <tr>
-                <td class="bold">Net Pay</td>
-                <td class="amount bold">11,220.00</td>
-            </tr>
-
-        </table>
-
-    </div>
-
-
-    <!-- =========================
-         6. UNIFORMS & PROTECTIVE GEAR
-    ========================== -->
-    <div class="section">
-
-        <div class="section-title">
-            6. Uniforms and Protective Gear
-        </div>
-
-        <p>
-            Where applicable, the Company shall provide the Employee with
-            the necessary protective clothing and equipment required for
-            the performance of assigned duties.
-        </p>
-
-        <p>
-            The Employee shall take reasonable care of all Company-issued
-            uniforms, protective equipment and other property and shall
-            return them upon completion of the engagement.
-        </p>
-
-    </div>
-
-
-    <!-- =========================
-         7. CODE OF CONDUCT
-    ========================== -->
-    <div class="section">
-
-        <div class="section-title">
-            7. Code of Conduct
-        </div>
-
-        <p>
-            The Employee shall comply with all Company rules, regulations,
-            health and safety requirements, security procedures and lawful
-            instructions issued by the Company or its representatives.
-        </p>
-
-        <p>
-            Any misconduct, negligence, dishonesty, insubordination or
-            violation of Company policies may result in termination of
-            the engagement.
-        </p>
-
-    </div>
-
-
-    <!-- =========================
-         8. TERMINATION
-    ========================== -->
-    <div class="section">
-
-        <div class="section-title">
-            8. Termination
-        </div>
-
-        <p>
-            The Company may terminate this engagement where the Employee
-            fails to comply with the terms of this contract, Company
-            policies or lawful instructions.
-        </p>
-
-        <p>
-            The engagement shall also terminate automatically upon expiry
-            of the agreed employment period.
-        </p>
-
-    </div>
-
-
-    <!-- =========================
-         9. TERMINATION ON INCAPACITY
-    ========================== -->
-    <div class="section">
-
-        <div class="section-title">
-            9. Termination on Incapacity
-        </div>
-
-        <p>
-            Where the Employee becomes unable to perform the assigned duties
-            due to incapacity, the Company shall handle the matter in
-            accordance with applicable employment legislation and Company
-            policy.
-        </p>
-
-    </div>
-
-
-    <!-- =========================
-         10. RESTRICTIONS AFTER TERMINATION
-    ========================== -->
-    <div class="section">
-
-        <div class="section-title">
-            10. Restrictions After Termination
-        </div>
-
-        <p>
-            Upon completion or termination of the engagement, the Employee
-            shall immediately return all Company property, documents,
-            equipment, uniforms, identification cards and any other
-            materials belonging to the Company.
-        </p>
-
-        <p>
-            The Employee shall continue to maintain confidentiality regarding
-            Company information obtained during the period of employment.
-        </p>
-
-    </div>
-
-
-    <!-- =========================
-         11. EMPLOYEE DETAILS
-    ========================== -->
-    <div class="section">
-
-        <div class="section-title">
-            11. Employee Details
-        </div>
-
-        <table class="employee-table">
-
-            <thead>
+        </thead>
+        <tbody>
+            @foreach($c['casuals'] as $row)
                 <tr>
-                    <th>Name</th>
-                    <th>ID Number</th>
-                    <th>NHIF / SHIF Number</th>
-                    <th>NSSF Number</th>
-                    <th>KRA PIN</th>
+                    <td>{{ $loop->iteration }}</td>
+                    <td>{{ $row['name'] }}</td>
+                    <td>{{ $row['id_no'] }}</td>
+                    <td>{{ $row['sha_no'] }}</td>
+                    <td>{{ $row['nssf_no'] }}</td>
+                    <td>{{ $row['tel'] }}</td>
+                    <td>&nbsp;</td>
                 </tr>
-            </thead>
+            @endforeach
+        </tbody>
+    </table>
 
-            <tbody>
+    <table class="pay">
+        <tr>
+            <td class="p-label">Paying Officer Name:</td>
+            <td class="p-line" colspan="4">&nbsp;</td>
+        </tr>
+        <tr>
+            <td class="p-label">Sign:</td>
+            <td class="p-line">&nbsp;</td>
+            <td class="p-date">Date:</td>
+            <td class="p-dline" colspan="2">&nbsp;</td>
+        </tr>
+    </table>
 
-                <tr>
-                    <td>Moses Okoth Odhiambo</td>
-                    <td>36384941</td>
-                    <td>CR3044103386906-1</td>
-                    <td>2032510376</td>
-                    <td>A012345678P</td>
-                </tr>
-
-            </tbody>
-
-        </table>
-
-    </div>
-
-
-    <!-- =========================
-         12. SIGNED
-    ========================== -->
-    <div class="section">
-
-        <div class="section-title">
-            12. Signed
-        </div>
-
-        <p>
-            By signing below, the parties confirm that they have read,
-            understood and agreed to the terms and conditions contained
-            in this Casual Employment Contract.
-        </p>
-
-
-        <table class="signature-table">
-
-            <tr>
-
-                <td>
-
-                    <div class="signature-line"></div>
-
-                    <div class="signature-label">
-                        Employee Signature
-                    </div>
-
-                    <div>
-                        Name: Moses Okoth Odhiambo
-                    </div>
-
-                    <div>
-                        Date: 5th September 2026
-                    </div>
-
-                </td>
-
-
-                <td>
-
-                    <div class="signature-line"></div>
-
-                    <div class="signature-label">
-                        For and on behalf of Kim-Fay (E.A) Limited
-                    </div>
-
-                    <div>
-                        Name: Alice Mworia
-                    </div>
-
-                    <div>
-                        Designation: HR and Administration Manager
-                    </div>
-
-                    <div>
-                        Date: 5th September 2026
-                    </div>
-
-                </td>
-
-            </tr>
-
-        </table>
-
-    </div>
-
-
-    <!-- =========================
-         FOOTER
-    ========================== -->
-    <div class="contract-footer-page">
-        Kim-Fay (E.A) Limited &nbsp; | &nbsp;
-        Casual Employment Contract &nbsp; | &nbsp;
-        HR Record - Version 1
-    </div>
+    @endif
 
 </div>
+
+<table class="c-foot">
+    <tr>
+        <td class="f-left">HR Record - Version 2</td>
+        <td class="f-right">2</td>
+    </tr>
+</table>
+
+
+
+{{-- =====================================================================
+     DOCUMENT 3 : CASUAL EMPLOYMENT CONTRACT  -  PAGE 3 OF 3
+     (only printed when there are more than 2 casuals)
+====================================================================== --}}
+@if($listOnPage3)
+<div class="c-page new-page">
+
+    <table class="c-hdr">
+        <tr>
+            <td class="h-logo"><img src="{{ $logo }}" alt="Kim-Fay"></td>
+            <td class="h-addr">
+                Kim-Fay E.A Ltd<br>
+                Maasai Road, Off Mombasa Road<br>
+                Behind Libra House<br>
+                Box 31437-00600, Nairobi
+            </td>
+            <td class="h-cont">
+                T/+254 20351824/19/24<br>
+                F/ +254 20 6531458, 6533518<br>
+                E/ <u>customercare&#64;kimfay.com</u><br>
+                www.kimfay.com
+            </td>
+        </tr>
+    </table>
+
+    <div class="c-title">CASUAL EMPLOYMENT CONTRACT</div>
+
+    <div class="c-h" style="margin-top: 6mm; margin-bottom: 0;">CASUAL DETAILS</div>
+
+    <table class="c-ct">
+        <thead>
+            <tr>
+                <th class="k-no">NO.</th>
+                <th class="k-name">Casual Name</th>
+                <th class="k-id">ID No.</th>
+                <th class="k-sha">SHA No.</th>
+                <th class="k-nssf">NSSF No.</th>
+                <th class="k-tel">Tel No.</th>
+                <th class="k-sign">Casual Sign</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($c['casuals'] as $row)
+                <tr>
+                    <td>{{ $loop->iteration }}</td>
+                    <td>{{ $row['name'] }}</td>
+                    <td>{{ $row['id_no'] }}</td>
+                    <td>{{ $row['sha_no'] }}</td>
+                    <td>{{ $row['nssf_no'] }}</td>
+                    <td>{{ $row['tel'] }}</td>
+                    <td>&nbsp;</td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+
+    <table class="pay">
+        <tr>
+            <td class="p-label">Paying Officer Name:</td>
+            <td class="p-line" colspan="4">&nbsp;</td>
+        </tr>
+        <tr>
+            <td class="p-label">Sign:</td>
+            <td class="p-line">&nbsp;</td>
+            <td class="p-date">Date:</td>
+            <td class="p-dline" colspan="2">&nbsp;</td>
+        </tr>
+    </table>
+
+</div>
+
+<table class="c-foot">
+    <tr>
+        <td class="f-left">HR Record - Version 2</td>
+        <td class="f-right">3</td>
+    </tr>
+</table>
+@endif
 
 </body>
 </html>
