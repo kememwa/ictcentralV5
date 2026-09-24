@@ -662,7 +662,7 @@
         <table class="field">
             <tr>
                 <td class="fl">Reason for request:</td>
-                <td class="fv">{{ $c['reason_for_request'] }}</td>
+                <td class="fv">{{ $requisition->reason }}</td>
             </tr>
             <tr>
                 <td colspan="2" class="fv">&nbsp;</td>

@@ -32,7 +32,7 @@ class ContractController extends Controller
         abort_if($assignments->isEmpty(), 404, 'No assigned casuals found');
 
         // Generate PDF
-        $pdf = Pdf::loadView('contracts.casual', compact('assignments'));
+        $pdf = Pdf::loadView('contracts.casual', compact(['assignments', 'requisition']));
 
         // Stream PDF to new tab
         return $pdf->stream("Casual-Contracts-{$requisition->id}.pdf");
