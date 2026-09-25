@@ -59,9 +59,9 @@ class User extends Authenticatable
 
     //This user heads one department 
    public function headedDepartment(): HasOne
-{
-    return $this->HasOne(Department::class, 'hod_id', 'id');
-}
+    {
+        return $this->HasOne(Department::class, 'hod_id', 'id');
+    }
 
     //This user has many devices
     public function devices(): HasMany

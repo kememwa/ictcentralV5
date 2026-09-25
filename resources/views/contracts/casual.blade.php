@@ -636,7 +636,7 @@
         <table class="field">
             <tr>
                 <td class="fl">Department:</td>
-                <td class="fv">{{ $c['department'] }}</td>
+                <td class="fv">{{ $requisition->requester->designation->division->department->name }}</td>
             </tr>
         </table>
 
