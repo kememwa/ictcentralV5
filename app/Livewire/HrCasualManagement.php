@@ -208,6 +208,7 @@ class HrCasualManagement extends Component
 
             Requisition::where('id', $this->selectedRequisition->id)->update([
                 'casual_assignment_status' => true,
+                'casual_assignment_date' => now(),
             ]);
             
             $this->dispatch('notify',

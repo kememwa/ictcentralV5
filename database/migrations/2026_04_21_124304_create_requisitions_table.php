@@ -75,6 +75,7 @@ public function up(): void
                 ->restrictOnDelete();
 
             $table->boolean('casual_assignment_status')->default(false);
+            $table->timestamp('casual_assignment_date')->nullable();
             $table->timestamp('coo_approval_date')->nullable();
 
             /*

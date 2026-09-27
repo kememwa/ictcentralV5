@@ -40,8 +40,12 @@
     $cooApprovalDate = \Carbon\Carbon::parse($requisition->coo_approval_date)->format('jS F Y, h:i A');
     $hrApprovalDate = \Carbon\Carbon::parse($requisition->hr_approval_date)->format('jS F Y, h:i A');
     $hrmApprovalDate = \Carbon\Carbon::parse($requisition->hrm_approval_date)->format('jS F Y, h:i A');
-    $totalDed = number_format($requisition->nssf_rate + $requisition->sha_rate, 2);
+    $nssfRate = number_format($requisition->nssf_rate, 2);
+    $shaRate = number_format($requisition->sha_rate, 2);
+    $totalDed = number_format($nssfRate + $shaRate, 2);
     $totalPay = number_format($dailyRate - $totalDed, 2);
+    $grossPay = number_format($dailyRate * $duration, 2);
+    
     
     
 
@@ -975,9 +979,9 @@
 
     <p class="c-p">
         The employee shall be engaged for a period of
-        <span class="b">{{ $c['days'] }} days</span> as from
-        <span class="b">{{ $c['start_date'] }}</span> to
-        <span class="b">{{ $c['end_date'] }}.</span>
+        <span class="b">{{ $duration }}</span> as from
+        <span class="b">{{ $startDate }}</span> to
+        <span class="b">{{ $endDate }}.</span>
     </p>
 
     <p class="c-p">
@@ -1025,17 +1029,17 @@
     <div class="c-h">REMUNERATION</div>
 
     <p class="c-p">
-        The company shall pay to the employee a sum of <span class="b">Kshs. {{ $gross }}</span>
+        The company shall pay to the employee a sum of <span class="b">Kshs. {{ $grossPay }}</span>
     </p>
 
     <p class="c-p">
         This payment will be paid at the end of the period of contract, being the accumulated daily wages of the
         aggregate days worked only.
-        A further deduction of <span class="b">Kshs. {{ $nssf }}</span> and
-        <span class="b">Kshs. {{ $sha }}</span> shall be made from your aggregate accumulated wages at the end of
+        A further deduction of <span class="b">Kshs. {{ $nssfRate }}</span> and
+        <span class="b">Kshs. {{ $shaRate }}</span> shall be made from your aggregate accumulated wages at the end of
         this contract and shall be remitted to <span class="b">NSSF</span> and <span class="b">SHA</span>
         respectively as is our statutory obligation. Therefore, total deductions shall amount to
-        <span class="b">Kshs. {{ $dedEachF }}</span>
+        <span class="b">Kshs. {{ $totalDed }}</span>
     </p>
 
     <p class="c-p">
@@ -1198,14 +1202,14 @@
             </tr>
         </thead>
         <tbody>
-            @foreach($c['casuals'] as $row)
+            @foreach($assignments as $assignment)
                 <tr>
                     <td>{{ $loop->iteration }}</td>
-                    <td>{{ $row['name'] }}</td>
-                    <td>{{ $row['id_no'] }}</td>
-                    <td>{{ $row['sha_no'] }}</td>
-                    <td>{{ $row['nssf_no'] }}</td>
-                    <td>{{ $row['tel'] }}</td>
+                    <td>{{ $assignment->casual->name }}</td>
+                    <td>{{ $assignment->casual->id_number }}</td>
+                    <td>{{ $assignment->casual->sha_number }}</td>
+                    <td>{{ $assignment->casual->nssf_number }}</td>
+                    <td>{{ $assignment->casual->phone_number }}</td>
                     <td>&nbsp;</td>
                 </tr>
             @endforeach
