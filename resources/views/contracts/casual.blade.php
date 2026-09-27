@@ -20,6 +20,10 @@
     /* ------------------------------------------------------------------
      | 1. DATA
      ------------------------------------------------------------------ */
+
+    $hod_name = $requisition->requester->designation->division->department->hod->name ?? 'NULL';
+    $hod_signature = $requisition->requester->designation->division->department->hod->signature ?? 'NULL';
+
     $c = array_merge([
 
         // Casual Request to Recruit
@@ -643,7 +647,7 @@
         <table class="field">
             <tr>
                 <td class="fl">Department Head:</td>
-                <td class="fv">{{ $c['department_head'] }}</td>
+                <td class="fv">{{ $hod_name }}</td>
             </tr>
         </table>
     </div>
@@ -655,7 +659,7 @@
         <table class="field">
             <tr>
                 <td class="fl">Number required:</td>
-                <td class="fv">{{ $c['number_required'] }}</td>
+                <td class="fv">{{ $requisition->no_of_casuals }}</td>
             </tr>
         </table>
 
@@ -672,14 +676,14 @@
         <table class="field">
             <tr>
                 <td class="fl">Number of days:</td>
-                <td class="fv">{{ $c['days'] }}</td>
+                <td class="fv">{{ $requisition->duration }}</td>
             </tr>
         </table>
 
         <table class="field">
             <tr>
                 <td class="fl">Start date:</td>
-                <td class="fv">{{ $c['start_date'] }}</td>
+                <td class="fv">{{ $requisition->start_date }}</td>
             </tr>
         </table>
     </div>
@@ -690,9 +694,20 @@
 
         <table class="sign-row">
             <tr>
-                <td class="sl">Department Head: {{ $c['department_head'] }}</td>
-                <td class="sline">&nbsp;</td>
+                <td class="sl">
+                    Department Head: {{ $hod_name }}
+                </td>
+
+                <td class="sline">
+                    @if($hod_signature)
+                        <img src="{{ public_path('storage/' . $hod_signature) }}"
+                            alt="HOD Signature"
+                            class="signature-image">
+                    @endif
+                </td>
+
                 <td class="dl">Date:</td>
+
                 <td class="dline">&nbsp;</td>
             </tr>
         </table>
