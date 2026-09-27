@@ -659,7 +659,7 @@
         <table class="field">
             <tr>
                 <td class="fl">Number required:</td>
-                <td class="fv">{{ $requisition->no_of_casuals }}</td>
+                <td class="fv">{{ $requisition->no_of_casuals }} Casuals</td>
             </tr>
         </table>
 
@@ -683,7 +683,7 @@
         <table class="field">
             <tr>
                 <td class="fl">Start date:</td>
-                <td class="fv">{{ $requisition->start_date }}</td>
+                <td class="fv">{{\Carbon\Carbon::parse($requisition->start_date)->format('jS F Y')}}</td>
             </tr>
         </table>
     </div>
@@ -706,9 +706,9 @@
                     @endif
                 </td>
 
-                <td class="dl">Date:</td>
+                <td class="dl">Date: </td>
 
-                <td class="dline">&nbsp;</td>
+                <td class="dline">{{\Carbon\Carbon::parse($requisition->hod_approval_date)->format('jS F Y, h:i A')}}</td>
             </tr>
         </table>
 
@@ -717,7 +717,7 @@
                 <td class="sl">Chief Operations Officer: {{ $c['coo'] }}</td>
                 <td class="sline">&nbsp;</td>
                 <td class="dl">Date:</td>
-                <td class="dline">&nbsp;</td>
+                <td class="dline">{{\Carbon\Carbon::parse($requisition->coo_approval_date)->format('jS F Y, h:i A')}}</td>
             </tr>
         </table>
     </div>
