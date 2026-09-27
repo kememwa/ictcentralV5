@@ -615,6 +615,15 @@
             width: 40%;
             border-bottom: 1px solid #000000;
         }
+        .signature-image {
+            width: 50px;
+            height: 30px;
+            object-fit: contain;
+            display: block;
+            margin: 0 auto;
+            position: relative;
+            top: -1px;
+        }
     </style>
 </head>
 
@@ -700,7 +709,7 @@
 
                 <td class="sline">
                     @if($hod_signature)
-                        <img src="{{ public_path('storage/' . $hod_signature) }}"
+                        <img src="{{ public_path('storage/' . $requisition->hod->signature_image_path) }}"
                             alt="HOD Signature"
                             class="signature-image">
                     @endif
