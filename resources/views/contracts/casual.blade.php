@@ -831,14 +831,14 @@
             </tr>
         </thead>
         <tbody>
-            @foreach($c['casuals'] as $row)
+            @foreach($assignments as $assignment)
                 <tr>
                     <td>{{ $loop->iteration }}</td>
-                    <td>{{ $row['name'] }}</td>
-                    <td>{{ $row['id_no'] }}</td>
-                    <td>{{ $row['sha_no'] }}</td>
-                    <td>{{ $row['nssf_no'] }}</td>
-                    <td>{{ $row['tel'] }}</td>
+                    <td>{{ $assignment->casual->name }}</td>
+                    <td>{{ $assignment->casual->id_number }}</td>
+                    <td>{{ $assignment->casual->sha_number }}</td>
+                    <td>{{ $assignment->casual->nssf_number }}</td>
+                    <td>{{ $assignment->casual->phone_number }}</td>
                     <td>&nbsp;</td>
                 </tr>
             @endforeach
