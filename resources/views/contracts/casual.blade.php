@@ -22,6 +22,11 @@
      ------------------------------------------------------------------ */
 
     $hod_name = $requisition->requester->designation->division->department->hod->name ?? 'NULL';
+    $hod_sig = $requisition->hod->signature_image_path;
+    $hr_sig = $requisition->hr->signature_image_path ?? 'NULL';
+    $hr_name = $requisition->hr->name ?? 'NULL';
+    $hrm_name = $requisition->hrm->name ?? 'NULL';
+    $hrm_sig = $requisition->hrm->signature_image_path ?? 'NULL';
     $departmentName = $requisition->requester->designation->division->department->name ?? 'NULL';
     $divisionName = $requisition->requester->designation->division->name ?? 'NULL';
     $applicantName = $requisition->requester->name ?? 'NULL';
@@ -33,8 +38,12 @@
     $no_casuals = $requisition->no_of_casuals;
     $hodApprovalDate = \Carbon\Carbon::parse($requisition->hod_approval_date)->format('jS F Y, h:i A');
     $cooApprovalDate = \Carbon\Carbon::parse($requisition->coo_approval_date)->format('jS F Y, h:i A');
+    $hrApprovalDate = \Carbon\Carbon::parse($requisition->hr_approval_date)->format('jS F Y, h:i A');
+    $hrmApprovalDate = \Carbon\Carbon::parse($requisition->hrm_approval_date)->format('jS F Y, h:i A');
     $totalDed = number_format($requisition->nssf_rate + $requisition->sha_rate, 2);
     $totalPay = number_format($dailyRate - $totalDed, 2);
+    
+    
 
 
 
@@ -637,6 +646,14 @@
             position: relative;
             top: -1px;
         }
+        .signature-image-casual {
+            width: 50px;
+            height: 30px;
+            object-fit: contain;
+            display: block;
+            margin: 0 auto;
+            position: relative;
+        }
     </style>
 </head>
 
@@ -721,7 +738,7 @@
                 </td>
 
                 <td class="sline">
-                        <img src="{{ public_path('storage/' . $requisition->hod->signature_image_path) }}"
+                        <img src="{{ public_path('storage/' . $hod_sig) }}"
                             alt="HOD Signature"
                             class="signature-image">  
                 </td>
@@ -853,34 +870,38 @@
 
         <table class="ap">
             <tr>
-                <td class="ap-role"><span class="b">Head of Department:</span> {{ $c['hod_name'] }}</td>
+                <td class="ap-role"><span class="b">Head of Department:</span> {{ $hod_name }}</td>
                 <td class="ap-sign">
                     <span class="b">Sign:</span>
-                    @if($hodSig)<img class="sig" src="{{ $hodSig }}" alt="Signature">@endif
+                        <img src="{{ public_path('storage/' . $hod_sig) }}"
+                            alt="HOD Signature"
+                            class="signature-image-casual">  
                 </td>
-                <td class="ap-date"><span class="b">Date:</span> {{ $c['hod_date'] }}</td>
+                <td class="ap-date"><span class="b">Date:</span> {{ $hodApprovalDate }}</td>
             </tr>
         </table>
 
         <table class="ap">
             <tr>
-                <td class="ap-role"><span class="b">HR Representative:</span> {{ $c['hr_name'] }}</td>
+                <td class="ap-role"><span class="b">HR Representative:</span> {{ $hr_name }}</td>
                 <td class="ap-sign">
                     <span class="b">Sign:</span>
-                    @if($hrSig)<img class="sig" src="{{ $hrSig }}" alt="Signature">@endif
+                        <img src="{{ public_path('storage/' . $hr_sig) }}"
+                            alt="HR Signature"
+                            class="signature-image-casual">  
                 </td>
-                <td class="ap-date"><span class="b">Date:</span> {{ $c['hr_date'] }}</td>
+                <td class="ap-date"><span class="b">Date:</span> {{ $hrApprovalDate }}</td>
             </tr>
         </table>
 
         <table class="ap">
             <tr>
-                <td class="ap-role"><span class="b">Head of People &amp; Culture:</span> {{ $c['hopc_name'] }}</td>
+                <td class="ap-role"><span class="b">Head of People &amp; Culture:</span> {{ $hrm_name }}</td>
                 <td class="ap-sign">
                     <span class="b">Sign:</span>
-                    @if($hopcSig)<img class="sig" src="{{ $hopcSig }}" alt="Signature">@endif
+                    @if($hrm_sig)<img src="{{ public_path('storage/' . $hrm_sig) }}" alt="HRM Signature" class="signature-image-casual">@endif
                 </td>
-                <td class="ap-date"><span class="b">Date:</span> {{ $c['hopc_date'] }}</td>
+                <td class="ap-date"><span class="b">Date:</span> {{ $hrmApprovalDate }}</td>
             </tr>
         </table>
 
