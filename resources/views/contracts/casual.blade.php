@@ -22,7 +22,21 @@
      ------------------------------------------------------------------ */
 
     $hod_name = $requisition->requester->designation->division->department->hod->name ?? 'NULL';
-    $hod_signature = $requisition->requester->designation->division->department->hod->signature ?? 'NULL';
+    $departmentName = $requisition->requester->designation->division->department->name ?? 'NULL';
+    $divisionName = $requisition->requester->designation->division->name ?? 'NULL';
+    $applicantName = $requisition->requester->name ?? 'NULL';
+    $startDate = \Carbon\Carbon::parse($requisition->start_date)->format('jS F Y');
+    $endDate = \Carbon\Carbon::parse($requisition->end_date)->format('jS F Y');
+    $duration = $requisition->duration;
+    $reason = $requisition->reason;
+    $dailyRate = $requisition->daily_rate;
+    $no_casuals = $requisition->no_of_casuals;
+    $hodApprovalDate = \Carbon\Carbon::parse($requisition->hod_approval_date)->format('jS F Y, h:i A');
+    $cooApprovalDate = \Carbon\Carbon::parse($requisition->coo_approval_date)->format('jS F Y, h:i A');
+    $totalDed = number_format($requisition->nssf_rate + $requisition->sha_rate, 2);
+    $totalPay = number_format($dailyRate - $totalDed, 2);
+
+
 
     $c = array_merge([
 
@@ -116,8 +130,7 @@
     $nssf      = number_format($c['nssf'], 2);
     $sha       = number_format($c['sha'], 2);
     $dedEachF  = number_format($dedEach, 2);
-    $totalDed  = number_format($dedEach * $count, 2);
-    $totalPay  = number_format(($grossEach - $dedEach) * $count, 2);
+   
 @endphp
 <!DOCTYPE html>
 <html lang="en">
@@ -649,7 +662,7 @@
         <table class="field">
             <tr>
                 <td class="fl">Department:</td>
-                <td class="fv">{{ $requisition->requester->designation->division->department->name }}</td>
+                <td class="fv">{{ $departmentName }}</td>
             </tr>
         </table>
 
@@ -668,14 +681,14 @@
         <table class="field">
             <tr>
                 <td class="fl">Number required:</td>
-                <td class="fv">{{ $requisition->no_of_casuals }} Casuals</td>
+                <td class="fv">{{ $no_casuals }} Casuals</td>
             </tr>
         </table>
 
         <table class="field">
             <tr>
                 <td class="fl">Reason for request:</td>
-                <td class="fv">{{ $requisition->reason }}</td>
+                <td class="fv">{{ $reason }}</td>
             </tr>
             <tr>
                 <td colspan="2" class="fv">&nbsp;</td>
@@ -685,14 +698,14 @@
         <table class="field">
             <tr>
                 <td class="fl">Number of days:</td>
-                <td class="fv">{{ $requisition->duration }}</td>
+                <td class="fv">{{ $duration }}
             </tr>
         </table>
 
         <table class="field">
             <tr>
                 <td class="fl">Start date:</td>
-                <td class="fv">{{\Carbon\Carbon::parse($requisition->start_date)->format('jS F Y')}}</td>
+                <td class="fv">{{ $startDate }}</td>
             </tr>
         </table>
     </div>
@@ -708,16 +721,14 @@
                 </td>
 
                 <td class="sline">
-                    @if($hod_signature)
                         <img src="{{ public_path('storage/' . $requisition->hod->signature_image_path) }}"
                             alt="HOD Signature"
-                            class="signature-image">
-                    @endif
+                            class="signature-image">  
                 </td>
 
                 <td class="dl">Date: </td>
 
-                <td class="dline">{{\Carbon\Carbon::parse($requisition->hod_approval_date)->format('jS F Y, h:i A')}}</td>
+                <td class="dline">{{ $hodApprovalDate }}</td>
             </tr>
         </table>
 
@@ -726,7 +737,7 @@
                 <td class="sl">Chief Operations Officer: {{ $c['coo'] }}</td>
                 <td class="sline">&nbsp;</td>
                 <td class="dl">Date:</td>
-                <td class="dline">{{\Carbon\Carbon::parse($requisition->coo_approval_date)->format('jS F Y, h:i A')}}</td>
+                <td class="dline">{{ $cooApprovalDate }}</td>
             </tr>
         </table>
     </div>
@@ -776,13 +787,13 @@
         <table class="eng">
             <tr>
                 <td class="eng-left">
-                    <div class="dl-line">Department: <span>{{ $c['department'] }}</span></div>
-                    <div class="dl-line">Division: <span>{{ $c['division'] }}</span></div>
-                    <div class="dl-line">Applicant: <span>{{ $c['applicant'] }}</span></div>
-                    <div class="dl-line">Start Date: <span>{{ $c['start_date'] }}</span></div>
-                    <div class="dl-line">End Date: <span>{{ $c['end_date'] }}</span></div>
-                    <div class="dl-line">Duration of Engagement (Days): <span>{{ $c['days'] }}</span></div>
-                    <div class="dl-line reason">Reason for Engagement: <span>{{ $c['reason_for_engagement'] }}</span></div>
+                    <div class="dl-line">Department: <span>{{ $departmentName }}</span></div>
+                    <div class="dl-line">Division: <span>{{ $divisionName }}</span></div>
+                    <div class="dl-line">Applicant: <span>{{ $applicantName }}</span></div>
+                    <div class="dl-line">Start Date: <span>{{ $startDate }}</span></div>
+                    <div class="dl-line">End Date: <span>{{ $endDate }}</span></div>
+                    <div class="dl-line">Duration of Engagement (Days): <span>{{ $duration }}</span></div>
+                    <div class="dl-line reason">Reason for Engagement: <span>{{ $reason }}</span></div>
                 </td>
                 <td class="eng-right">
                     @if($showStamp)
@@ -795,10 +806,10 @@
         <div class="a-head sec-gap">WAGES DETAILS</div>
 
         <div class="wages">
-            <div class="dl-line">Daily Payment Rate: <span>Ksh. {{ $rate }}</span></div>
-            <div class="dl-line">No. of Casuals: <span>{{ $count }}</span></div>
-            <div class="dl-line">Total Deductions: <span>Ksh. {{ $totalDed }}</span></div>
-            <div class="dl-line">Total Amount Payable: <span>Ksh. {{ $totalPay }}</span></div>
+            <div class="dl-line">Daily Payment Rate: <span>Ksh. {{ $dailyRate }}</span></div>
+            <div class="dl-line">No. of Casuals: <span>{{ $no_casuals }}</span></div>
+            <div class="dl-line">Total Deductions(PP): <span>Ksh. {{ $totalDed }}</span></div>
+            <div class="dl-line">Total Amount Payable(PP): <span>Ksh. {{ $totalPay }}</span></div>
         </div>
 
     </div>
