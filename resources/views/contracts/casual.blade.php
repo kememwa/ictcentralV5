@@ -45,6 +45,7 @@
     $totalDed = number_format($nssfRate + $shaRate, 2);
     $totalPay = number_format($dailyRate - $totalDed, 2);
     $grossPay = number_format($dailyRate * $duration, 2);
+    $contractDate = \Carbon\Carbon::parse($requisition->casual_assignment_date)->format('jS F Y');
     
     
     
@@ -945,7 +946,7 @@
 
     <p class="c-p">
         <span class="b">THIS AGREEMENT</span> is made on the
-        <span class="b">{{ $c['contract_date'] }}</span>
+        <span class="b">{{ $contractDate }}</span>
         <span class="b">BETWEEN; Kim-Fay (E.A) Ltd</span>
         (hereinafter called &ldquo;the Company&rdquo;)
         <span class="b">AND (See listed Employees on Page {{ $listPage }})</span>
