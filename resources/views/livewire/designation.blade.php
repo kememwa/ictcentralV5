@@ -65,7 +65,7 @@
                                     {{ $designation->division->department->name ?? 'N/A' }}
                                 </td>
                                 <td class="px-3 py-2 hidden xl:table-cell text-gray-700">
-                                    {{ $designation->reports_to ?? 'Not Assigned' }}
+                                    {{ $designation->reportsTo->name ?? 'Not Assigned' }}
                                 </td>
                             </tr>
                             @empty

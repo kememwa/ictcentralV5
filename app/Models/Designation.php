@@ -25,4 +25,9 @@ class Designation extends Model
     public function division(){
         return $this->belongsTo(Division::class);
     }
+
+    public function reportsTo()
+    {
+        return $this->belongsTo(Designation::class, 'reports_to');
+    }
 }
