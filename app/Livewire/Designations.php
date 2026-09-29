@@ -89,6 +89,52 @@ public function removeHead()
     $this->searchHead = '';
 }
 
+//search for division from the divisions table
+public function updatedSearchReportsTo()
+{
+    $search = trim($this->searchReportsTo);
+
+    if (strlen($search) < 2) {
+        $this->reportsToResults = [];
+        $this->showReportsToDropdown = false;
+        return;
+    }
+
+    $this->showReportsToDropdown = true;
+
+    $this->reportsToResults = Designation::query()
+        ->where(function ($query) use ($search) {
+            $query->where('name', 'like', "%{$search}%");
+        })
+        ->orderBy('name')
+        ->limit(8)
+        ->get();
+}
+
+public function selectReportsTo($id)
+{
+    $designation = Designation::find($id);
+
+    if (!$designation) {
+        return;
+    }
+
+    $this->selectedReportsTo = $designation->id;
+
+    $this->searchReportsTo = $designation->name;
+
+    $this->showReportsToDropdown = false;
+
+    $this->reportsToResults = [];
+}
+
+public function removeReportsTo()
+{
+    $this->selectedReportsTo = null;
+    $this->searchReportsTo = '';
+}
+
+
 // Create the department
 public function createDesignation()
 {
