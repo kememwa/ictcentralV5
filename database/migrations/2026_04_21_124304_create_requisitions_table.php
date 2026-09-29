@@ -19,6 +19,10 @@ public function up(): void
                 ->constrained('users')
                 ->restrictOnDelete();
 
+            $table->foreignId('department_id')
+                ->constrained('departments')
+                ->restrictOnDelete();
+
             $table->date('requested_date');
             $table->unsignedInteger('no_of_casuals');
             $table->date('start_date');

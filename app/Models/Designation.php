@@ -17,6 +17,7 @@ class Designation extends Model
     protected $fillable = [
         'name',
         'division_id',
+        'reports_to',
         'status',
     ];
 

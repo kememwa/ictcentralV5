@@ -81,6 +81,7 @@ class CasualWorkforce extends Component
 
     public function requisition()
     {
+        $departmentId = auth()->user()->designation->division->department->id;
         $this->calculateDuration();
         $this->validate();
 
@@ -94,6 +95,7 @@ class CasualWorkforce extends Component
         } else {
             Requisition::create([
                 'requested_by' => auth()->id(),
+                'department_id' => $departmentId,
                 'requested_date' => Carbon::now()->toDateString(),
                 'no_of_casuals' => $this->no_of_casuals,
                 'start_date' => $this->start_date,

@@ -15,6 +15,7 @@ class Requisition extends Model
 
     protected $fillable = [
         'requested_by',
+        'department_id',
         'requested_date',
         'no_of_casuals',
         'start_date',

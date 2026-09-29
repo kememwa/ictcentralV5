@@ -48,6 +48,7 @@
                             <th class="px-3 py-2">Designation Name</th>
                             <th class="px-3 py-2">Division Name</th>
                             <th class="px-3 py-2">Department Name</th>
+                            <th class="px-3 py-2">Reports to</th>
                         </tr>
                     </thead>
 
@@ -62,6 +63,9 @@
                                 </td>
                                 <td class="px-3 py-2 hidden xl:table-cell text-gray-700">
                                     {{ $designation->division->department->name ?? 'N/A' }}
+                                </td>
+                                <td class="px-3 py-2 hidden xl:table-cell text-gray-700">
+                                    #
                                 </td>
                             </tr>
                             @empty

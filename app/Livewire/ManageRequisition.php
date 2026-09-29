@@ -46,8 +46,10 @@ class ManageRequisition extends Component
     #[Layout('layouts.dashboard')]
     public function render()
     {
+        $departmentId = auth()->user()->designation->division->department->id;
+        
         return view('livewire.manage-requisition', [
-            'requisitions' => Requisition::where('hod_id', auth()->id())
+            'requisitions' => Requisition::where('department_id', $departmentId)
                 ->where('hod_approval_status', '0')
                 ->latest()
                 ->paginate(10)
