@@ -47,13 +47,20 @@ class ManageRequisition extends Component
     public function render()
     {
         $departmentId = auth()->user()->designation->division->department->id;
-        
+
+        $designationId = auth()->user()->designation->id;
+
         return view('livewire.manage-requisition', [
             'requisitions' => Requisition::where('department_id', $departmentId)
                 ->where('hod_approval_status', '0')
+                ->whereHas('requester.designation', function ($query) use ($designationId) {
+                    $query->where('reports_to', $designationId);
+                })
                 ->latest()
-                ->paginate(10)
+                ->paginate(10),
         ]);
+        
+
     }
 
 }

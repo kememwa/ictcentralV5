@@ -46,7 +46,7 @@ class Requisition extends Model
         return $this->belongsTo(User::class, 'hod_id');
     }
 
-        public function requester()
+    public function requester()
     {
         return $this->belongsTo(User::class, 'requested_by');
     }
