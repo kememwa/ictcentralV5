@@ -296,7 +296,7 @@ resetAddForm() {
             <!-- Body - Using wire:model like the add user form -->
             <form wire:submit.prevent="updateUser" class="p-6 space-y-6">
                 <!-- Full width fields -->
-                <div class="grid grid-cols-1 gap-6 mb-6">
+                <div class="grid grid-cols-2 gap-6 mb-6">
                     <div>
                         <label for="edit-name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Full Name</label>
                         <input wire:model="name" id="edit-name" type="text"
@@ -317,48 +317,158 @@ resetAddForm() {
                 </div>
                 
                 <!-- Half width fields -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                    <div>
-                        <label for="edit-department" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Department</label>
-                        <select wire:model="department_id" id="edit-department"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white">
-                            <option value="">Select Department</option>
-                            @foreach($departments as $department)
-                            <option value="{{ $department->id }}">{{ $department->name }}</option>
-                            @endforeach
-                        </select>
-                        @error('department_id')
-                        <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                        @enderror
-                    </div>
+                <div class="grid grid-cols-1 md:grid-cols-1 gap-6 mb-6">
                     
-                    <div>
-                        <label for="edit-division" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Division</label>
-                        <select wire:model="division_id" id="edit-division"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white">
-                            <option value="">Select Division</option>
-                            @foreach($divisions as $division)
-                            <option value="{{ $division->id }}">{{ $division->name }}</option>
-                            @endforeach
-                        </select>
-                        @error('division_id')
-                        <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                    {{-- Designation selection --}}
+                    <div class="relative">
+                        <label class="text-xs font-semibold text-gray-700 flex items-center gap-1">
+                            Designation for the user
+                            <span class="text-gray-400 font-normal">(optional)</span>
+                        </label>
+
+                        <div class="relative mt-1.5">
+                            <input
+                                type="text"
+                                wire:model.live.debounce.300ms="searchHead"
+                                wire:keydown.escape="$set('showHeadDropdown', false)"
+                                @focus="if($wire.searchHead.length >= 2) $wire.set('showHeadDropdown', true)"
+                                autocomplete="off"
+                                placeholder="Search designation by name..."
+                                class="w-full px-3.5 py-2.5 pl-10 pr-10 border border-gray-200 rounded-lg bg-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-all duration-200 placeholder:text-gray-400 disabled:opacity-70 disabled:cursor-not-allowed"                
+                            />
+
+                            {{-- Search Icon --}}
+                            <div class="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none">
+                                <svg wire:loading.remove wire:target="searchHead" class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                </svg>
+                                <svg wire:loading wire:target="searchHead" class="animate-spin h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+                                </svg>
+                            </div>
+
+                            {{-- Clear Button --}}
+                            @if(!empty($searchHead))
+                                <button
+                                    type="button"
+                                    wire:click="$set('searchHead', '')"
+                                    wire:loading.attr="disabled"
+                                    class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                                >
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                    </svg>
+                                </button>
+                            @endif
+                        </div>
+
+                        {{-- Dropdown --}}
+                        @if($showHeadDropdown)
+                            <div 
+                                x-data
+                                @click.outside="$wire.set('showHeadDropdown', false)"
+                                class="absolute z-[9999] mt-1.5 w-full bg-white border border-gray-200 rounded-lg shadow-xl max-h-60 overflow-y-auto"
+                            >
+                                {{-- Loading State --}}
+                                <div wire:loading wire:target="searchHead" class="p-4 space-y-3">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-full bg-gray-200 animate-pulse"></div>
+                                        <div class="flex-1">
+                                            <div class="h-4 bg-gray-200 rounded w-3/4 animate-pulse"></div>
+                                            <div class="h-3 bg-gray-100 rounded w-1/2 mt-2 animate-pulse"></div>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-full bg-gray-200 animate-pulse"></div>
+                                        <div class="flex-1">
+                                            <div class="h-4 bg-gray-200 rounded w-2/3 animate-pulse"></div>
+                                            <div class="h-3 bg-gray-100 rounded w-1/3 mt-2 animate-pulse"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- Results --}}
+                                <div wire:loading.remove wire:target="searchHead">
+                                    @if(count($headResults))
+                                        <div class="py-1">
+                                            <div class="px-3 py-1.5 text-[10px] font-medium text-gray-400 uppercase tracking-wider border-b border-gray-100">
+                                                {{ count($headResults) }} designation{{ count($headResults) > 1 ? 's' : '' }} found
+                                            </div>
+                                            
+                                            @foreach($headResults as $designation)
+                                                <button
+                                                    type="button"
+                                                    wire:click="selectHead({{ $designation->id }})"
+                                                    @click="$wire.set('showHeadDropdown', false)"
+                                                    class="w-full px-4 py-2.5 text-left hover:bg-blue-50 active:bg-blue-100 transition-colors duration-150 border-b border-gray-50 last:border-0 group"
+                                                >
+                                                    <div class="flex items-center gap-3">
+                                                        <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-700 font-semibold flex items-center justify-center flex-shrink-0 text-sm">
+                                                            {{ strtoupper(substr($designation->name, 0, 1)) }}
+                                                        </div>
+                                                        <div class="flex-1 min-w-0">
+                                                            <div class="font-medium text-sm text-gray-800 group-hover:text-blue-700 truncate">
+                                                                {{ $designation->name }}
+                                                            </div>
+                                                        </div>
+                                                        <svg class="w-4 h-4 text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                                        </svg>
+                                                    </div>
+                                                </button>
+                                            @endforeach
+                                        </div>
+                                    @elseif(strlen($searchHead) >= 2)
+                                        <div class="p-6 text-center">
+                                            <svg class="w-10 h-10 mx-auto text-gray-300 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                            </svg>
+                                            <p class="text-sm text-gray-500">No designation found</p>
+                                            <p class="text-xs text-gray-400 mt-1">Try adjusting your search</p>
+                                        </div>
+                                    @else
+                                        <div class="p-4 text-center text-sm text-gray-400">
+                                            Type at least 2 characters to search
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                        @endif
+
+                        {{-- Selected Designation --}}
+                        @if($selectedDesignation)
+                            <div class="mt-3 rounded-lg bg-green-50 border border-green-200 p-3 flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full bg-green-200 text-green-700 font-semibold flex items-center justify-center flex-shrink-0 text-sm">
+                                    {{ strtoupper(substr($searchHead, 0, 1)) }}
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="text-xs text-green-600 font-medium">Selected Designation</div>
+                                    <div class="font-semibold text-green-800 truncate text-sm">
+                                        {{ $searchHead }}
+                                    </div>
+                                </div>
+                                <button 
+                                    type="button"
+                                    wire:click="removeHead"
+                                    class="text-green-600 hover:text-green-800 transition-colors"
+                                >
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        @endif
+
+                        @error('department_head')
+                            <p class="text-xs text-red-500 mt-1.5 flex items-center gap-1">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                {{ $message }}
+                            </p>
                         @enderror
-                    </div>
-                    
-                    <div>
-                        <label for="edit-designation" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Designation</label>
-                        <select wire:model="designation_id" id="edit-designation"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white">
-                            <option value="">Select Designation</option>
-                            @foreach($designations as $designation)
-                            <option value="{{ $designation->id }}">{{ $designation->name }}</option>
-                            @endforeach
-                        </select>
-                        @error('designation_id')
-                        <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                        @enderror
-                    </div>
+                    </div> 
                 </div>
                 
                 <!-- Roles Section -->

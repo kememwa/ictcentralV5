@@ -25,6 +25,7 @@ class ManageUser extends Component
     public $editRole;
     public $selectedRoles = [];
     public $editSelectedRoles = [];
+
     
     public $departments = [];
     public $divisions = [];
@@ -164,7 +165,7 @@ class ManageUser extends Component
         $this->email = $user->email;
         $this->department_id = $user->dep_id;
         $this->division_id = $user->division_id;
-        $this->designation_id = $user->designation_id;
+        $this->searchHead = $user->designation->name;
         $this->editSelectedRoles = $user->roles->pluck('name')->toArray();
     }
     public function updateUser()
@@ -172,9 +173,7 @@ class ManageUser extends Component
         $validated = $this->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,'.$this->editingUserId,
-            'department_id' => 'required|exists:departments,id',
-            'division_id' => 'required|exists:divisions,id',
-            'designation_id' => 'required|exists:designations,id',
+            'selectedDesignation' => 'required|exists:designations,id',
             'editSelectedRoles' => 'required|array',
             'editSelectedRoles.*' => 'exists:roles,name',
         ]);
@@ -189,14 +188,12 @@ class ManageUser extends Component
         $user->update([
             'name' => $this->name,
             'email' => $this->email,
-            'dep_id' => $this->department_id,
-            'division_id' => $this->division_id,
-            'designation_id' => $this->designation_id,
+            'designation_id' => $this->selectedDesignation,
         ]);
 
         $user->syncRoles($this->editSelectedRoles);
-        $this->reset(['editingUserId', 'name', 'email', 'department_id', 'division_id', 'designation_id', 'editSelectedRoles']);
-    $this->dispatch('close-edit-user-modal');
+        $this->reset(['editingUserId', 'name', 'email', 'selectedDesignation', 'editSelectedRoles']);
+        $this->dispatch('close-edit-user-modal');
         $this->dispatch('userUpdatedOrAdded');
         $this->dispatch('notify', 
             type: 'success',
