@@ -58,7 +58,7 @@ resetAddForm() {
             <!-- Body -->
             <form wire:submit.prevent="addUser" class="p-6 space-y-6">
                 <!-- Full width fields -->
-                <div class="grid grid-cols-1 gap-6 mb-6">
+                <div class="grid grid-cols-2 gap-6 mb-6">
                     <div>
                         <label for="add-name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Full Name</label>
                         <input wire:model="name" id="add-name" type="text"
@@ -80,7 +80,7 @@ resetAddForm() {
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div class="grid grid-cols-1 gap-6 mb-6">
                 {{-- Designation selection --}}
                     <div class="relative">
                         <label class="text-xs font-semibold text-gray-700 flex items-center gap-1">
@@ -231,11 +231,8 @@ resetAddForm() {
                             </p>
                         @enderror
                     </div>
+                </div>
 
-
-                
-                
-                                
                 <!-- Roles Section -->
                 <div class="mb-6">
                     <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Roles</label>
@@ -258,6 +255,7 @@ resetAddForm() {
                     @enderror
                 </div>
                 
+
                 <!-- Submit Button -->
                 <div class="flex justify-end space-x-3">
                     <button type="button" 

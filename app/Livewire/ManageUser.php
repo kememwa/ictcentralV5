@@ -130,7 +130,6 @@ class ManageUser extends Component
             'name' => $this->name,
             'email' => $this->email,
             'designation_id' => $this->selectedDesignation,
-            'line_manager_id' => $this->selectedLineManager,
             'password' => Hash::make('123456'),
         ]);
         

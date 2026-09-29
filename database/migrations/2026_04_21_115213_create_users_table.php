@@ -20,7 +20,6 @@ return new class extends Migration
             $table->string('password');
             $table->string('signature_image_path')->nullable();
             $table->string('profile_picture')->nullable();
-            $table->unsignedBigInteger('line_manager_id');
             $table->rememberToken();
             $table->softDeletes();
             $table->timestamps();

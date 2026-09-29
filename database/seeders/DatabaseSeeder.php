@@ -28,7 +28,7 @@ $this->call(QuestionSeeder::class);
             'email' => 'it@example.com',
             'designation_id' => '1', // Assuming the designation ID is 1
             'password' => '12345',
-            'line_manager_id' => 6, // Assuming line manager ID is 4
+        
         ])->assignRole('It'); 
        
         $User=User::factory()->create([
@@ -36,7 +36,7 @@ $this->call(QuestionSeeder::class);
             'email' => 'denniskem6@gmail.com',
             'designation_id' => '1',
             'password' => '12345',
-            'line_manager_id' => 4, // Assuming line manager ID is 4
+            
         ])->assignRole('Hr');
 
         $User=User::factory()->create([
@@ -44,7 +44,7 @@ $this->call(QuestionSeeder::class);
             'email' => 'kememwadennis@gmail.com',
             'designation_id' => '2', 
             'password' => '12345',
-            'line_manager_id' => 4, // Assuming line manager ID is 4
+            
         ])->assignRole('SuperAdmin');
 
         $User=User::factory()->create([
@@ -52,7 +52,7 @@ $this->call(QuestionSeeder::class);
             'email' => 'linemanager@example.com',
             'designation_id' => '1', 
             'password' => '12345',
-            'line_manager_id' => 1, // Assuming line manager ID is 4
+           
         ])->assignRole('LineManager');
 
         $User=User::factory()->create([
@@ -60,7 +60,7 @@ $this->call(QuestionSeeder::class);
             'email' => 'adminofficer@example.com',
             'designation_id' => '2',
             'password' => '12345',
-            'line_manager_id' => 2, // Assuming line manager ID is 4
+            
         ])->assignRole('AdminOfficer');
 
         $User=User::factory()->create([
@@ -68,7 +68,7 @@ $this->call(QuestionSeeder::class);
             'email' => 'finance@example.com',
             'designation_id' => '1', 
             'password' => '12345',
-            'line_manager_id' => 2, // Assuming line manager ID is 4
+            
         ])->assignRole('Finance');
 
         $User=User::factory()->create([
@@ -76,7 +76,7 @@ $this->call(QuestionSeeder::class);
             'email' => 'user@example.com',
             'designation_id' => '1', 
             'password' => '12345',
-            'line_manager_id' => 3, // Assuming line manager ID is 4
+            
         ])->assignRole('User');
     $this->call(DeviceSeeder::class);
 
