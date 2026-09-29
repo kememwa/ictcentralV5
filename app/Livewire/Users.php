@@ -19,6 +19,7 @@ class Users extends Component
     protected $listeners = ['userUpdatedOrAdded' => '$refresh'];
    
     public string $search = '';
+    public $actionFilter = '';
 
     public function updatingSearch()
     {

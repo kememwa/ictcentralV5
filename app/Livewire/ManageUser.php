@@ -25,6 +25,7 @@ class ManageUser extends Component
     public $editRole;
     public $selectedRoles = [];
     public $editSelectedRoles = [];
+    
 
     
     public $departments = [];
