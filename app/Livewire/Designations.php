@@ -22,16 +22,25 @@ public $headResults = []; // Matching users
 
 public $showHeadDropdown = false;
 
+//Search and select Designation for "Reports To" field
+
+public $selectedReportsTo = null; // Selected designation ID
+public $searchReportsTo = ''; // Search text for reports to
+public $reportsToResults = []; // Matching designations for reports to
+public $showReportsToDropdown = false; // Show/hide reports to dropdown
+
 
 protected $rules = [
     'designation_name' => 'required|string|max:255|unique:designations,name',
     'selectedDivision' => 'nullable|exists:divisions,id',
+    'selectedReportsTo' => 'nullable|exists:designations,id',
 ];
 
 protected $messages = [
     'designation_name.required' => 'Designation name is required.',
     'designation_name.unique' => 'This designation already exists.',
     'selectedDivision.exists' => 'Selected division is invalid.',
+    'selectedReportsTo.exists' => 'Selected reports to designation is invalid.',
 ];
 
 
