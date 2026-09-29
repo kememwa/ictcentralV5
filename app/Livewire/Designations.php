@@ -144,10 +144,11 @@ public function createDesignation()
         $designation = Designation::create([
             'name' => $this->designation_name,
             'division_id' => $this->selectedDivision, // Store only the ID
+            'reports_to' => $this->selectedReportsTo, // Store only the ID
         ]);
 
         // Reset form
-        $this->reset(['designation_name', 'searchHead', 'selectedDivision', 'showHeadDropdown', 'headResults']);
+        $this->reset(['designation_name', 'searchReportsTo', 'selectedReportsTo', 'showReportsToDropdown', 'reportsToResults']);
         
         // Close modal
         $this->dispatch('close-designation-modal');
