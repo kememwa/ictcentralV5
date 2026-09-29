@@ -64,36 +64,6 @@ class ManageUser extends Component
 
     public $showHeadDropdown = false;
 
-    //search variables for line manager
-
-    public $selectedLineManager = null; // Selected designation ID
-
-    public $searchLineManager = ''; // Search text
-
-    public $lineManagerResults = []; // Matching users
-
-    public $showLineManagerDropdown = false;
-
-    //search for line manager
-    public function updatedSearchLineManager()
-    {
-        $search = trim($this->searchLineManager);
-
-        if (strlen($search) < 2) {
-            $this->lineManagerResults = [];
-            $this->showLineManagerDropdown = false;
-            return;
-        }
-
-        $this->showHeadDropdown = false;
-
-        $this->showLineManagerDropdown = true;
-
-        $this->lineManagerResults = User::where('name', 'like', "%{$search}%")
-            ->orderBy('name')
-            ->limit(8)
-            ->get();
-    }
 
     //search for division from the divisions table
     public function updatedSearchHead()
@@ -117,24 +87,7 @@ class ManageUser extends Component
             ->get();
     }
 
-    //line manager select
-    public function selectLineManager($id)
-    {
-        $lineManager = User::find($id);
-
-        if (!$lineManager) {
-            return;
-        }
-
-        $this->selectedLineManager = $lineManager->id;
-
-        $this->searchLineManager = $lineManager->name;
-
-        $this->showLineManagerDropdown = false;
-
-        $this->lineManagerResults = [];
-    }
-
+    
     public function selectHead($id)
     {
         $designation = Designation::find($id);
@@ -158,12 +111,6 @@ class ManageUser extends Component
         $this->searchHead = '';
     }
 
-    public function removeLineManagerHead()
-    {
-        $this->selectedLineManager = null;
-        $this->searchLineManager = '';
-    }
-
 
     public function addUser()
     {
@@ -173,7 +120,6 @@ class ManageUser extends Component
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'selectedDesignation' => 'nullable|exists:designations,id',
-            'selectedLineManager' => 'nullable|exists:users,id',
             'selectedRoles' => 'required|array',
             'selectedRoles.*' => 'exists:roles,name',
         ]);
@@ -210,58 +156,58 @@ class ManageUser extends Component
 
 
     public function editUser($userId)
-{
-    $this->prepareAddUser();
-    $user = User::with(['roles', 'designation'])->find($userId);
-    
-    $this->editingUserId = $userId;
-    $this->name = $user->name;
-    $this->email = $user->email;
-    $this->department_id = $user->dep_id;
-    $this->division_id = $user->division_id;
-    $this->designation_id = $user->designation_id;
-    $this->editSelectedRoles = $user->roles->pluck('name')->toArray();
-}
-public function updateUser()
-{
-    $validated = $this->validate([
-        'name' => 'required|string|max:255',
-        'email' => 'required|email|unique:users,email,'.$this->editingUserId,
-        'department_id' => 'required|exists:departments,id',
-        'division_id' => 'required|exists:divisions,id',
-        'designation_id' => 'required|exists:designations,id',
-        'editSelectedRoles' => 'required|array',
-        'editSelectedRoles.*' => 'exists:roles,name',
-    ]);
-
-    $user = User::find($this->editingUserId);
-
-    if (!$user) {
-        $this->dispatch('notify', type: 'error', title: 'Error', message: "User not found.");
-        return;
+    {
+        $this->prepareAddUser();
+        $user = User::with(['roles', 'designation'])->find($userId);
+        
+        $this->editingUserId = $userId;
+        $this->name = $user->name;
+        $this->email = $user->email;
+        $this->department_id = $user->dep_id;
+        $this->division_id = $user->division_id;
+        $this->designation_id = $user->designation_id;
+        $this->editSelectedRoles = $user->roles->pluck('name')->toArray();
     }
+    public function updateUser()
+    {
+        $validated = $this->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,'.$this->editingUserId,
+            'department_id' => 'required|exists:departments,id',
+            'division_id' => 'required|exists:divisions,id',
+            'designation_id' => 'required|exists:designations,id',
+            'editSelectedRoles' => 'required|array',
+            'editSelectedRoles.*' => 'exists:roles,name',
+        ]);
 
-    $user->update([
-        'name' => $this->name,
-        'email' => $this->email,
-        'dep_id' => $this->department_id,
-        'division_id' => $this->division_id,
-        'designation_id' => $this->designation_id,
-    ]);
+        $user = User::find($this->editingUserId);
 
-    $user->syncRoles($this->editSelectedRoles);
-    $this->reset(['editingUserId', 'name', 'email', 'department_id', 'division_id', 'designation_id', 'editSelectedRoles']);
-$this->dispatch('close-edit-user-modal');
-    $this->dispatch('userUpdatedOrAdded');
-    $this->dispatch('notify', 
-        type: 'success',
-        title: 'Update User',
-        message: "User has been updated successfully!"
-    );
-    
-    // Close the modal by dispatching an event
-    
-}
+        if (!$user) {
+            $this->dispatch('notify', type: 'error', title: 'Error', message: "User not found.");
+            return;
+        }
+
+        $user->update([
+            'name' => $this->name,
+            'email' => $this->email,
+            'dep_id' => $this->department_id,
+            'division_id' => $this->division_id,
+            'designation_id' => $this->designation_id,
+        ]);
+
+        $user->syncRoles($this->editSelectedRoles);
+        $this->reset(['editingUserId', 'name', 'email', 'department_id', 'division_id', 'designation_id', 'editSelectedRoles']);
+    $this->dispatch('close-edit-user-modal');
+        $this->dispatch('userUpdatedOrAdded');
+        $this->dispatch('notify', 
+            type: 'success',
+            title: 'Update User',
+            message: "User has been updated successfully!"
+        );
+        
+        // Close the modal by dispatching an event
+        
+    }
 
     public function deleteUser($userId)
     {
