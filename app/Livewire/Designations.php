@@ -6,6 +6,7 @@ use Livewire\Component;
 use Livewire\Attributes\Layout;
 use App\Models\Designation;
 use App\Models\Division;
+use Illuminate\Validation\Rule;
 
 class Designations extends Component
 {
@@ -21,6 +22,8 @@ public $searchHead = ''; // Search text
 public $headResults = []; // Matching users
 
 public $showHeadDropdown = false;
+
+public $editingDesId = '';
 
 //Search and select Designation for "Reports To" field
 
@@ -187,11 +190,52 @@ public function createDesignation()
         $this->prepareAddDes();
         $designation = Designation::with(['division', 'reportsTo'])->find($des_id);
         
+        $this->selectedDivision = $designation->division->id;
+        $this->selectedReportsTo = $designation->reportsTo->id;
+        $this->editingDesId = $designation->id;
         $this->designation_name = $designation->name;
         $this->searchHead = $designation->division->name;
         $this->searchReportsTo = $designation->reportsTo->name;
  
 
+    }
+
+    public function updateDesignation()
+    {
+        $validated = $this->validate([
+            'designation_name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('designations', 'name')->ignore($this->editingDesId),
+            ],
+            'selectedDivision' => 'nullable|exists:divisions,id',
+            'selectedReportsTo' => 'nullable|exists:designations,id',
+        ]);
+
+        $designation = Designation::find($this->editingDesId);
+
+        if (!$designation) {
+            $this->dispatch('notify', type: 'error', title: 'Error', message: "Designation not found.");
+            return;
+        }
+
+        $designation->update([
+            'name' => $this->designation_name,
+            'division_id' => $this->selectedDivision, // Store only the ID
+            'reports_to' => $this->selectedReportsTo,
+        ]);
+
+        
+        $this->prepareAddDes();
+        $this->dispatch('close-editdes-modal');
+      
+        $this->dispatch('notify', 
+            type: 'success',
+            title: 'Update Designation',
+            message: "Designation has been updated successfully!"
+        );
+         
     }
 
     #[layout('layouts.dashboard')]
