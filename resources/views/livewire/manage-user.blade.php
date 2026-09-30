@@ -8,8 +8,8 @@ resetAddForm() {
     }
 }" 
 @close-add-user-modal.window="showAddUserModal = false"
- @open-edit-user-modal.window="showEditUserModal = true"
-  @close-edit-user-modal.window="showEditUserModal = false">
+@open-edit-user-modal.window="showEditUserModal = true"
+@close-edit-user-modal.window="showEditUserModal = false">
     <!-- ▸ User-Management Breadcrumb + Toolbar -->
 
     <x-page-header title="User Management" subtitle="Create and manage users">

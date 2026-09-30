@@ -165,4 +165,16 @@
             </div>
         @endif
     </div>
+
+
+    {{--Modal for editing requisitions--}}
+
+    <div x-show="showEditUserModal"
+         class="fixed inset-0 flex items-center justify-center bg-black/50 z-50"
+         
+          x-cloak>
+    
+    </div>
+
+    
 </div>
