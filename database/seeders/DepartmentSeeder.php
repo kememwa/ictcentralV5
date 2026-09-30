@@ -16,15 +16,15 @@ class DepartmentSeeder extends Seeder
         //departments
         $department=Department::factory()->create([
             'name' => 'HR and Admin',
-            'hod_id' => '1', // Assuming the HOD user ID is 1
+            'hod_id' => '2', // Assuming the HOD user ID is 1
             'status' => 'active',
-    ]);
+        ]);
 
-     $department=Department::factory()->create([
-            'name' => 'IT',
-            'hod_id' => '4', // Assuming the HOD user ID is 4
-            'status' => 'active',
-    ]);
+        $department=Department::factory()->create([
+                'name' => 'Finance',
+                'hod_id' => '1', // Assuming the HOD user ID is 4
+                'status' => 'active',
+        ]);
 
     }
 }

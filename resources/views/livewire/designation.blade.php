@@ -49,6 +49,7 @@
                             <th class="px-3 py-2">Division Name</th>
                             <th class="px-3 py-2">Department Name</th>
                             <th class="px-3 py-2">Reports to</th>
+                            <th class="px-3 py-2">Edit</th>
                         </tr>
                     </thead>
 
@@ -67,6 +68,19 @@
                                 <td class="px-3 py-2 hidden xl:table-cell text-gray-700">
                                     {{ $designation->reportsTo->name ?? 'Not Assigned' }}
                                 </td>
+                                
+                                <td class="px-3 py-2">
+                                    <button
+                                        type="button"
+                                        wire:click="edit({{ $designation->id }})"
+                                        class="px-2 py-1 text-xs font-medium text-blue-600 rounded
+                                            hover:bg-blue-50 hover:text-blue-700
+                                            cursor-pointer transition-colors duration-150"
+                                    >
+                                        Edit
+                                    </button>
+                                </td>
+                                
                             </tr>
                             @empty
                             <tr>

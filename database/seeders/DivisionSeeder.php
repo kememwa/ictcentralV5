@@ -21,8 +21,13 @@ class DivisionSeeder extends Seeder
         ]);
 
         $division = Division::factory()->create([
-            'name'=> 'IT',
-            'department_id'=> 1,
+            'name'=> 'ICT',
+            'department_id'=> 2,
+        ]);
+
+        $division = Division::factory()->create([
+            'name'=> 'Finance',
+            'department_id'=> 2,
         ]);
     }
 }

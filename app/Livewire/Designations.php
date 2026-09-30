@@ -176,7 +176,7 @@ public function createDesignation()
         return view('livewire.designation',[
             'designations' => Designation::where('name', 'like', '%' . $this->search . '%')  
                                           ->latest()
-                                          ->paginate(6),
+                                          ->paginate(10),
         ]);
     }
 }

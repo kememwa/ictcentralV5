@@ -24,60 +24,54 @@ $this->call(VideoSeeder::class);
 $this->call(QuestionSeeder::class);
 
         $User=User::factory()->create([
-            'name' => 'it officer',
-            'email' => 'it@example.com',
-            'designation_id' => '1', // Assuming the designation ID is 1
+            'name' => 'Manan Shah',
+            'email' => 'finance@kimfay.com',
+            'designation_id' => '4', // Assuming the designation ID is 1
             'password' => '12345',
         
-        ])->assignRole('It'); 
-       
-        $User=User::factory()->create([
-            'name' => 'hr officer',
-            'email' => 'denniskem6@gmail.com',
-            'designation_id' => '1',
-            'password' => '12345',
-            
-        ])->assignRole('Hr');
-
-        $User=User::factory()->create([
-            'name' => 'super admin',
-            'email' => 'kememwadennis@gmail.com',
-            'designation_id' => '2', 
-            'password' => '12345',
-            
-        ])->assignRole('SuperAdmin');
-
-        $User=User::factory()->create([
-            'name' => 'Line Manager',
-            'email' => 'linemanager@example.com',
-            'designation_id' => '1', 
-            'password' => '12345',
-           
-        ])->assignRole('LineManager');
-
-        $User=User::factory()->create([
-            'name' => 'Admin officer',
-            'email' => 'adminofficer@example.com',
-            'designation_id' => '2',
-            'password' => '12345',
-            
-        ])->assignRole('AdminOfficer');
-
-        $User=User::factory()->create([
-            'name' => 'finance officer',
-            'email' => 'finance@example.com',
-            'designation_id' => '1', 
-            'password' => '12345',
-            
         ])->assignRole('Finance');
 
         $User=User::factory()->create([
-            'name' => 'User Officer',
-            'email' => 'user@example.com',
-            'designation_id' => '1', 
+            'name' => 'Alice Mworia',
+            'email' => 'hr@kimfay.com',
+            'designation_id' => '3', // Assuming the designation ID is 1
             'password' => '12345',
-            
-        ])->assignRole('User');
+        
+        ])->assignRole('HR');
+
+        $User=User::factory()->create([
+            'name' => 'Antony Kiema',
+            'email' => 'it@kimfay.com',
+            'designation_id' => '5', // Assuming the designation ID is 1
+            'password' => '12345',
+        
+        ])->assignRole('It');
+
+        $User=User::factory()->create([
+            'name' => 'Dennis Kememwa',
+            'email' => 'application.support@kimfay.com',
+            'designation_id' => '8', // Assuming the designation ID is 1
+            'password' => '12345',
+        
+        ])->assignRole('It'); 
+
+        $User=User::factory()->create([
+            'name' => 'Althea Marie',
+            'email' => 'performance.assistant@kimfay.com',
+            'designation_id' => '6', // Assuming the designation ID is 1
+            'password' => '12345',
+        
+        ])->assignRole('It');
+
+        $User=User::factory()->create([
+            'name' => 'Jackline Kasinga',
+            'email' => 'hr.assistant@kimfay.com',
+            'designation_id' => '7', // Assuming the designation ID is 1
+            'password' => '12345',
+        
+        ])->assignRole('It');
+       
+
     $this->call(DeviceSeeder::class);
 
     }

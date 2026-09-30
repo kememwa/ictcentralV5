@@ -34,7 +34,7 @@ class Users extends Component
             'users' => User::where('name', 'like', '%' . $this->search . '%')
                                ->orWhere('email', 'like', '%' . $this->search . '%')
                                ->latest()
-                               ->paginate(4),
+                               ->paginate(10),
                                
         ]);
     }
