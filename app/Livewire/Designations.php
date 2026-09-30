@@ -162,13 +162,16 @@ public function createDesignation()
 
 
     } catch (\Exception $e) {
-        $this->addError('designation_name', 'Failed to create designation. Please try again.');
+        $this->addError('designation_name', 'Failed to create designation. Please contact Admin.');
         
         // Log the error for debugging
         \Log::error('Designation creation failed: ' . $e->getMessage());
     }
 }
 
+    public function editRequisition(){
+
+    }
 
     #[layout('layouts.dashboard')]
     public function render()

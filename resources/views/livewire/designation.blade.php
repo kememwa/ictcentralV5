@@ -68,11 +68,12 @@
                                 <td class="px-3 py-2 hidden xl:table-cell text-gray-700">
                                     {{ $designation->reportsTo->name ?? 'Not Assigned' }}
                                 </td>
-                                
+
                                 <td class="px-3 py-2">
                                     <button
                                         type="button"
-                                        wire:click="edit({{ $designation->id }})"
+                                        wire:click="editRequisition({{ $designation->id }})"
+                                        @click="$dispatch('open-editdes-modal')"
                                         class="px-2 py-1 text-xs font-medium text-blue-600 rounded
                                             hover:bg-blue-50 hover:text-blue-700
                                             cursor-pointer transition-colors duration-150"
@@ -140,7 +141,7 @@
     </x-data-card>
 
 
-{{-- Designation Creation Modal --}}
+    {{-- Designation Creation Modal --}}
     <div
         x-data="{ isOpen: false }"
         x-on:open-designation-modal.window="isOpen = true"
@@ -524,5 +525,389 @@
     </div>
 </div>
 
+
+{{--Edit Designation Modal--}}
+
+<div
+        x-data="{ isOpen: false }"
+        x-on:open-editdes-modal.window="isOpen = true"
+        x-on:close-editdes-modal.window="isOpen = false"
+        x-init="$watch('isOpen', v => document.body.classList.toggle('overflow-hidden', v))"
+    >
+    <div
+        x-show="isOpen"
+        x-transition.opacity
+        @keydown.escape.window="isOpen = false"
+        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+    >
+        <div
+            @click.away="isOpen = false"
+            x-transition.scale.origin.center
+            class="relative w-full max-w-md bg-white rounded-2xl shadow-2xl"
+        >
+            {{-- Header --}}
+            <div class="flex items-start justify-between p-6 border-b border-gray-100">
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900">Edit Designation</h3>
+                    <p class="text-sm text-gray-500 mt-0.5">Edit the designation to the system</p>
+                </div>
+                <button @click="isOpen = false"
+                    class="text-gray-400 hover:bg-gray-100 hover:text-gray-700 rounded-full w-8 h-8 inline-flex items-center justify-center transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+
+            {{-- Form --}}
+            <form wire:submit.prevent="createDesignation" class="p-6 space-y-5 max-h-[70vh] overflow-y-auto">
+                {{-- Designation Name --}}
+                <div>
+                    <label class="text-xs font-semibold text-gray-700 flex items-center gap-1">
+                        Designation Name
+                        <span class="text-red-500">*</span>
+                    </label>
+                    <input 
+                        wire:model="designation_name" 
+                        type="text"
+                        placeholder="Enter designation name..."
+                        class="mt-1.5 w-full px-3.5 py-2.5 border border-gray-200 rounded-lg bg-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-all duration-200 placeholder:text-gray-400"
+                    >
+                    @error('designation_name') 
+                        <p class="text-xs text-red-500 mt-1.5 flex items-center gap-1">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            {{ $message }}
+                        </p>
+                    @enderror
+                </div>
+
+                {{-- Belongs to which division --}}
+                <div class="relative">
+                    <label class="text-xs font-semibold text-gray-700 flex items-center gap-1">
+                        Division
+                    </label>
+
+                    <div class="relative mt-1.5">
+                        <input
+                            type="text"
+                            wire:model.live.debounce.300ms="searchHead"
+                            wire:keydown.escape="$set('showHeadDropdown', false)"
+                            @focus="if($wire.searchHead.length >= 2) $wire.set('showHeadDropdown', true)"
+                            autocomplete="off"
+                            placeholder="Search division by name..."
+                            class="w-full px-3.5 py-2.5 pl-10 pr-10 border border-gray-200 rounded-lg bg-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-all duration-200 placeholder:text-gray-400 disabled:opacity-70 disabled:cursor-not-allowed"                
+                        />
+
+                        {{-- Search Icon --}}
+                        <div class="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none">
+                            <svg wire:loading.remove wire:target="searchHead" class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                            </svg>
+                            <svg wire:loading wire:target="searchHead" class="animate-spin h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+                            </svg>
+                        </div>
+
+                        {{-- Clear Button --}}
+                        @if(!empty($searchHead))
+                            <button
+                                type="button"
+                                wire:click="$set('searchHead', '')"
+                                wire:loading.attr="disabled"
+                                class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                            >
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                </svg>
+                            </button>
+                        @endif
+                    </div>
+
+                    {{-- Dropdown --}}
+                    @if($showHeadDropdown)
+                        <div 
+                            x-data
+                            @click.outside="$wire.set('showHeadDropdown', false)"
+                            class="absolute z-[9999] mt-1.5 w-full bg-white border border-gray-200 rounded-lg shadow-xl max-h-60 overflow-y-auto"
+                        >
+                            {{-- Loading State --}}
+                            <div wire:loading wire:target="searchHead" class="p-4 space-y-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-full bg-gray-200 animate-pulse"></div>
+                                    <div class="flex-1">
+                                        <div class="h-4 bg-gray-200 rounded w-3/4 animate-pulse"></div>
+                                        <div class="h-3 bg-gray-100 rounded w-1/2 mt-2 animate-pulse"></div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-full bg-gray-200 animate-pulse"></div>
+                                    <div class="flex-1">
+                                        <div class="h-4 bg-gray-200 rounded w-2/3 animate-pulse"></div>
+                                        <div class="h-3 bg-gray-100 rounded w-1/3 mt-2 animate-pulse"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Results --}}
+                            <div wire:loading.remove wire:target="searchHead">
+                                @if(count($headResults))
+                                    <div class="py-1">
+                                        <div class="px-3 py-1.5 text-[10px] font-medium text-gray-400 uppercase tracking-wider border-b border-gray-100">
+                                            {{ count($headResults) }} division{{ count($headResults) > 1 ? 's' : '' }} found
+                                        </div>
+                                        
+                                        @foreach($headResults as $division)
+                                            <button
+                                                type="button"
+                                                wire:click="selectHead({{ $division->id }})"
+                                                @click="$wire.set('showHeadDropdown', false)"
+                                                class="w-full px-4 py-2.5 text-left hover:bg-blue-50 active:bg-blue-100 transition-colors duration-150 border-b border-gray-50 last:border-0 group"
+                                            >
+                                                <div class="flex items-center gap-3">
+                                                    <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-700 font-semibold flex items-center justify-center flex-shrink-0 text-sm">
+                                                        {{ strtoupper(substr($division->name, 0, 1)) }}
+                                                    </div>
+                                                    <div class="flex-1 min-w-0">
+                                                        <div class="font-medium text-sm text-gray-800 group-hover:text-blue-700 truncate">
+                                                            {{ $division->name }}
+                                                        </div>
+                                                    </div>
+                                                    <svg class="w-4 h-4 text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                                    </svg>
+                                                </div>
+                                            </button>
+                                        @endforeach
+                                    </div>
+                                @elseif(strlen($searchHead) >= 2)
+                                    <div class="p-6 text-center">
+                                        <svg class="w-10 h-10 mx-auto text-gray-300 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                        </svg>
+                                        <p class="text-sm text-gray-500">No division found</p>
+                                        <p class="text-xs text-gray-400 mt-1">Try adjusting your search</p>
+                                    </div>
+                                @else
+                                    <div class="p-4 text-center text-sm text-gray-400">
+                                        Type at least 2 characters to search
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                    @endif
+
+                    {{-- Selected Division --}}
+                    @if($selectedDivision)
+                        <div class="mt-3 rounded-lg bg-green-50 border border-green-200 p-3 flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-green-200 text-green-700 font-semibold flex items-center justify-center flex-shrink-0 text-sm">
+                                {{ strtoupper(substr($searchHead, 0, 1)) }}
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="text-xs text-green-600 font-medium">Selected Division</div>
+                                <div class="font-semibold text-green-800 truncate text-sm">
+                                    {{ $searchHead }}
+                                </div>
+                            </div>
+                            <button 
+                                type="button"
+                                wire:click="removeHead"
+                                class="text-green-600 hover:text-green-800 transition-colors"
+                            >
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                </svg>
+                            </button>
+                        </div>
+                    @endif
+
+                    @error('department_head')
+                        <p class="text-xs text-red-500 mt-1.5 flex items-center gap-1">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            {{ $message }}
+                        </p>
+                    @enderror
+                </div>
+
+                {{--Reports to--}}
+                <div class="relative">
+                    <label class="text-xs font-semibold text-gray-700 flex items-center gap-1">
+                        Reports To Designation
+                    </label>
+
+                    <div class="relative mt-1.5">
+                        <input
+                            type="text"
+                            wire:model.live.debounce.300ms="searchReportsTo"
+                            wire:keydown.escape="$set('showReportsToDropdown', false)"
+                            @focus="if($wire.searchReportsTo.length >= 2) $wire.set('showReportsToDropdown', true)"
+                            autocomplete="off"
+                            placeholder="Search designation by name..."
+                            class="w-full px-3.5 py-2.5 pl-10 pr-10 border border-gray-200 rounded-lg bg-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-all duration-200 placeholder:text-gray-400 disabled:opacity-70 disabled:cursor-not-allowed"                
+                        />
+
+                        {{-- Search Icon --}}
+                        <div class="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none">
+                            <svg wire:loading.remove wire:target="searchReportsTo" class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                            </svg>
+                            <svg wire:loading wire:target="searchReportsTo" class="animate-spin h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+                            </svg>
+                        </div>
+
+                        {{-- Clear Button --}}
+                        @if(!empty($searchReportsTo))
+                            <button
+                                type="button"
+                                wire:click="$set('searchReportsTo', '')"
+                                wire:loading.attr="disabled"
+                                class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                            >
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                </svg>
+                            </button>
+                        @endif
+                    </div>
+
+                    {{-- Dropdown --}}
+                    @if($showReportsToDropdown)
+                        <div 
+                            x-data
+                            @click.outside="$wire.set('showReportsToDropdown', false)"
+                            class="absolute z-[9999] mt-1.5 w-full bg-white border border-gray-200 rounded-lg shadow-xl max-h-60 overflow-y-auto"
+                        >
+                            {{-- Loading State --}}
+                            <div wire:loading wire:target="searchReportsTo" class="p-4 space-y-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-full bg-gray-200 animate-pulse"></div>
+                                    <div class="flex-1">
+                                        <div class="h-4 bg-gray-200 rounded w-3/4 animate-pulse"></div>
+                                        <div class="h-3 bg-gray-100 rounded w-1/2 mt-2 animate-pulse"></div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-full bg-gray-200 animate-pulse"></div>
+                                    <div class="flex-1">
+                                        <div class="h-4 bg-gray-200 rounded w-2/3 animate-pulse"></div>
+                                        <div class="h-3 bg-gray-100 rounded w-1/3 mt-2 animate-pulse"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Results --}}
+                            <div wire:loading.remove wire:target="searchReportsTo">
+                                @if(count($reportsToResults))
+                                    <div class="py-1">
+                                        <div class="px-3 py-1.5 text-[10px] font-medium text-gray-400 uppercase tracking-wider border-b border-gray-100">
+                                            {{ count($reportsToResults) }} designation{{ count($reportsToResults) > 1 ? 's' : '' }} found
+                                        </div>
+                                        
+                                        @foreach($reportsToResults as $designation)
+                                            <button
+                                                type="button"
+                                                wire:click="selectReportsTo({{ $designation->id }})"
+                                                @click="$wire.set('showHeadDropdown', false)"
+                                                class="w-full px-4 py-2.5 text-left hover:bg-blue-50 active:bg-blue-100 transition-colors duration-150 border-b border-gray-50 last:border-0 group"
+                                            >
+                                                <div class="flex items-center gap-3">
+                                                    <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-700 font-semibold flex items-center justify-center flex-shrink-0 text-sm">
+                                                        {{ strtoupper(substr($designation->name, 0, 1)) }}
+                                                    </div>
+                                                    <div class="flex-1 min-w-0">
+                                                        <div class="font-medium text-sm text-gray-800 group-hover:text-blue-700 truncate">
+                                                            {{ $designation->name }}
+                                                        </div>
+                                                    </div>
+                                                    <svg class="w-4 h-4 text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                                    </svg>
+                                                </div>
+                                            </button>
+                                        @endforeach
+                                    </div>
+                                @elseif(strlen($searchReportsTo) >= 2)
+                                    <div class="p-6 text-center">
+                                        <svg class="w-10 h-10 mx-auto text-gray-300 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                        </svg>
+                                        <p class="text-sm text-gray-500">No designation found</p>
+                                        <p class="text-xs text-gray-400 mt-1">Try adjusting your search</p>
+                                    </div>
+                                @else
+                                    <div class="p-4 text-center text-sm text-gray-400">
+                                        Type at least 2 characters to search
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                    @endif
+
+                    {{-- Selected Reports To --}}
+                    @if($selectedReportsTo)
+                        <div class="mt-3 rounded-lg bg-green-50 border border-green-200 p-3 flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-green-200 text-green-700 font-semibold flex items-center justify-center flex-shrink-0 text-sm">
+                                {{ strtoupper(substr($searchReportsTo, 0, 1)) }}
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="text-xs text-green-600 font-medium">Selected Reports To</div>
+                                <div class="font-semibold text-green-800 truncate text-sm">
+                                    {{ $searchReportsTo }}
+                                </div>
+                            </div>
+                            <button 
+                                type="button"
+                                wire:click="removeReportsTo"
+                                class="text-green-600 hover:text-green-800 transition-colors"
+                            >
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                </svg>
+                            </button>
+                        </div>
+                    @endif
+
+                    @error('designation_reports_to')
+                        <p class="text-xs text-red-500 mt-1.5 flex items-center gap-1">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            {{ $message }}
+                        </p>
+                    @enderror
+                </div>
+
+
+
+
+                {{-- Actions --}}
+                <div class="flex justify-end gap-2 pt-4 border-t border-gray-100">
+                    <button type="button" @click="isOpen = false"
+                        class="px-4 py-2.5 text-sm border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all duration-200">
+                        Cancel
+                    </button>
+                    <button type="submit"
+                        class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-sm font-medium rounded-lg shadow-sm hover:shadow-md transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed"
+                        wire:loading.attr="disabled"
+                    >
+                        <span wire:loading.remove wire:target="createDesignation">Add Designation</span>
+                        <span wire:loading wire:target="createDesignation" class="flex items-center gap-2">
+                            <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+                            </svg>
+                            Saving...
+                        </span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 
 </div>
