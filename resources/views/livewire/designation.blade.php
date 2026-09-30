@@ -1,4 +1,8 @@
-<div class="space-y-6">
+<div class="space-y-6"
+    x-data="{
+    resetAddForm(){
+    @this.call('prepareAddDes')}
+}">
 
     {{-- ===== Page Header ===== --}}
     <x-page-header
@@ -8,7 +12,7 @@
         <x-slot name="actions">
             <button
                 type="button"
-                @click="$dispatch('open-designation-modal')"
+                @click="resetAddForm, $dispatch('open-designation-modal')"
                 class="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-sm font-medium rounded-xl shadow-sm hover:shadow-md transition group"
             >
                 <svg class="w-4 h-4 transition-transform group-hover:rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
