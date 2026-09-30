@@ -169,7 +169,28 @@ public function createDesignation()
     }
 }
 
-    public function editRequisition(){
+    public function prepareAddDes()
+    {
+        $this->reset(['designation_name',
+        'selectedDivision',
+        'searchHead',
+        'headResults',
+        'showHeadDropdown',
+        'selectedReportsTo',
+        'searchReportsTo',
+        'reportsToResults',
+        'showReportsToDropdown']);
+    }
+
+    public function editDesignation($des_id)
+    {
+        $this->prepareAddDes();
+        $designation = Designation::with(['division', 'reportsTo'])->find($des_id);
+        
+        $this->designation_name = $designation->name;
+        $this->searchHead = $designation->division->name;
+        $this->searchReportsTo = $designation->reportsTo->name;
+ 
 
     }
 

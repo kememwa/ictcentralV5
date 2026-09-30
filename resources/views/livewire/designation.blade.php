@@ -72,7 +72,7 @@
                                 <td class="px-3 py-2">
                                     <button
                                         type="button"
-                                        wire:click="editRequisition({{ $designation->id }})"
+                                        wire:click="editDesignation({{ $designation->id }})"
                                         @click="$dispatch('open-editdes-modal')"
                                         class="px-2 py-1 text-xs font-medium text-blue-600 rounded
                                             hover:bg-blue-50 hover:text-blue-700

@@ -169,6 +169,7 @@ class ManageUser extends Component
         $this->searchHead = $user->designation->name;
         $this->editSelectedRoles = $user->roles->pluck('name')->toArray();
     }
+    
     public function updateUser()
     {
         $validated = $this->validate([
