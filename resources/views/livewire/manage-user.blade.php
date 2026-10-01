@@ -437,7 +437,7 @@ resetAddForm() {
                         @endif
 
                         {{-- Selected Designation --}}
-                        @if($selectedDesignation)
+                        @if($showSelectedDesignation)
                             <div class="mt-3 rounded-lg bg-green-50 border border-green-200 p-3 flex items-center gap-3">
                                 <div class="w-8 h-8 rounded-full bg-green-200 text-green-700 font-semibold flex items-center justify-center flex-shrink-0 text-sm">
                                     {{ strtoupper(substr($searchHead, 0, 1)) }}

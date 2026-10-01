@@ -23,6 +23,7 @@ class ManageUser extends Component
     public $editingUserId;
     public $role;
     public $editRole;
+    public $showSelectedDesignation = false;
     public $selectedRoles = [];
     public $editSelectedRoles = [];
     
@@ -103,6 +104,7 @@ class ManageUser extends Component
         $this->searchHead = $designation->name;
 
         $this->showHeadDropdown = false;
+        $this->showSelectedDesignation = true;
 
         $this->headResults = [];
     }
@@ -162,6 +164,7 @@ class ManageUser extends Component
         $user = User::with(['roles', 'designation'])->find($userId);
         
         $this->editingUserId = $userId;
+        $this->selectedDesignation = $user->designation->id;
         $this->name = $user->name;
         $this->email = $user->email;
         $this->department_id = $user->dep_id;
