@@ -22,6 +22,8 @@ public $searchHead = ''; // Search text
 public $headResults = []; // Matching users
 
 public $showHeadDropdown = false;
+public $showSelectedDivision = false;
+public $showSelectedReportsTo = false;
 
 public $editingDesId = '';
 
@@ -81,6 +83,8 @@ public function selectHead($id)
 
     $this->searchHead = $division->name;
 
+    $this->showSelectedDivision = true;
+
     $this->showHeadDropdown = false;
 
     $this->headResults = [];
@@ -127,6 +131,8 @@ public function selectReportsTo($id)
     $this->searchReportsTo = $designation->name;
 
     $this->showReportsToDropdown = false;
+
+    $this->showSelectedReportsTo = true;
 
     $this->reportsToResults = [];
 }
@@ -196,7 +202,8 @@ public function createDesignation()
         $this->designation_name = $designation->name;
         $this->searchHead = $designation->division->name;
         $this->searchReportsTo = $designation->reportsTo->name;
- 
+        $this->showSelectedDivision = false;
+        $this->showSelectedReportsTo = false;
 
     }
 
@@ -213,7 +220,7 @@ public function createDesignation()
             'selectedReportsTo' => 'nullable|exists:designations,id',
         ]);
 
-        $designation = Designation::find($this->editingDesId);
+        $designation = Designation::with(['division', 'reportsTo'])->find($this->editingDesId);
 
         if (!$designation) {
             $this->dispatch('notify', type: 'error', title: 'Error', message: "Designation not found.");
