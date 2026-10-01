@@ -62,13 +62,13 @@ class PendingApproval extends Component
     #[Layout('layouts.dashboard')]
     public function render()
     {
-        $managerId = auth()->id();   // <-- this gets the currently logged-in user's ID
+        $managerDesId = auth()->user()->designation->id;   // <-- this gets the currently logged-in user's ID
 
         
         return view('livewire.pending-approval', [
         'pendingDevices' => Device::where('line_manager_approval', 0)
-            ->whereHas('user', function ($query) use ($managerId) {
-                $query->where('line_manager_id', $managerId);
+            ->whereHas('user.designation', function ($query) use ($managerDesId) {
+                $query->where('reports_to', $managerDesId);
             })
             ->orderBy('created_at', 'desc')
             ->paginate(5),
