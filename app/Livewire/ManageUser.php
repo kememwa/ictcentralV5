@@ -172,6 +172,7 @@ class ManageUser extends Component
     
     public function updateUser()
     {
+
         $validated = $this->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,'.$this->editingUserId,
@@ -186,6 +187,8 @@ class ManageUser extends Component
             $this->dispatch('notify', type: 'error', title: 'Error', message: "User not found.");
             return;
         }
+
+        
 
         $user->update([
             'name' => $this->name,
