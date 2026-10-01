@@ -78,19 +78,22 @@
                         </div>
                     </td>
 
-                    <td class="px-3 py-2 text-right">
-                        <div class="flex items-center space-x-2">
-                            <button 
+                    <td class="p-2 text-right">
+                        <div class="flex items-center justify-end gap-3">
+                            <button
+                                type="button"
                                 wire:click="$parent.editUser({{ $user->id }})"
                                 @click="showEditUserModal = true"
-                                class="px-3 py-1.5 text-xs font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                                class="text-xs font-medium text-blue-600 hover:text-blue-800 hover:underline cursor-pointer transition"
                             >
                                 Edit
                             </button>
-                            <button 
+
+                            <button
+                                type="button"
                                 wire:click="$parent.deleteUser({{ $user->id }})"
                                 wire:confirm="Are you sure you want to delete this user?"
-                                class="px-3 py-1.5 text-xs font-medium text-center text-white bg-red-700 rounded-lg hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800"
+                                class="text-xs font-medium text-red-600 hover:text-red-800 hover:underline cursor-pointer transition"
                             >
                                 Delete
                             </button>
