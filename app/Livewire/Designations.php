@@ -197,11 +197,11 @@ public function createDesignation()
         $designation = Designation::with(['division', 'reportsTo'])->find($des_id);
         
         $this->selectedDivision = $designation->division->id;
-        $this->selectedReportsTo = $designation->reportsTo->id;
+        $this->selectedReportsTo = $designation->reportsTo?->id;
         $this->editingDesId = $designation->id;
         $this->designation_name = $designation->name;
         $this->searchHead = $designation->division->name;
-        $this->searchReportsTo = $designation->reportsTo->name;
+        $this->searchReportsTo = $designation->reportsTo?->name;
         $this->showSelectedDivision = false;
         $this->showSelectedReportsTo = false;
 
