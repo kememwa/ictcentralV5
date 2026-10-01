@@ -13,7 +13,7 @@ class ContractController extends Controller
     public function print($requisitionId)
     {
 
-        $requisition = Requisition::findOrFail($requisitionId);
+        $requisition = Requisition::where('uuid', $requisitionId)->firstOrFail();
 
         // Ensure requisition is eligible
         abort_if(

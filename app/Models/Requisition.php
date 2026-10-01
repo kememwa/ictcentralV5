@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 
 
 class Requisition extends Model
@@ -39,7 +40,16 @@ class Requisition extends Model
         'casual_assignment_status',
         'coo_approval_date',
         'hr_id',
+        'uuid'
     ];
+
+    // Automatically generate a UUID when creating a new onboarding record
+    protected static function booted()
+    {
+        static::creating(function ($requisition) {
+            $requisition->uuid = (string) Str::uuid();
+        });
+    }
 
     public function hod()
     {

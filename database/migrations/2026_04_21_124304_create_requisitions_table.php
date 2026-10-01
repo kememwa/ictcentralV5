@@ -29,6 +29,7 @@ public function up(): void
             $table->date('end_date');
             $table->text('reason');
             $table->unsignedInteger('duration');
+            $table->uuid('uuid')->unique()->nullable();
 
             /*
             |--------------------------------------------------------------------------
