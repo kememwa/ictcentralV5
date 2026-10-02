@@ -15,7 +15,8 @@ For security reasons, this link will expire after some time. If the link expires
 
 If you did not expect this email, please disregard it. No further action is required.
 
-Thank you,
-{{ config('app.name') }}
+Regards,
+
+IT Team KimFay.
 
 </x-mail::message>
