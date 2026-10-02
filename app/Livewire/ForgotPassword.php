@@ -29,6 +29,12 @@ class ForgotPassword extends Component
             
             $this->reset('email');
 
+            $this->js("
+                setTimeout(() => {
+                    window.location.href = '" . route('login') . "';
+                }, 3500);
+            ");
+
             return;
         }
 
