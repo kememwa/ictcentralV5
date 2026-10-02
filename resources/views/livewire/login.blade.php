@@ -76,7 +76,7 @@
                     />
                     <label for="remember" class="ms-2 text-sm font-medium text-gray-700">Remember me</label>
                 </div>
-                <a href="#" class="text-sm text-blue-600 hover:text-blue-500 transition-colors">
+                <a wire:navigate href="{{ route('forgot-password') }}" class="text-sm text-blue-600 hover:text-blue-500 transition-colors">
                     Forgot Password?
                 </a>
             </div>
@@ -84,7 +84,6 @@
             <!-- Submit Button -->
             <button 
                 type="submit"
-                wire:click="login"
                 wire:loading.attr="disabled"
                 wire:target="login"
                 class="w-full flex items-center justify-center text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 

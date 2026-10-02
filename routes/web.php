@@ -29,10 +29,12 @@ use App\Livewire\Divisions;
 use App\Http\Controllers\ContractController;
 use App\Livewire\EditProfile;
 use App\Livewire\Coo\RequisitionApproval;
+use App\Livewire\ForgotPassword;
 
 
 Route::get('/', Login::class)->name('login');
-
+Route::get('forgot-password', ForgotPassword::class)->name('forgot-password');
+Route::get('/reset-password/{token}', ResetPassword::class)->name('password.reset');
 
 //routes for authenticated users
 Route::middleware(['auth'])->group(function(){
@@ -71,4 +73,5 @@ Route::middleware(['auth'])->group(function(){
  Route::get('/contracts/print/{requisitionId}',[ContractController::class, 'print'])->name('contracts.print');
  Route::get('edit-profile', EditProfile::class)->name('edit-profile');
  Route::get('coo-approval', RequisitionApproval::class)->name('coo-approval');
+ 
 });
