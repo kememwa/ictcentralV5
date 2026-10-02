@@ -5,6 +5,7 @@ namespace App\Livewire;
 use Livewire\Component;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
+use Livewire\Attributes\Layout;
 
 class ResetPassword extends Component
 {
@@ -44,9 +45,10 @@ class ResetPassword extends Component
 
         if ($status === Password::PASSWORD_RESET) {
 
-            session()->flash(
-                'success',
-                'Your password has been reset successfully. You can now log in.'
+            $this->dispatch('notify',
+                type: 'Success',
+                title: 'Success',
+                message: 'Your password has been reset successfully. You can now log in with your new password.',
             );
 
             return redirect()->route('login');
@@ -55,6 +57,7 @@ class ResetPassword extends Component
         $this->addError('email', __($status));
     }
 
+    #[layout('layouts.auth')]
     public function render()
     {
         return view('livewire.reset-password');
