@@ -30,6 +30,7 @@ use App\Http\Controllers\ContractController;
 use App\Livewire\EditProfile;
 use App\Livewire\Coo\RequisitionApproval;
 use App\Livewire\ForgotPassword;
+use App\Livewire\ResetPassword;
 
 
 Route::get('/', Login::class)->name('login');
