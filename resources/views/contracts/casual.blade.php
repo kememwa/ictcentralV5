@@ -21,7 +21,7 @@
      | 1. DATA
      ------------------------------------------------------------------ */
 
-    $hod_name = $requisition->requester->designation->division->department->hod->name ?? 'NULL';
+    $hod_name = $requisition->hod->name ?? 'NULL';
     $hod_sig = $requisition->hod->signature_image_path;
     $hr_sig = $requisition->hr->signature_image_path ?? 'NULL';
     $hr_name = $requisition->hr->name ?? 'NULL';
