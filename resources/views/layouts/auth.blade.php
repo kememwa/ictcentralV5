@@ -15,7 +15,8 @@
 
     <body class="bg-gray-400">
     
-
+    {{-- Toast notifications --}}
+    @livewire('notification-toast')
     
     <div class="min-h-screen flex items-center justify-center 
         bg-gradient-to-br from-blue-50 to-indigo-100
