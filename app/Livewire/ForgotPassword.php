@@ -31,7 +31,7 @@ class ForgotPassword extends Component
 
             $this->js("
                 setTimeout(() => {
-                    window.location.href = '" . route('login') . "';
+                    Livewire.navigate('" . route('login') . "');
                 }, 3500);
             ");
 

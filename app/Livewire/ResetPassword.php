@@ -46,12 +46,18 @@ class ResetPassword extends Component
         if ($status === Password::PASSWORD_RESET) {
 
             $this->dispatch('notify',
-                type: 'Success',
+                type: 'success',
                 title: 'Success',
                 message: 'Your password has been reset successfully. You can now log in with your new password.',
             );
 
-            return redirect()->route('login');
+            $this->js("
+                setTimeout(() => {
+                    Livewire.navigate('" . route('login') . "');
+                }, 3500);
+            ");
+
+            return;
         }
 
         $this->addError('email', __($status));
