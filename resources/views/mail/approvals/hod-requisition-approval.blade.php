@@ -67,7 +67,7 @@
                                     <td style="border-bottom: 1px solid #e5e7eb;">
                                         {{ $requisition->requester->designation->division->department->name ?? 'N/A' }}
                                     </td>
-                                </tr>php 
+                                </tr>
 
                                 <tr>
                                     <td style="font-weight: bold; border-bottom: 1px solid #e5e7eb;">
