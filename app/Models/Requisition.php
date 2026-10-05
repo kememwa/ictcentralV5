@@ -39,6 +39,7 @@ class Requisition extends Model
         'coo_approval_status',
         'casual_assignment_status',
         'coo_approval_date',
+        'coo_id',
         'hr_id',
         'uuid'
     ];

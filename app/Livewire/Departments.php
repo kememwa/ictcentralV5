@@ -107,7 +107,7 @@ public function createDepartment()
 
 
     } catch (\Exception $e) {
-        $this->addError('department_name', 'Failed to create department. Please try again.');
+        $this->addError('department_name', 'Failed to create department. Contact Admin.');
         
         // Log the error for debugging
         \Log::error('Department creation failed: ' . $e->getMessage());

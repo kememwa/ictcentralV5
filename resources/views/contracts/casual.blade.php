@@ -56,29 +56,7 @@
 
     $c = array_merge([
 
-        // Casual Request to Recruit
-        'department'            => 'Kimfay Professional',
-        'department_head'       => 'Susan Ngina',
-        'coo'                   => 'James Mwangi',
-        'number_required'       => 1,
-        'reason_for_request'    => 'Additional casual staff are required to support pending installation and operational activities during the engagement period and to ensure timely completion of assigned work.',
-
-        // Shared
-        'days'                  => 4,
-        'start_date'            => '10th August 2026',
-        'end_date'              => '15th August 2026',
-
-        // Daily Casuals Approval Sheet
-        'reference_token'       => '800804',
-        'division'              => 'Technical Services',
-        'applicant'             => 'Berna Piwang',
-        'reason_for_engagement' => 'Installation completion requested to support pending works and ensure timely completion of critical client assignments including Gardaworld, Vertiv, Industrial Solutions Ltd, Biafra Hospital, Treasure Communication and Aurum Iris Ltd.',
-        'budgeted'              => true,
-
-        // Wages (per casual)
-        'daily_rate'            => 3000,
-        'nssf'                  => 216,
-        'sha'                   => 564,
+  
 
         // Casuals  (name, id_no, sha_no, nssf_no, tel)
         'casuals' => [
@@ -751,7 +729,7 @@
         <table class="sign-row">
             <tr>
                 <td class="sl">
-                    @if($requisition->coo?->hasRole('COO Delegate'))
+                    @if($requisition->coo?->hasRole('coo delegate'))
                         For Chief Operations Officer: {{ $coo_name }}
                     @else
                         Chief Operations Officer: {{ $coo_name }}
@@ -806,7 +784,7 @@
     {{-- FRAME 1 : reference, engagement, wages --}}
     <div class="frame">
 
-        <div class="ref">Reference Token: <span style="font-weight: normal;">{{ $c['reference_token'] }}</span></div>
+        <div class="ref">Reference Token: <span style="font-weight: normal;">{{ "Reference Number" }}</span></div>
 
         <div class="a-head">ENGAGEMENT DETAILS</div>
 

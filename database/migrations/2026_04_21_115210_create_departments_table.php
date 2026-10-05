@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('departments', function (Blueprint $table) {
             $table->id(); // BIGINT UNSIGNED PRIMARY KEY
             $table->string('name');
-            $table->unsignedBigInteger('hod_id');
+            $table->unsignedBigInteger('hod_id')->nullable();
             $table->string('status')->default('active');
             $table->timestamps();
         });
