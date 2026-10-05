@@ -14,6 +14,8 @@ class RequisitionApproval extends Component
 
         $req->update([
             'coo_approval_status' => true,
+            'coo_approval_date' => now(),
+            'coo_id' => auth()->user()->id,
         ]);
 
         // Flash message for Livewire UI
