@@ -8,7 +8,7 @@
                 <h1 class="mt-1 text-2xl sm:text-3xl font-bold tracking-tight">
                     {{ auth()->user()->name }} 👋
                 </h1>
-                <p class="mt-1 text-sm text-indigo-100">Here's what's happening with your account today.</p>
+                <p class="mt-1 text-sm text-indigo-100">{{ auth()->user()->designation->name }}</p>
             </div>
             <button wire:click="reportIssue()"
                 class="inline-flex items-center justify-center gap-2 rounded-lg bg-white/15 hover:bg-white/25 backdrop-blur px-4 py-2.5 text-sm font-medium text-white ring-1 ring-white/20 transition">
