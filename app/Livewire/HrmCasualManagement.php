@@ -15,6 +15,8 @@ class HrmCasualManagement extends Component
 
         $req->update([
             'hrm_approval_status' => 'approved',
+            'hrm_approval_date' => now(),
+            'hrm_id' => auth()->user()->id,
         ]);
 
         // Flash message for Livewire UI
