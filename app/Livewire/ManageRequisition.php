@@ -5,6 +5,9 @@ namespace App\Livewire;
 use Livewire\Component;
 use Livewire\Attributes\Layout;
 use App\Models\Requisition;
+use App\Models\User;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\CooApproveRequisition;
 
 
 
@@ -15,21 +18,58 @@ class ManageRequisition extends Component
 
     public function approveRequest($id)
     {
+        try {
 
-    Requisition::where('id', $id)->update([
-        'hod_approval_status' => '1',
-        'hod_id' => auth()->user()->id,
-        'hod_approval_date' => now(),
-    ]);    
-    
-                // Flash message for Livewire UI
-    $this->dispatch('notify', 
+            $requisition = Requisition::findOrFail($id);
+
+            // Approve requisition as HOD
+            $requisition->update([
+                'hod_approval_status' => '1',
+                'hod_id' => auth()->user()->id,
+                'hod_approval_date' => now(),
+            ]);
+
+            // Find COO and COO Delegate
+            $cooApprovers = User::whereHas('roles', function ($query) {
+                $query->whereIn('name', ['coo', 'coo delegate']);
+            })
+            ->whereNotNull('email')
+            ->get();
+
+            // Send email to COO / COO Delegate
+            $emails = $cooApprovers->pluck('email')->toArray();
+
+            if (!empty($emails)) {
+                Mail::to($emails[0])
+                    ->cc(array_slice($emails, 1))
+                    ->send(new CooApproveRequisition($requisition));
+            }
+
+            // Success notification
+            $this->dispatch(
+                'notify',
                 type: 'success',
                 title: 'Requisition Approved',
-                message: "Requisition approved successfully."
-    );
+                message: 'Requisition approved successfully.'
+            );
 
+        } catch (\Throwable $e) {
 
+            Log::error('HOD requisition approval failed', [
+                'requisition_id' => $id,
+                'user_id' => auth()->id(),
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
+            $this->dispatch(
+                'notify',
+                type: 'error',
+                title: 'Approval Failed',
+                message: 'The requisition could not be approved. Please try again.'
+            );
+        }
     }
 
     public function rejectRequest($id)
