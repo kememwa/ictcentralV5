@@ -8,6 +8,9 @@ use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use App\Models\Requisition;
 use Livewire\WithPagination;
+use Illuminate\Support\Facades\Mail;
+use App\Models\User;
+use App\Mail\HodApproveRequisition;
 
 class CasualWorkforce extends Component
 {
@@ -93,7 +96,19 @@ class CasualWorkforce extends Component
                 message: "Duration days should be a minimum of 1 day"
             );
         } else {
-            Requisition::create([
+
+            $requester = auth()->user();
+
+            $reportingDesignation = $requester->designation?->reportsTo;
+
+            $lineManagers = User::where(
+                'designation_id',
+                $reportingDesignation?->id
+            )
+            ->whereNotNull('email')
+            ->get();
+
+            $requisition = Requisition::create([
                 'requested_by' => auth()->id(),
                 'department_id' => $departmentId,
                 'requested_date' => Carbon::now()->toDateString(),
@@ -101,12 +116,17 @@ class CasualWorkforce extends Component
                 'start_date' => $this->start_date,
                 'end_date' => $this->end_date,
                 'reason' => $this->reason,
-                'duration' => $this->duration,
-                'hod_id' => auth()->user()->line_manager_id,
+                'duration' => $this->duration,     
             ]);
 
-            //send notification to HOD for approval
-           
+           // Send notification to all reporting managers
+            $emails = $lineManagers->pluck('email')->toArray();
+
+            if (!empty($emails)) {
+                Mail::to($emails[0])
+                    ->cc(array_slice($emails, 1))
+                    ->send(new HodApproveRequisition($requisition));
+            }
 
             // Dispatch success notification
             $this->dispatch('notify', 
