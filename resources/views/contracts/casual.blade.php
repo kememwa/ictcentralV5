@@ -91,21 +91,7 @@
             ],
         ],
 
-        // Approvals  (signature = path relative to /public, or null)
-        'hod_name'       => 'Susan Ngina',
-        'hod_signature'  => null,
-        'hod_date'       => null,
 
-        'hr_name'        => 'Althea Marie',
-        'hr_signature'   => null,
-        'hr_date'        => null,
-
-        'hopc_name'      => 'Alice Mworia',
-        'hopc_signature' => 'dist/signatures/hr_manager_sign.png',
-        'hopc_date'      => '3rd September 2026',
-
-        // Contract
-        'contract_date'  => '5th September 2026',
 
     ], $c ?? []);
 
@@ -136,16 +122,8 @@
     $listOnPage3 = ! $listOnPage2;
     $listPage    = $listOnPage2 ? 2 : 3;
 
-    $showStamp   = $c['budgeted'] && file_exists($stamp);
+    $showStamp   = $requisition->hrm_approval_status == 'approved';
 
-    $grossEach = $c['daily_rate'] * $c['days'];
-    $dedEach   = $c['nssf'] + $c['sha'];
-
-    $rate      = number_format($c['daily_rate'], 2);
-    $gross     = number_format($grossEach, 2);
-    $nssf      = number_format($c['nssf'], 2);
-    $sha       = number_format($c['sha'], 2);
-    $dedEachF  = number_format($dedEach, 2);
    
 @endphp
 <!DOCTYPE html>
@@ -758,7 +736,13 @@
 
         <table class="sign-row">
             <tr>
-                <td class="sl">Chief Operations Officer: {{ $coo_name }}</td>
+                <td class="sl">
+                    @if($requisition->coo?->hasRole('COO Delegate'))
+                        For Chief Operations Officer: {{ $coo_name }}
+                    @else
+                        Chief Operations Officer: {{ $coo_name }}
+                    @endif
+                </td>
                 <td class="sline">
                     <img src="{{ public_path('storage/' . $coo_sig) }}"
                         alt="COO Signature"
@@ -907,7 +891,13 @@
 
         <table class="ap">
             <tr>
-                <td class="ap-role"><span class="b">Head of People &amp; Culture:</span> {{ $hrm_name }}</td>
+                <td class="ap-role"><span class="b">
+                    @if($requisition->hrm?->hasRole('hrm Delegate'))
+                        For Head of People &amp; Culture:
+                    @else
+                        Head of People &amp; Culture:
+                    @endif
+                    </span> {{ $hrm_name }}</td>
                 <td class="ap-sign">
                     <span class="b">Sign:</span>
                     @if($hrm_sig)<img src="{{ public_path('storage/' . $hrm_sig) }}" alt="HRM Signature" class="signature-image-casual">@endif
