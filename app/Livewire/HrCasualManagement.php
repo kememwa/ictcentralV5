@@ -279,6 +279,8 @@ class HrCasualManagement extends Component
             'nssf_rate' => $nssfRate,
             'sha_rate' => $shaRate,
             'hr_approval_status' => true,
+            'hr_approval_date' => now(),
+            'hr_rep_id' => auth()->user()->id,
             'total_amount' => $totalAmount,
         ]);
 
