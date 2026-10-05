@@ -884,8 +884,8 @@
         <table class="ap">
             <tr>
                 <td class="ap-role"><span class="b">
-                    @if($requisition->hrm?->hasRole('hrm Delegate'))
-                        For Head of People &amp; Culture:
+                    @if($requisition->hrm?->hasRole('hrm delegate'))
+                        (For) Head of People &amp; Culture:
                     @else
                         Head of People &amp; Culture:
                     @endif
