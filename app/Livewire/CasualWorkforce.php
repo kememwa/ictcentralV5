@@ -85,17 +85,22 @@ class CasualWorkforce extends Component
     public function requisition()
     {
         $departmentId = auth()->user()->designation->division->department->id;
+
         $this->calculateDuration();
         $this->validate();
 
         if ($this->duration === 0) {
-            // Correct Livewire 3 dispatch syntax
-            $this->dispatch('notify', 
+            $this->dispatch(
+                'notify',
                 type: 'error',
                 title: 'Duration Days',
-                message: "Duration days should be a minimum of 1 day"
+                message: 'Duration days should be a minimum of 1 day'
             );
-        } else {
+
+            return;
+        }
+
+        try {
 
             $requester = auth()->user();
 
@@ -116,10 +121,10 @@ class CasualWorkforce extends Component
                 'start_date' => $this->start_date,
                 'end_date' => $this->end_date,
                 'reason' => $this->reason,
-                'duration' => $this->duration,     
+                'duration' => $this->duration,
             ]);
 
-           // Send notification to all reporting managers
+            // Send notification to all reporting managers
             $emails = $lineManagers->pluck('email')->toArray();
 
             if (!empty($emails)) {
@@ -128,17 +133,18 @@ class CasualWorkforce extends Component
                     ->send(new HodApproveRequisition($requisition));
             }
 
-            // Dispatch success notification
-            $this->dispatch('notify', 
+            // Success notification
+            $this->dispatch(
+                'notify',
                 type: 'success',
                 title: 'Requisition Submitted',
-                message: "Your requisition has been submitted for approval"
+                message: 'Your requisition has been submitted for approval'
             );
 
-            // Dispatch close modal event
+            // Close modal
             $this->dispatch('close-casual-modal');
-            
-            // Reset form after successful submission
+
+            // Reset form
             $this->reset([
                 'start_date',
                 'end_date',
@@ -147,10 +153,30 @@ class CasualWorkforce extends Component
                 'exclude_weekends',
                 'duration',
             ]);
-        }
-        $this->resetPage();
-    }
 
+            $this->resetPage();
+
+        } catch (\Throwable $e) {
+
+            // Log the actual exception for debugging
+            Log::error('Casual requisition submission failed', [
+                'user_id' => auth()->id(),
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
+            // Show friendly error to the user
+            $this->dispatch(
+                'notify',
+                type: 'error',
+                title: 'Submission Failed',
+                message: 'Unable to submit the requisition. Please try again or contact IT support.'
+            );
+
+            return;
+        }
+    }
 
     public function pettyCash()
     {

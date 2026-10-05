@@ -30,7 +30,7 @@ class HodApproveRequisition extends Mailable implements ShouldQueue
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Casual Requisition Awaiting HODApproval',
+            subject: 'Casual Requisition Awaiting HOD Approval',
         );
     }
 

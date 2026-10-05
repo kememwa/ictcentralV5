@@ -53,12 +53,21 @@
 
                                 <tr>
                                     <td style="font-weight: bold; border-bottom: 1px solid #e5e7eb;">
+                                        Division
+                                    </td>
+                                    <td style="border-bottom: 1px solid #e5e7eb;">
+                                        {{ $requisition->requester->designation->division->name ?? 'N/A' }}
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="font-weight: bold; border-bottom: 1px solid #e5e7eb;">
                                         Department
                                     </td>
                                     <td style="border-bottom: 1px solid #e5e7eb;">
-                                        {{ $requisition->department->name ?? 'N/A' }}
+                                        {{ $requisition->requester->designation->division->department->name ?? 'N/A' }}
                                     </td>
-                                </tr>
+                                </tr>php 
 
                                 <tr>
                                     <td style="font-weight: bold; border-bottom: 1px solid #e5e7eb;">
@@ -110,7 +119,7 @@
                             {{-- Approval Button --}}
                             <div style="text-align: center; margin-top: 30px;">
 
-                                <a href="#"
+                                <a href="{{route('requisition')}}"
                                    style="
                                        display: inline-block;
                                        padding: 12px 24px;
@@ -133,7 +142,7 @@
 
                             <p style="font-size: 14px;">
                                 Regards,<br>
-                                <strong>{{ config('app.name') }}</strong>
+                                <strong>ICT Team</strong>
                             </p>
 
                         </td>
@@ -144,7 +153,7 @@
                         <td style="background: #f9fafb; padding: 20px; text-align: center;">
 
                             <p style="margin: 0; font-size: 12px; color: #6b7280;">
-                                This is an automated email from {{ config('app.name') }}.
+                                This is an automated email from ict central system.
                             </p>
 
                         </td>
