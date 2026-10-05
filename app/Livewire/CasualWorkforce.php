@@ -105,6 +105,9 @@ class CasualWorkforce extends Component
                 'hod_id' => auth()->user()->line_manager_id,
             ]);
 
+            //send notification to HOD for approval
+           
+
             // Dispatch success notification
             $this->dispatch('notify', 
                 type: 'success',
