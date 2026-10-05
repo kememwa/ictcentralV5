@@ -91,7 +91,21 @@
             ],
         ],
 
+        // Approvals  (signature = path relative to /public, or null)
+        'hod_name'       => 'Susan Ngina',
+        'hod_signature'  => null,
+        'hod_date'       => null,
 
+        'hr_name'        => 'Althea Marie',
+        'hr_signature'   => null,
+        'hr_date'        => null,
+
+        'hopc_name'      => 'Alice Mworia',
+        'hopc_signature' => 'dist/signatures/hr_manager_sign.png',
+        'hopc_date'      => '3rd September 2026',
+
+        // Contract
+        'contract_date'  => '5th September 2026',
 
     ], $c ?? []);
 
@@ -670,7 +684,7 @@
 
         <table class="field">
             <tr>
-                <td class="fl">Department Head:</td>
+                <td class="fl">Department/Division Head:</td>
                 <td class="fv">{{ $hod_name }}</td>
             </tr>
         </table>
