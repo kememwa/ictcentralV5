@@ -23,10 +23,12 @@
 
     $hod_name = $requisition->hod->name ?? 'NULL';
     $hod_sig = $requisition->hod->signature_image_path;
-    $hr_sig = $requisition->hr->signature_image_path ?? 'NULL';
-    $hr_name = $requisition->hr->name ?? 'NULL';
+    $hr_sig = $requisition->hrRep->signature_image_path ?? 'NULL';
+    $hr_name = $requisition->hrRep->name ?? 'NULL';
     $hrm_name = $requisition->hrm->name ?? 'NULL';
     $hrm_sig = $requisition->hrm->signature_image_path ?? 'NULL';
+    $coo_name = $requisition->coo->name ?? 'NULL';
+    $coo_sig = $requisition->coo->signature_image_path ?? 'NULL';
     $departmentName = $requisition->requester->designation->division->department->name ?? 'NULL';
     $divisionName = $requisition->requester->designation->division->name ?? 'NULL';
     $applicantName = $requisition->requester->name ?? 'NULL';
@@ -756,8 +758,12 @@
 
         <table class="sign-row">
             <tr>
-                <td class="sl">Chief Operations Officer: {{ $c['coo'] }}</td>
-                <td class="sline">&nbsp;</td>
+                <td class="sl">Chief Operations Officer: {{ $coo_name }}</td>
+                <td class="sline">
+                    <img src="{{ public_path('storage/' . $coo_sig) }}"
+                        alt="COO Signature"
+                        class="signature-image">
+                </td>
                 <td class="dl">Date:</td>
                 <td class="dline">{{ $cooApprovalDate }}</td>
             </tr>
@@ -1169,7 +1175,7 @@
         </tr>
         <tr>
             <td class="s-label">Signed:</td>
-            <td class="s-value">{{ $c['hr_name'] }}</td>
+            <td class="s-value">{{ $hr_name }}</td>
             <td class="s-sign">Sign:</td>
             <td>
                 @if($hrSig)<img class="sig" src="{{ $hrSig }}" alt="Signature">@endif
@@ -1177,7 +1183,7 @@
         </tr>
         <tr>
             <td class="s-label">Name:</td>
-            <td class="s-value" colspan="3">{{ $c['hopc_name'] }}</td>
+            <td class="s-value" colspan="3">{{ $hrm_name }}</td>
         </tr>
         <tr>
             <td class="s-label">Designation:</td>
