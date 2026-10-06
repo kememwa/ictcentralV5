@@ -169,17 +169,62 @@
                                         </td>
                                     </tr>
 
-                                    {{-- HR --}}
+                                    {{-- HR Rep --}}
                                     <tr>
                                         <td style="font-weight: bold;">
-                                            HR Approval
+                                            HR Rep Approval
+                                        </td>
+
+                                        <td style="color: #166534;">
+                                            <strong>Approved</strong><br>
+
+                                            <span style="color: #374151; font-size: 13px;">
+                                                {{ $requisition->hrRep->name ?? 'N/A' }}
+                                            </span>
+
+                                            @if($requisition->hr_rep_approval_date)
+                                                <br>
+                                                <span style="color: #6b7280; font-size: 12px;">
+                                                    {{ \Carbon\Carbon::parse($requisition->coo_approval_date)->format('d M Y, h:i A') }}
+                                                </span>
+                                            @endif
+                                        </td>
+                                    </tr>
+
+                                    {{-- HRM --}}
+                                    <tr>
+                                        <td style="font-weight: bold;">
+                                            HRM Approval
+                                        </td>
+
+                                        <td style="color: #166534;">
+                                            <strong>Approved</strong><br>
+
+                                            <span style="color: #374151; font-size: 13px;">
+                                                {{ $requisition->hrm->name ?? 'N/A' }}
+                                            </span>
+
+                                            @if($requisition->hrm_approval_date)
+                                                <br>
+                                                <span style="color: #6b7280; font-size: 12px;">
+                                                    {{ \Carbon\Carbon::parse($requisition->hrm_approval_date)->format('d M Y, h:i A') }}
+                                                </span>
+                                            @endif
+                                        </td>
+                                    </tr>
+
+
+                                    {{-- Casual Assignment --}}
+                                    <tr>
+                                        <td style="font-weight: bold;">
+                                            Casual Assignment
                                         </td>
 
                                         <td style="color: #d97706;">
                                             <strong>Pending</strong><br>
 
                                             <span style="color: #6b7280; font-size: 12px;">
-                                                Awaiting HR action
+                                                Casual Assignment Pending
                                             </span>
                                         </td>
                                     </tr>
