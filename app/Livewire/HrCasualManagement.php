@@ -224,12 +224,17 @@ class HrCasualManagement extends Component
                 'casual_assignment_date' => now(),
             ]);
 
+            $assignments = $req->CasualAssignments()
+            ->with('casual')
+            ->where('status', 'assigned')
+            ->get();
+
             // Send notification to the staff who requested the requisition
             $staffEmail = $req->requester?->email;
 
             if (!empty($staffEmail)) {
                 Mail::to($staffEmail)
-                    ->queue(new CasualApproved($req));
+                    ->queue(new CasualApproved($req, $assignments));
             }
 
             $this->dispatch(
@@ -261,7 +266,7 @@ class HrCasualManagement extends Component
             );
         }
     }
-    
+
     public function update() // Add this method for form submission
     {
         $this->validate();

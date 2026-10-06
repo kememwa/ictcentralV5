@@ -154,14 +154,14 @@
                                         </td>
                                     </tr>
 
-                                    @forelse($requisition->CasualAssignments as $assignment)
+                                    @forelse($assignments as $assignment)
                                         <tr>
                                             <td style="border-bottom: 1px solid #e5e7eb;">
                                                 {{ $loop->iteration }}
                                             </td>
 
                                             <td style="border-bottom: 1px solid #e5e7eb;">
-                                                {{ $assignment->name ?? 'N/A' }}
+                                                {{ $assignment->casual->name ?? 'N/A' }}
                                             </td>
 
                                             <td style="border-bottom: 1px solid #e5e7eb; color: #166534;">

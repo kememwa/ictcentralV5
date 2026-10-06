@@ -10,6 +10,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 use App\Models\Requisition;
+use Illuminate\Database\Eloquent\Collection;
 
 class CasualApproved extends Mailable
 {
@@ -18,7 +19,7 @@ class CasualApproved extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct(public Requisition $requisition)
+    public function __construct(public Requisition $requisition, public Collection $assignments)
     {
         //
     }
