@@ -102,99 +102,515 @@
             ];
         @endphp
 
-        <div class="overflow-x-auto">
-            <table class="w-full text-sm">
-                <thead>
-                    <tr class="border-b border-slate-200 text-left text-[11px] uppercase tracking-wider text-slate-400">
-                        <th class="px-5 sm:px-6 py-3 font-medium whitespace-nowrap">Requested By</th>
-                        <th class="px-5 sm:px-6 py-3 font-medium text-center">Casuals</th>
-                        <th class="px-5 sm:px-6 py-3 font-medium w-2/5 min-w-[260px]">Reason</th>
-                        <th class="px-5 sm:px-6 py-3 font-medium text-center">Days</th>
-                        <th class="px-5 sm:px-6 py-3 font-medium whitespace-nowrap">Period</th>
-                        <th class="px-5 sm:px-6 py-3 font-medium whitespace-nowrap">Submitted</th>
-                        <th class="px-5 sm:px-6 py-3 font-medium">Status</th>
+        {{-- =========================================================
+            DESKTOP TABLE (lg and up)
+        ========================================================= --}}
+        <div class="hidden lg:block overflow-x-auto">
+
+            <table class="w-full text-xs">
+
+                <thead class="border-b border-slate-200 bg-slate-50/80">
+
+                    <tr class="text-left uppercase tracking-wider text-[10px] font-semibold text-slate-500">
+
+                        <th class="px-4 py-3 whitespace-nowrap">
+                            Requested By
+                        </th>
+
+                        <th class="px-4 py-3 whitespace-nowrap text-center">
+                            Casuals
+                        </th>
+
+                        <th class="px-4 py-3 min-w-[280px]">
+                            Reason
+                        </th>
+
+                        <th class="px-4 py-3 whitespace-nowrap text-center">
+                            Days
+                        </th>
+
+                        <th class="px-4 py-3 whitespace-nowrap">
+                            Period
+                        </th>
+
+                        <th class="px-4 py-3 whitespace-nowrap">
+                            Submitted
+                        </th>
+
+                        <th class="px-4 py-3 whitespace-nowrap">
+                            Status
+                        </th>
+
                     </tr>
+
                 </thead>
 
+
                 <tbody class="divide-y divide-slate-100">
+
                     @forelse($MyRequisitions as $req)
-                        <tr class="align-top hover:bg-slate-50/60 transition">
 
-                            {{-- Requested By --}}
-                            <td class="px-5 sm:px-6 py-4 whitespace-nowrap font-medium text-slate-900">
-                                {{ $req->requester->name }}
+                        <tr
+                            wire:key="my-req-{{ $req->id }}"
+                            class="group align-top transition-colors hover:bg-slate-50/70"
+                        >
+
+                            {{-- =================================================
+                                REQUESTED BY
+                            ================================================== --}}
+                            <td class="px-4 py-3 whitespace-nowrap">
+
+                                <div class="flex items-center gap-2.5">
+
+                                    {{-- Initial --}}
+                                    <div
+                                        class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full
+                                            bg-slate-100 text-[10px] font-semibold text-slate-600"
+                                    >
+                                        {{ strtoupper(substr($req->requester->name ?? 'U', 0, 1)) }}
+                                    </div>
+
+
+                                    {{-- Name --}}
+                                    <div class="min-w-0">
+
+                                        <p class="font-medium text-slate-800">
+                                            {{ $req->requester->name ?? 'Unknown User' }}
+                                        </p>
+
+                                    </div>
+
+                                </div>
+
                             </td>
 
-                            {{-- Casuals --}}
-                            <td class="px-5 sm:px-6 py-4 text-center text-slate-700 tabular-nums">
-                                {{ $req->no_of_casuals }}
+
+                            {{-- =================================================
+                                CASUALS
+                            ================================================== --}}
+                            <td class="px-4 py-3 text-center whitespace-nowrap">
+
+                                <span class="font-medium tabular-nums text-slate-700">
+                                    {{ number_format($req->no_of_casuals) }}
+                                </span>
+
                             </td>
 
-                            {{-- Reason (wide, wraps, expandable) --}}
-                            <td class="px-5 sm:px-6 py-4">
+
+                            {{-- =================================================
+                                REASON
+                            ================================================== --}}
+                            <td class="px-4 py-3">
+
                                 @if($req->reason)
-                                    <div x-data="{ open: false }" class="max-w-xl">
+
+                                    <div
+                                        x-data="{ open: false }"
+                                        class="max-w-xl"
+                                    >
+
                                         <p
-                                            class="text-slate-600 leading-relaxed break-words"
+                                            class="text-[11px] leading-relaxed text-slate-600
+                                                break-words whitespace-normal"
                                             :class="open ? '' : 'line-clamp-2'"
-                                        >{{ $req->reason }}</p>
+                                        >
+                                            {{ $req->reason }}
+                                        </p>
+
 
                                         @if(mb_strlen($req->reason) > 110)
+
                                             <button
                                                 type="button"
                                                 @click="open = !open"
-                                                class="mt-1 text-xs text-slate-400 hover:text-slate-700 transition"
+                                                class="mt-1 text-[10px] font-medium text-blue-600
+                                                    hover:text-blue-700 hover:underline"
                                                 x-text="open ? 'Show less' : 'Read more'"
                                             ></button>
+
                                         @endif
+
                                     </div>
+
                                 @else
-                                    <span class="text-xs italic text-slate-300">No reason provided</span>
+
+                                    <span class="text-[11px] italic text-slate-400">
+                                        No reason provided
+                                    </span>
+
                                 @endif
+
                             </td>
 
-                            {{-- Days --}}
-                            <td class="px-5 sm:px-6 py-4 text-center text-slate-700 tabular-nums">
-                                {{ $req->duration }}
-                            </td>
 
-                            {{-- Period --}}
-                            <td class="px-5 sm:px-6 py-4 whitespace-nowrap text-slate-600 tabular-nums">
-                                {{ \Carbon\Carbon::parse($req->start_date)->format('d M Y') }}
-                                <span class="mx-1 text-slate-300">–</span>
-                                {{ \Carbon\Carbon::parse($req->end_date)->format('d M Y') }}
-                            </td>
+                            {{-- =================================================
+                                DAYS
+                            ================================================== --}}
+                            <td class="px-4 py-3 text-center whitespace-nowrap">
 
-                            {{-- Submitted --}}
-                            <td class="px-5 sm:px-6 py-4 whitespace-nowrap text-slate-400 tabular-nums">
-                                {{ $req->created_at->format('d M Y') }}
-                            </td>
-
-                            {{-- Status --}}
-                            <td class="px-5 sm:px-6 py-4 whitespace-nowrap">
-                                <span class="inline-flex items-center gap-1.5 text-xs text-slate-600">
-                                    <span class="h-1.5 w-1.5 rounded-full {{ $statusDots[$req->status] ?? 'bg-slate-300' }}"></span>
-                                    {{ ucfirst(str_replace('-', ' ', $req->status)) }}
+                                <span class="font-medium tabular-nums text-slate-700">
+                                    {{ $req->duration }}
                                 </span>
+
+                                <span class="ml-0.5 text-[10px] text-slate-400">
+                                    {{ $req->duration == 1 ? 'day' : 'days' }}
+                                </span>
+
                             </td>
+
+
+                            {{-- =================================================
+                                PERIOD
+                            ================================================== --}}
+                            <td class="px-4 py-3 whitespace-nowrap">
+
+                                <div class="text-slate-700">
+
+                                    <span class="font-medium">
+                                        {{ \Carbon\Carbon::parse($req->start_date)->format('d M Y') }}
+                                    </span>
+
+                                    <span class="mx-1 text-slate-300">
+                                        –
+                                    </span>
+
+                                    <span class="font-medium">
+                                        {{ \Carbon\Carbon::parse($req->end_date)->format('d M Y') }}
+                                    </span>
+
+                                </div>
+
+                            </td>
+
+
+                            {{-- =================================================
+                                SUBMITTED
+                            ================================================== --}}
+                            <td class="px-4 py-3 whitespace-nowrap">
+
+                                <span class="text-slate-500 tabular-nums">
+                                    {{ $req->created_at->format('d M Y') }}
+                                </span>
+
+                            </td>
+
+
+                            {{-- =================================================
+                                STATUS
+                            ================================================== --}}
+                            <td class="px-4 py-3 whitespace-nowrap">
+
+                                <span
+                                    class="inline-flex items-center gap-1.5 text-[11px]
+                                        font-medium text-slate-600"
+                                >
+
+                                    <span
+                                        class="h-1.5 w-1.5 shrink-0 rounded-full
+                                            {{ $statusDots[$req->status] ?? 'bg-slate-300' }}"
+                                    ></span>
+
+                                    {{ ucfirst(str_replace('-', ' ', $req->status)) }}
+
+                                </span>
+
+                            </td>
+
                         </tr>
+
                     @empty
+
                         <tr>
-                            <td colspan="7" class="px-6 py-16 text-center">
-                                <p class="text-sm font-medium text-slate-900">No requisitions yet</p>
-                                <p class="mt-1 text-xs text-slate-400">Submit your first request using the cards above.</p>
+
+                            <td colspan="7" class="px-4 py-16 text-center">
+
+                                <div class="flex flex-col items-center justify-center">
+
+                                    <div
+                                        class="mb-3 flex h-10 w-10 items-center justify-center rounded-full
+                                            bg-slate-100"
+                                    >
+                                        <svg
+                                            class="h-5 w-5 text-slate-400"
+                                            viewBox="0 0 20 20"
+                                            fill="currentColor"
+                                        >
+                                            <path
+                                                fill-rule="evenodd"
+                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.707a1 1 0 00-1.414-1.414L9 11.172
+                                                7.707 9.879a1 1 0 001.414 1.414l2 2a1 1 0 001.414 0l3.414-3.414z"
+                                                clip-rule="evenodd"
+                                            />
+                                        </svg>
+                                    </div>
+
+                                    <p class="font-medium text-slate-700">
+                                        No requisitions yet
+                                    </p>
+
+                                    <p class="mt-1 text-[11px] text-slate-400">
+                                        Submit your first request using the cards above.
+                                    </p>
+
+                                </div>
+
                             </td>
+
                         </tr>
+
                     @endforelse
+
                 </tbody>
+
             </table>
+
         </div>
 
+
+        {{-- =========================================================
+            MOBILE / TABLET CARDS
+        ========================================================= --}}
+        <div class="lg:hidden divide-y divide-slate-100">
+
+            @forelse($MyRequisitions as $req)
+
+                <div
+                    wire:key="mobile-my-req-{{ $req->id }}"
+                    class="p-4"
+                >
+
+                    {{-- =================================================
+                        HEADER
+                    ================================================== --}}
+                    <div class="flex items-start justify-between gap-3">
+
+                        <div class="flex min-w-0 items-center gap-2.5">
+
+                            {{-- Initial --}}
+                            <div
+                                class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full
+                                    bg-slate-100 text-xs font-semibold text-slate-600"
+                            >
+                                {{ strtoupper(substr($req->requester->name ?? 'U', 0, 1)) }}
+                            </div>
+
+
+                            {{-- Requested By --}}
+                            <div class="min-w-0">
+
+                                <p class="truncate text-sm font-semibold text-slate-800">
+                                    {{ $req->requester->name ?? 'Unknown User' }}
+                                </p>
+
+                                <p class="mt-0.5 text-[10px] text-slate-400">
+                                    Submitted {{ $req->created_at->format('d M Y') }}
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        {{-- Status --}}
+                        <span
+                            class="inline-flex shrink-0 items-center gap-1.5 text-[10px]
+                                font-medium text-slate-600"
+                        >
+
+                            <span
+                                class="h-1.5 w-1.5 rounded-full
+                                    {{ $statusDots[$req->status] ?? 'bg-slate-300' }}"
+                            ></span>
+
+                            {{ ucfirst(str_replace('-', ' ', $req->status)) }}
+
+                        </span>
+
+                    </div>
+
+
+                    {{-- =================================================
+                        SUMMARY
+                    ================================================== --}}
+                    <div class="mt-4 grid grid-cols-2 gap-2">
+
+                        {{-- Casuals --}}
+                        <div
+                            class="rounded-lg border border-slate-100 bg-slate-50/70 p-2.5"
+                        >
+
+                            <p class="text-[10px] font-medium uppercase tracking-wide text-slate-400">
+                                Casuals
+                            </p>
+
+                            <p class="mt-1 text-xs font-semibold text-slate-700">
+                                {{ number_format($req->no_of_casuals) }}
+                            </p>
+
+                        </div>
+
+
+                        {{-- Days --}}
+                        <div
+                            class="rounded-lg border border-slate-100 bg-slate-50/70 p-2.5"
+                        >
+
+                            <p class="text-[10px] font-medium uppercase tracking-wide text-slate-400">
+                                Duration
+                            </p>
+
+                            <p class="mt-1 text-xs font-semibold text-slate-700">
+
+                                {{ $req->duration }}
+
+                                <span class="font-normal text-slate-400">
+                                    {{ $req->duration == 1 ? 'day' : 'days' }}
+                                </span>
+
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    {{-- =================================================
+                        PERIOD
+                    ================================================== --}}
+                    <div
+                        class="mt-3 rounded-lg border border-slate-100 bg-slate-50/70 p-2.5"
+                    >
+
+                        <p class="text-[10px] font-medium uppercase tracking-wide text-slate-400">
+                            Period
+                        </p>
+
+                        <div class="mt-1 flex items-center gap-1.5 text-xs font-semibold text-slate-700">
+
+                            <span>
+                                {{ \Carbon\Carbon::parse($req->start_date)->format('d M Y') }}
+                            </span>
+
+                            <span class="text-slate-300">
+                                →
+                            </span>
+
+                            <span>
+                                {{ \Carbon\Carbon::parse($req->end_date)->format('d M Y') }}
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    {{-- =================================================
+                        REASON
+                    ================================================== --}}
+                    <div class="mt-3 rounded-lg border border-slate-100 bg-white">
+
+                        <div class="px-3 pt-2.5">
+
+                            <p class="text-[10px] font-semibold uppercase tracking-wide text-slate-400">
+                                Reason
+                            </p>
+
+                        </div>
+
+
+                        @if($req->reason)
+
+                            <div
+                                x-data="{ open: false }"
+                                class="px-3 pb-2.5 pt-1.5"
+                            >
+
+                                <p
+                                    class="text-[11px] leading-relaxed text-slate-600 break-words"
+                                    :class="open ? '' : 'line-clamp-3'"
+                                >
+                                    {{ $req->reason }}
+                                </p>
+
+
+                                @if(mb_strlen($req->reason) > 110)
+
+                                    <button
+                                        type="button"
+                                        @click="open = !open"
+                                        class="mt-1 text-[10px] font-medium text-blue-600
+                                            hover:text-blue-700 hover:underline"
+                                        x-text="open ? 'Show less' : 'Read more'"
+                                    ></button>
+
+                                @endif
+
+                            </div>
+
+                        @else
+
+                            <p class="px-3 pb-2.5 pt-1.5 text-[11px] italic text-slate-400">
+                                No reason provided
+                            </p>
+
+                        @endif
+
+                    </div>
+
+                </div>
+
+            @empty
+
+                <div class="px-4 py-16 text-center">
+
+                    <div class="flex flex-col items-center justify-center">
+
+                        <div
+                            class="mb-3 flex h-10 w-10 items-center justify-center rounded-full
+                                bg-slate-100"
+                        >
+                            <svg
+                                class="h-5 w-5 text-slate-400"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                            >
+                                <path
+                                    fill-rule="evenodd"
+                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.707a1 1 0 00-1.414-1.414L9 11.172
+                                    7.707 9.879a1 1 0 001.414 1.414l2 2a1 1 0 001.414 0l3.414-3.414z"
+                                    clip-rule="evenodd"
+                                />
+                            </svg>
+                        </div>
+
+                        <p class="font-medium text-slate-700">
+                            No requisitions yet
+                        </p>
+
+                        <p class="mt-1 text-[11px] text-slate-400">
+                            Submit your first request using the cards above.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            @endforelse
+
+        </div>
+
+
+        {{-- =========================================================
+            PAGINATION
+        ========================================================= --}}
         @if($MyRequisitions->hasPages())
-            <div class="border-t border-slate-100 px-5 sm:px-6 py-3">
+
+            <div class="border-t border-slate-100 px-4 py-3 sm:px-6">
                 {{ $MyRequisitions->links() }}
             </div>
+
         @endif
+
     </x-data-card>
 
     {{-- Casual Requisition Modal --}}
