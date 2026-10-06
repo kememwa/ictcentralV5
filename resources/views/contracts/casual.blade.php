@@ -729,10 +729,10 @@
         <table class="sign-row">
             <tr>
                 <td class="sl">
-                    @if($requisition->coo?->hasRole('coo delegate'))
-                        For Chief Operations Officer: {{ $coo_name }}
-                    @else
+                    @if($requisition->coo?->hasRole('coo'))
                         Chief Operations Officer: {{ $coo_name }}
+                    @else
+                        (For) Chief Operations Officer: {{ $coo_name }}
                     @endif
                 </td>
                 <td class="sline">
@@ -884,10 +884,10 @@
         <table class="ap">
             <tr>
                 <td class="ap-role"><span class="b">
-                    @if($requisition->hrm?->hasRole('hrm delegate'))
-                        (For) Head of People &amp; Culture:
-                    @else
+                    @if($requisition->hrm?->hasRole('hrm'))
                         Head of People &amp; Culture:
+                    @else
+                       (For) Head of People &amp; Culture:
                     @endif
                     </span> {{ $hrm_name }}</td>
                 <td class="ap-sign">
