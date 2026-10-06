@@ -30,7 +30,7 @@ class HrmApproveReq extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Hrm Approve Requisition',
+            subject: 'Hrm Approved Requisition',
         );
     }
 

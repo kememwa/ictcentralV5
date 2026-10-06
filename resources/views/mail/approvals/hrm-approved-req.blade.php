@@ -34,7 +34,7 @@
                             </p>
 
                             <p style="font-size: 15px; line-height: 1.6;">
-                                A casual requisition has been approved by the COO and is now awaiting HR approval.
+                                A casual requisition has been approved by the HRM and is now awaiting Casual Assignment.
                             </p>
 
                             {{-- Requisition Details --}}
@@ -191,7 +191,7 @@
                             {{-- Approval Button --}}
                             <div style="text-align: center; margin-top: 30px;">
 
-                                <a href="{{ route('hr.casual.manage') }}"
+                                <a href="{{ route('hr.casual.manage',['view' => 'hrm_approved']) }}"
                                    style="
                                        display: inline-block;
                                        padding: 12px 24px;

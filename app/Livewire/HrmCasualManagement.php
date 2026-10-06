@@ -6,7 +6,7 @@ use Livewire\Component;
 use Livewire\Attributes\Layout;
 use App\Models\Requisition;
 use Illuminate\Support\Facades\Mail;
-use App\Mail\HrmApprovedReq;
+use App\Mail\HrmApproveReq;
 use Illuminate\Support\Facades\Log;
 
 class HrmCasualManagement extends Component
@@ -31,7 +31,7 @@ class HrmCasualManagement extends Component
             if ($hrUser && !empty($hrUser->email)) {
 
                 Mail::to($hrUser->email)
-                    ->queue(new HrmApprovedReq($req));
+                    ->queue(new HrmApproveReq($req));
             }
 
             // Flash message for Livewire UI
