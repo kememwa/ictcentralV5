@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\HrmApproveRequisition;
 use Illuminate\Support\Facades\Log;
 use App\Models\User;
+use App\Mail\CasualApproved;
 
 class HrCasualManagement extends Component
 {
@@ -198,10 +199,13 @@ class HrCasualManagement extends Component
 
     public function assignSelectedCasuals()
     {
+        try {
 
-        if ($this->selectedRequisition && !empty($this->selectedCasuals)) {
-            
-            //create a new assignment for each selected casual
+            if (!$this->selectedRequisition || empty($this->selectedCasuals)) {
+                return;
+            }
+
+            // Create an assignment for each selected casual
             foreach ($this->selectedCasuals as $casualId) {
                 Assignment::create([
                     'requisition_id' => $this->selectedRequisition->id,
@@ -210,22 +214,54 @@ class HrCasualManagement extends Component
                 ]);
             }
 
-            Requisition::where('id', $this->selectedRequisition->id)->update([
+            // Get the requisition model
+            $req = Requisition::with('requester')
+                ->findOrFail($this->selectedRequisition->id);
+
+            // Update requisition assignment status
+            $req->update([
                 'casual_assignment_status' => true,
                 'casual_assignment_date' => now(),
             ]);
-            
-            $this->dispatch('notify',
+
+            // Send notification to the staff who requested the requisition
+            $staffEmail = $req->requester?->email;
+
+            if (!empty($staffEmail)) {
+                Mail::to($staffEmail)
+                    ->queue(new CasualApproved($req));
+            }
+
+            $this->dispatch(
+                'notify',
                 type: 'success',
                 title: 'Assignment Successful',
-                message: count($this->selectedCasuals) . " casual(s) assigned successfully."
+                message: count($this->selectedCasuals) . ' casual(s) assigned successfully.'
+            );
+
+            $this->showAssignmentModal = false;
+            $this->resetForm();
+
+        } catch (\Throwable $e) {
+
+            Log::error('Casual assignment failed', [
+                'requisition_id' => $this->selectedRequisition?->id,
+                'user_id' => auth()->id(),
+                'selected_casuals' => $this->selectedCasuals,
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
+            $this->dispatch(
+                'notify',
+                type: 'error',
+                title: 'Assignment Failed',
+                message: 'The casuals could not be assigned. Please try again or contact IT support.'
             );
         }
-
-        $this->showAssignmentModal = false;
-        $this->resetForm();
     }
-
+    
     public function update() // Add this method for form submission
     {
         $this->validate();
