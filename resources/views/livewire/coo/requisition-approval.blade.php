@@ -24,146 +24,456 @@
             </span>
         </div>
 
-        {{-- ===== DESKTOP TABLE ===== --}}
+        {{-- ===== DESKTOP TABLE (lg and up) ===== --}}
         <div class="hidden lg:block overflow-x-auto">
-            <table class="w-full text-sm">
-                <thead class="bg-gray-50 dark:bg-gray-800/50 text-left text-xs uppercase tracking-wider text-gray-500">
-                    <tr>
-                        <th class="px-4 py-3">Requested By</th>
-                        <th class="px-4 py-3 text-center">Casuals</th>
-                        <th class="px-4 py-3">Duration</th>
-                        <th class="px-4 py-3 text-right">Daily Rate</th>
-                        <th class="px-4 py-3 text-right">Estimated Total</th>
-                        <th class="px-4 py-3">HR Status</th>
-                        <th class="px-4 py-3 text-right">HRM Action</th>
+            <table class="w-full text-xs">
+                <thead class="border-b border-slate-200 bg-slate-50/80">
+                    <tr class="text-left uppercase tracking-wider text-[10px] font-semibold text-slate-500">
+                        
+                        <th class="px-4 py-3 whitespace-nowrap">
+                            Requested By
+                        </th>
+
+                        <th class="px-4 py-3 whitespace-nowrap text-center">
+                            Casuals
+                        </th>
+
+                        <th class="px-4 py-3 whitespace-nowrap text-center">
+                            Days
+                        </th>
+
+                        <th class="px-4 py-3 min-w-[280px]">
+                            Reason
+                        </th>
+
+                        <th class="px-4 py-3 whitespace-nowrap text-right">
+                            Start Date
+                        </th>
+
+                        <th class="px-4 py-3 whitespace-nowrap text-right">
+                            End Date
+                        </th>
+
+                        <th class="px-4 py-3 whitespace-nowrap text-right">
+                            Actions
+                        </th>
+
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+
+                <tbody class="divide-y divide-slate-100">
                     @forelse($coo_requisitions as $req)
-                        @php $total = $req->daily_rate * $req->no_of_casuals * $req->duration; @endphp
-                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/40 transition">
-                            <td class="px-4 py-3">
-                                <div class="flex items-center gap-3 min-w-0">
-                                    <div class="w-9 h-9 rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-600 text-white flex items-center justify-center font-semibold text-xs shrink-0">
-                                        {{ strtoupper(substr($req->requester->name, 0, 1)) }}
+
+                        <tr
+                            wire:key="coo-req-{{ $req->id }}"
+                            class="group align-top transition-colors hover:bg-slate-50/70"
+                        >
+
+                            {{-- Requested By --}}
+                            <td class="px-4 py-3 whitespace-nowrap">
+                                <div class="flex items-center gap-2.5">
+
+                                    {{-- Initial --}}
+                                    <div
+                                        class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full
+                                            bg-slate-100 text-[10px] font-semibold text-slate-600"
+                                    >
+                                        {{ strtoupper(substr($req->requester->name ?? 'U', 0, 1)) }}
                                     </div>
-                                    <div class="min-w-0">
-                                        <p class="font-medium text-gray-900 dark:text-white truncate">{{ $req->requester->name }}</p>
+
+                                    <div>
+                                        <p class="font-medium text-slate-800">
+                                            {{ $req->requester->name ?? 'Unknown User' }}
+                                        </p>
+
+                                        @if($req->requester?->designation)
+                                            <p class="mt-0.5 text-[10px] text-slate-400">
+                                                {{ $req->requester->designation->name }}
+                                            </p>
+                                        @endif
                                     </div>
+
                                 </div>
                             </td>
+
+
+                            {{-- Number of Casuals --}}
                             <td class="px-4 py-3 text-center">
-                                <span class="inline-flex items-center justify-center min-w-[2rem] px-2 py-1 rounded-lg text-xs font-semibold bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300">
-                                    {{ $req->no_of_casuals }}
+                                <span class="font-medium tabular-nums text-slate-700">
+                                    {{ number_format($req->no_of_casuals) }}
                                 </span>
                             </td>
-                            <td class="px-4 py-3 whitespace-nowrap text-gray-700 dark:text-gray-300">{{ $req->duration }} days</td>
-                            <td class="px-4 py-3 whitespace-nowrap text-right text-gray-700 dark:text-gray-300">KES {{ number_format($req->daily_rate, 2) }}</td>
-                            <td class="px-4 py-3 whitespace-nowrap text-right">
-                                <span class="font-semibold text-gray-900 dark:text-white">KES {{ number_format($total) }}</span>
-                            </td>
-                            <td class="px-4 py-3">
-                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-300 dark:ring-emerald-800">
-                                    <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span> HR Approved
+
+
+                            {{-- Duration --}}
+                            <td class="px-4 py-3 text-center whitespace-nowrap">
+                                <span class="font-medium tabular-nums text-slate-700">
+                                    {{ $req->duration }}
+                                </span>
+
+                                <span class="ml-0.5 text-[10px] text-slate-400">
+                                    {{ $req->duration == 1 ? 'day' : 'days' }}
                                 </span>
                             </td>
+
+
+                            {{-- Reason --}}
                             <td class="px-4 py-3">
-                                <div class="flex items-center justify-end gap-1.5">
-                                    <button type="button"
+                                @if($req->reason)
+
+                                    <div
+                                        x-data="{ open: false }"
+                                        class="max-w-xl"
+                                    >
+                                        <p
+                                            class="text-[11px] leading-relaxed text-slate-600 break-words whitespace-normal"
+                                            :class="open ? '' : 'line-clamp-2'"
+                                        >
+                                            {{ $req->reason }}
+                                        </p>
+
+                                        @if(mb_strlen($req->reason) > 140)
+                                            <button
+                                                type="button"
+                                                @click="open = !open"
+                                                class="mt-1 text-[10px] font-medium text-blue-600
+                                                    hover:text-blue-700 hover:underline"
+                                                x-text="open ? 'Show less' : 'Read more'"
+                                            ></button>
+                                        @endif
+                                    </div>
+
+                                @else
+
+                                    <span class="text-[11px] italic text-slate-400">
+                                        No reason provided
+                                    </span>
+
+                                @endif
+                            </td>
+
+
+                            {{-- Start Date --}}
+                            <td class="px-4 py-3 text-right whitespace-nowrap">
+                                <span class="font-medium text-slate-800">
+                                    {{ \Carbon\Carbon::parse($req->start_date)->format('d M Y') }}
+                                </span>
+                            </td>
+
+
+                            {{-- End Date --}}
+                            <td class="px-4 py-3 text-right whitespace-nowrap">
+                                <span class="font-medium text-slate-800">
+                                    {{ \Carbon\Carbon::parse($req->end_date)->format('d M Y') }}
+                                </span>
+                            </td>
+
+                            {{-- Actions --}}
+                            <td class="px-3 py-2.5 text-right">
+                                <div class="flex items-center justify-end gap-1">
+
+                                    {{-- Approve --}}
+                                    <button
+                                        type="button"
                                         wire:click="approveCoo({{ $req->id }})"
-                                        wire:confirm="Approve this requisition ?"
-                                        class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md text-xs font-medium text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm transition">
-                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
-                                        Approve
+                                        wire:confirm="Approve this requisition?"
+                                        title="Approve"
+                                        aria-label="Approve requisition"
+                                        class="p-1.5 rounded-md text-green-600 hover:bg-green-50 hover:text-green-700 transition"
+                                    >
+                                        <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd"
+                                                d="M16.704 4.884a1 1 0 01.012 1.414l-8.25 8.25a1 1 0 01-1.414 0l-3.75-3.75a1 1 0 011.414-1.414l3.043 3.043 7.543-7.543a1 1 0 011.402 0z"
+                                                clip-rule="evenodd"/>
+                                        </svg>
                                     </button>
-                                    <button type="button"
-                                        wire:click="reject({{ $req->id }})"
+
+                                    {{-- Reject --}}
+                                    <button
+                                        type="button"
+                                        wire:click="rejectCoo({{ $req->id }})"
                                         wire:confirm="Reject this requisition?"
-                                        class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md text-xs font-medium text-white bg-rose-600 hover:bg-rose-700 shadow-sm transition">
-                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
-                                        Reject
+                                        title="Reject"
+                                        aria-label="Reject requisition"
+                                        class="p-1.5 rounded-md text-red-600 hover:bg-red-50 hover:text-red-700 transition"
+                                    >
+                                        <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd"
+                                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                clip-rule="evenodd"/>
+                                        </svg>
                                     </button>
+
                                 </div>
                             </td>
                         </tr>
+
                     @empty
+
                         <tr>
-                            <td colspan="7" class="py-16 text-center">
-                                <p class="font-medium text-gray-700 dark:text-gray-200">No requisitions awaiting COO approval</p>
-                                <p class="text-xs text-gray-500 mt-1">All caught up 🎉</p>
+                            <td colspan="8" class="px-4 py-16 text-center">
+
+                                <div class="flex flex-col items-center justify-center">
+
+                                    <div class="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-slate-100">
+                                        <svg
+                                            class="h-5 w-5 text-slate-400"
+                                            viewBox="0 0 20 20"
+                                            fill="currentColor"
+                                        >
+                                            <path
+                                                fill-rule="evenodd"
+                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.707a1 1 0 00-1.414-1.414L9 11.172 7.707 9.879a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l3.414-3.414z"
+                                                clip-rule="evenodd"
+                                            />
+                                        </svg>
+                                    </div>
+
+                                    <p class="font-medium text-slate-700">
+                                        No requisitions awaiting COO approval
+                                    </p>
+
+                                    <p class="mt-1 text-[11px] text-slate-400">
+                                        All caught up 🎉
+                                    </p>
+
+                                </div>
+
                             </td>
                         </tr>
+
                     @endforelse
+
                 </tbody>
             </table>
         </div>
 
+
         {{-- ===== MOBILE / TABLET CARDS ===== --}}
-        <div class="lg:hidden divide-y divide-gray-100 dark:divide-gray-800">
+        <div class="lg:hidden divide-y divide-slate-100">
+
             @forelse($coo_requisitions as $req)
-                @php $total = $req->daily_rate * $req->no_of_casuals * $req->duration; @endphp
-                <div class="p-4">
-                    <div class="flex items-start justify-between gap-3 mb-3">
-                        <div class="flex items-center gap-3 min-w-0">
-                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-600 text-white flex items-center justify-center font-semibold text-sm shrink-0">
-                                {{ strtoupper(substr($req->requester->name, 0, 1)) }}
+
+                <div
+                    wire:key="mobile-coo-req-{{ $req->id }}"
+                    class="p-4"
+                >
+
+                    {{-- Header: Requester + Casual Count --}}
+                    <div class="flex items-start justify-between gap-3">
+
+                        <div class="flex min-w-0 items-center gap-2.5">
+
+                            {{-- Initial --}}
+                            <div
+                                class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full
+                                    bg-slate-100 text-xs font-semibold text-slate-600"
+                            >
+                                {{ strtoupper(substr($req->requester->name ?? 'U', 0, 1)) }}
                             </div>
+
+                            {{-- Requester --}}
                             <div class="min-w-0">
-                                <p class="font-semibold text-gray-900 dark:text-white truncate">{{ $req->requester->name }}</p>
-                                <span class="inline-flex items-center gap-1 mt-0.5 px-2 py-0.5 rounded-full text-[10px] font-medium bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">
-                                    <span class="w-1 h-1 bg-emerald-500 rounded-full"></span> COO Approved
-                                </span>
+                                <p class="truncate text-sm font-semibold text-slate-800">
+                                    {{ $req->requester->name ?? 'Unknown User' }}
+                                </p>
+
+                                @if($req->requester?->designation)
+                                    <p class="mt-0.5 truncate text-[10px] text-slate-400">
+                                        {{ $req->requester->designation->name }}
+                                    </p>
+                                @endif
                             </div>
+
                         </div>
-                        <span class="shrink-0 inline-flex items-center justify-center min-w-[2rem] px-2 py-1 rounded-lg text-xs font-semibold bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300">
-                            {{ $req->no_of_casuals }} casuals
-                        </span>
+
+
+                        {{-- Casual Count --}}
+                        <div class="shrink-0 text-right">
+                            <p class="text-[10px] uppercase tracking-wide text-slate-400">
+                                Casuals
+                            </p>
+
+                            <p class="mt-0.5 text-sm font-semibold tabular-nums text-slate-700">
+                                {{ number_format($req->no_of_casuals) }}
+                            </p>
+                        </div>
+
                     </div>
 
-                    <dl class="grid grid-cols-3 gap-2 text-xs mb-3">
-                        <div class="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-2">
-                            <dt class="text-gray-500">Duration</dt>
-                            <dd class="font-medium text-gray-900 dark:text-white mt-0.5">{{ $req->duration }}d</dd>
-                        </div>
-                        <div class="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-2">
-                            <dt class="text-gray-500">Daily</dt>
-                            <dd class="font-medium text-gray-900 dark:text-white mt-0.5">{{ number_format($req->daily_rate) }}</dd>
-                        </div>
-                        <div class="bg-violet-50 dark:bg-violet-900/20 rounded-lg p-2">
-                            <dt class="text-violet-600 dark:text-violet-300">Total KES</dt>
-                            <dd class="font-bold text-violet-700 dark:text-violet-200 mt-0.5">{{ number_format($total) }}</dd>
-                        </div>
-                    </dl>
 
-                    <div class="flex gap-2">
-                        <button type="button"
+                    {{-- Summary --}}
+                    <div class="mt-4 grid grid-cols-2 gap-2">
+
+                        {{-- Duration --}}
+                        <div class="rounded-lg border border-slate-100 bg-slate-50/70 p-2.5">
+                            <p class="text-[10px] font-medium uppercase tracking-wide text-slate-400">
+                                Duration
+                            </p>
+
+                            <p class="mt-1 text-xs font-semibold text-slate-700">
+                                {{ $req->duration }}
+                                <span class="font-normal text-slate-400">
+                                    {{ $req->duration == 1 ? 'day' : 'days' }}
+                                </span>
+                            </p>
+                        </div>
+
+
+                        {{-- Period --}}
+                        <div class="rounded-lg border border-slate-100 bg-slate-50/70 p-2.5">
+                            <p class="text-[10px] font-medium uppercase tracking-wide text-slate-400">
+                                Period
+                            </p>
+
+                            <p class="mt-1 text-xs font-semibold text-slate-700">
+                                {{ \Carbon\Carbon::parse($req->start_date)->format('d M Y') }}
+                            </p>
+
+                            <p class="mt-0.5 text-[10px] text-slate-400">
+                                to {{ \Carbon\Carbon::parse($req->end_date)->format('d M Y') }}
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                    {{-- Reason --}}
+                    <div class="mt-3 rounded-lg border border-slate-100 bg-white">
+
+                        <div class="px-3 pt-2.5">
+                            <p class="text-[10px] font-semibold uppercase tracking-wide text-slate-400">
+                                Reason
+                            </p>
+                        </div>
+
+                        @if($req->reason)
+
+                            <div
+                                x-data="{ open: false }"
+                                class="px-3 pb-2.5 pt-1.5"
+                            >
+                                <p
+                                    class="text-[11px] leading-relaxed text-slate-600 break-words"
+                                    :class="open ? '' : 'line-clamp-3'"
+                                >
+                                    {{ $req->reason }}
+                                </p>
+
+                                @if(mb_strlen($req->reason) > 140)
+                                    <button
+                                        type="button"
+                                        @click="open = !open"
+                                        class="mt-1 text-[10px] font-medium text-blue-600
+                                            hover:text-blue-700 hover:underline"
+                                        x-text="open ? 'Show less' : 'Read more'"
+                                    ></button>
+                                @endif
+                            </div>
+
+                        @else
+
+                            <p class="px-3 pb-2.5 pt-1.5 text-[11px] italic text-slate-400">
+                                No reason provided
+                            </p>
+
+                        @endif
+
+                    </div>
+
+
+                    {{-- Actions --}}
+                    <div class="mt-4 flex items-center justify-end gap-2">
+
+                        {{-- Approve --}}
+                        <button
+                            type="button"
                             wire:click="approveCoo({{ $req->id }})"
-                            wire:confirm="Approve this requisition (KES {{ number_format($total) }})?"
-                            class="flex-1 inline-flex items-center justify-center gap-1 px-3 py-2 rounded-lg text-xs font-medium text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm">
-                            ✓ Approve
+                            wire:confirm="Approve this requisition?"
+                            title="Approve"
+                            aria-label="Approve requisition"
+                            class="inline-flex h-9 w-9 items-center justify-center rounded-lg
+                                border border-emerald-200 bg-white text-emerald-600
+                                transition hover:bg-emerald-50 hover:text-emerald-700
+                                focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                        >
+                            <svg
+                                class="h-4 w-4"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                            >
+                                <path
+                                    fill-rule="evenodd"
+                                    d="M16.704 4.884a1 1 0 01.012 1.414l-8.25 8.25a1 1 0 01-1.414 0l-3.75-3.75a1 1 0 011.414-1.414l3.043 3.043 7.543-7.543a1 1 0 011.402 0z"
+                                    clip-rule="evenodd"
+                                />
+                            </svg>
                         </button>
-                        <button type="button"
-                            wire:click="reject({{ $req->id }})"
+
+
+                        {{-- Reject --}}
+                        <button
+                            type="button"
+                            wire:click="rejectCoo({{ $req->id }})"
                             wire:confirm="Reject this requisition?"
-                            class="flex-1 inline-flex items-center justify-center gap-1 px-3 py-2 rounded-lg text-xs font-medium text-white bg-rose-600 hover:bg-rose-700 shadow-sm">
-                            ✕ Reject
+                            title="Reject"
+                            aria-label="Reject requisition"
+                            class="inline-flex h-9 w-9 items-center justify-center rounded-lg
+                                border border-red-200 bg-white text-red-600
+                                transition hover:bg-red-50 hover:text-red-700
+                                focus:outline-none focus:ring-2 focus:ring-red-500/20"
+                        >
+                            <svg
+                                class="h-4 w-4"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                            >
+                                <path
+                                    fill-rule="evenodd"
+                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                    clip-rule="evenodd"
+                                />
+                            </svg>
                         </button>
+
                     </div>
+
                 </div>
+
             @empty
-                <div class="py-16 text-center">
-                    <p class="font-medium text-gray-700 dark:text-gray-200">No requisitions awaiting COO approval</p>
-                    <p class="text-xs text-gray-500 mt-1">All caught up 🎉</p>
+
+                <div class="px-4 py-16 text-center">
+
+                    <div class="flex flex-col items-center justify-center">
+
+                        <div class="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-slate-100">
+                            <svg
+                                class="h-5 w-5 text-slate-400"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                            >
+                                <path
+                                    fill-rule="evenodd"
+                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.707a1 1 0 00-1.414-1.414L9 11.172 7.707 9.879a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l3.414-3.414a1 1 0 000-1.414z"
+                                    clip-rule="evenodd"
+                                />
+                            </svg>
+                        </div>
+
+                        <p class="font-medium text-slate-700">
+                            No requisitions awaiting COO approval
+                        </p>
+
+                        <p class="mt-1 text-[11px] text-slate-400">
+                            All caught up 🎉
+                        </p>
+
+                    </div>
+
                 </div>
+
             @endforelse
+
         </div>
-
-        @if(method_exists($coo_requisitions, 'hasPages') && $coo_requisitions->hasPages())
-            <div class="px-4 sm:px-6 py-4 border-t border-gray-100 dark:border-gray-800">
-                {{ $coo_requisitions->links() }}
-            </div>
-        @endif
-    </div>
-
 
 </div>
