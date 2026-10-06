@@ -125,6 +125,59 @@
 
                             </table>
 
+                            {{-- Approval History --}}
+                            <div style="margin-top: 30px;">
+
+                                <h3 style="margin: 0 0 15px 0; font-size: 16px; color: #1f2937;">
+                                    Approval History
+                                </h3>
+
+                                <table width="100%" cellpadding="10" cellspacing="0"
+                                       style="border-collapse: collapse; border: 1px solid #e5e7eb;">
+
+                                    {{-- HOD --}}
+                                    <tr>
+                                        <td style="font-weight: bold; border-bottom: 1px solid #e5e7eb; width: 35%;">
+                                            HOD Approval
+                                        </td>
+
+                                        <td style="border-bottom: 1px solid #e5e7eb; color: #166534;">
+                                            <strong>Approved</strong><br>
+
+                                            <span style="color: #374151; font-size: 13px;">
+                                                {{ $requisition->hod->name ?? 'N/A' }}
+                                            </span>
+
+                                            @if($requisition->hod_approval_date)
+                                                <br>
+                                                <span style="color: #6b7280; font-size: 12px;">
+                                                    {{ \Carbon\Carbon::parse($requisition->hod_approval_date)->format('d M Y, h:i A') }}
+                                                </span>
+                                            @endif
+                                        </td>
+                                    </tr>
+
+                                    
+                                    {{-- HR --}}
+                                    <tr>
+                                        <td style="font-weight: bold;">
+                                            COO Approval
+                                        </td>
+
+                                        <td style="color: #d97706;">
+                                            <strong>Pending</strong><br>
+
+                                            <span style="color: #6b7280; font-size: 12px;">
+                                                Awaiting COO Action
+                                            </span>
+                                        </td>
+                                    </tr>
+
+                                </table>
+
+                            </div>
+
+
                             {{-- Approval Button --}}
                             <div style="text-align: center; margin-top: 30px;">
 
