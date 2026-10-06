@@ -9,6 +9,7 @@ use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use App\Models\Requisition;
 
 class HrmApproveRequisition extends Mailable
 {
@@ -17,7 +18,7 @@ class HrmApproveRequisition extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct()
+    public function __construct(public Requisition $requisition)
     {
         //
     }
@@ -28,7 +29,7 @@ class HrmApproveRequisition extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Hrm Approve Requisition',
+            subject: 'Casual Requisition Awaiting HRM Approval',
         );
     }
 
@@ -38,7 +39,7 @@ class HrmApproveRequisition extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'view.name',
+            view: 'mail.approvals.hrm-approve-requisition',
         );
     }
 
