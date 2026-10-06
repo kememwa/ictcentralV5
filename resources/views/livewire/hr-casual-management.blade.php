@@ -263,7 +263,7 @@
             </div>
         </div>
     </div>
-    
+
         {{-- =========================================================
             DATA CONTAINER
         ========================================================= --}}
@@ -1912,321 +1912,245 @@
         </div>
     </div>
 
-    {{-- ===== Data Container ===== --}}
-    <div class="rounded-2xl border border-gray-200/70 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm overflow-hidden">
 
-        {{-- ===== Desktop / Tablet Table (md+) ===== --}}
-        <div class="hidden md:block overflow-x-auto">
+    {{-- ===== DATA CONTAINER ===== --}}
+    <div class="overflow-hidden rounded-2xl border border-slate-200/70 bg-white shadow-sm">
 
-            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-800">
+        {{-- ===== DESKTOP TABLE (lg and up) ===== --}}
+        <div class="hidden overflow-x-auto lg:block">
+            <table class="w-full text-xs">
 
-                {{-- Table Header --}}
-                <thead class="bg-gray-50 dark:bg-gray-900/60">
-
-                    <tr class="text-left text-xs font-semibold uppercase tracking-wider
-                            text-gray-500 dark:text-gray-400">
-
-                        <th class="px-5 py-3.5">
+                <thead class="border-b border-slate-200 bg-slate-50/80 text-left">
+                    <tr>
+                        <th class="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
                             Requested By
                         </th>
 
-                        <th class="px-5 py-3.5">
+                        <th class="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
                             Casuals
                         </th>
 
-                        <th class="px-5 py-3.5">
+                        <th class="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
                             Duration
                         </th>
 
-                        <th class="px-5 py-3.5 text-right">
+                        <th class="px-4 py-2.5 text-right text-[10px] font-semibold uppercase tracking-wider text-slate-500">
                             Action
                         </th>
-
                     </tr>
-
                 </thead>
 
-
-                {{-- Table Body --}}
-                <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+                <tbody class="divide-y divide-slate-100">
 
                     @forelse($this->hrRequisitions as $req)
 
-                        <tr class="hover:bg-gray-50/70 dark:hover:bg-gray-800/40
-                                transition-colors duration-150">
+                        <tr class="group align-middle transition-colors hover:bg-slate-50/70">
 
                             {{-- Requested By --}}
-                            <td class="px-5 py-3.5">
+                            <td class="px-4 py-3">
+                                <div class="flex min-w-0 items-center gap-3">
 
-                                <div class="flex items-center gap-3 min-w-0">
-
-                                    {{-- Avatar --}}
-                                    <div class="h-10 w-10 shrink-0 rounded-full
-                                                bg-gradient-to-br from-blue-500 to-indigo-600
-                                                text-white
-                                                flex items-center justify-center
-                                                text-sm font-semibold
-                                                shadow-sm">
-
+                                    <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-100 text-xs font-semibold text-slate-600">
                                         {{ strtoupper(substr($req->requester->name, 0, 1)) }}
-
                                     </div>
 
-
-                                    {{-- Requester Details --}}
                                     <div class="min-w-0">
-
-                                        <p class="text-sm font-semibold
-                                                text-gray-900 dark:text-white truncate">
-
+                                        <p class="truncate font-medium text-slate-800">
                                             {{ $req->requester->name }}
-
                                         </p>
 
-                                        <p class="mt-0.5 text-xs
-                                                text-gray-500 dark:text-gray-400 truncate">
-
+                                        <p class="mt-0.5 truncate text-[11px] text-slate-400">
                                             {{ $req->requester->department->name ?? 'Department' }}
-
                                         </p>
-
                                     </div>
 
                                 </div>
-
                             </td>
-
 
                             {{-- Casuals --}}
-                            <td class="px-5 py-3.5">
-
-                                <span class="inline-flex items-center
-                                            px-2.5 py-1
-                                            rounded-md
-                                            text-xs font-medium
-                                            bg-blue-50 text-blue-700
-                                            dark:bg-blue-900/30
-                                            dark:text-blue-300
-                                            border border-blue-100
-                                            dark:border-blue-900/50">
-
-                                    {{ $req->no_of_casuals }} Casuals
-
+                            <td class="px-4 py-3">
+                                <span class="inline-flex min-w-[2rem] items-center justify-center rounded-lg bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-700">
+                                    {{ $req->no_of_casuals }}
                                 </span>
-
                             </td>
-
 
                             {{-- Duration --}}
-                            <td class="px-5 py-3.5">
+                            <td class="px-4 py-3">
+                                <div class="inline-flex items-center gap-1.5 whitespace-nowrap text-slate-600">
 
-                                <div class="inline-flex items-center gap-1.5
-                                            text-sm font-medium
-                                            text-gray-700 dark:text-gray-300">
-
-                                    <svg class="w-4 h-4 text-gray-400 shrink-0"
+                                    <svg
+                                        class="h-3.5 w-3.5 shrink-0 text-slate-400"
                                         fill="none"
                                         stroke="currentColor"
-                                        viewBox="0 0 24 24">
-
-                                        <path stroke-linecap="round"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
                                             stroke-linejoin="round"
                                             stroke-width="2"
-                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0
-                                                9 9 0 0118 0z"/>
-
+                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                                        />
                                     </svg>
 
-                                    {{ $req->duration }} days
+                                    {{ $req->duration }}
+                                    {{ $req->duration == 1 ? 'day' : 'days' }}
 
                                 </div>
-
                             </td>
 
-
                             {{-- Action --}}
-                            <td class="px-5 py-3.5">
-
+                            <td class="px-4 py-3">
                                 <div class="flex justify-end">
 
                                     <button
                                         type="button"
                                         wire:click="assignCasuals({{ $req->id }})"
-                                        class="inline-flex items-center justify-center
-                                            gap-2
-                                            px-4 py-2.5
-                                            text-sm font-medium
-                                            text-white
-                                            bg-gradient-to-r
-                                            from-emerald-600 to-green-600
-                                            hover:from-emerald-700
-                                            hover:to-green-700
-                                            rounded-lg
-                                            transition-all duration-200
-                                            shadow-sm hover:shadow-md
-                                            focus:outline-none
-                                            focus:ring-2
-                                            focus:ring-emerald-500
-                                            focus:ring-offset-2
-                                            group/btn">
-
-                                        <svg class="w-4 h-4
-                                                    group-hover/btn:rotate-12
-                                                    transition-transform"
+                                        class="inline-flex items-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-700 transition hover:bg-emerald-100"
+                                    >
+                                        <svg
+                                            class="h-3.5 w-3.5"
                                             fill="none"
                                             stroke="currentColor"
-                                            viewBox="0 0 24 24">
-
-                                            <path stroke-linecap="round"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path
+                                                stroke-linecap="round"
                                                 stroke-linejoin="round"
                                                 stroke-width="2"
                                                 d="M12 4.354a4 4 0 110 5.292
-                                                    M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1
-                                                    a6 6 0 00-9-5.197
-                                                    m13.46 5.197a4 4 0 00-5.16-3.754"/>
-
+                                                M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1
+                                                a6 6 0 00-9-5.197
+                                                m13.46 5.197a4 4 0 00-5.16-3.754"
+                                            />
                                         </svg>
 
                                         Assign Workers
-
                                     </button>
 
                                 </div>
-
                             </td>
 
                         </tr>
 
                     @empty
 
-                        {{-- Empty State --}}
                         <tr>
+                            <td colspan="4" class="py-16">
+                                <div class="flex flex-col items-center gap-3 text-center">
 
-                            <td colspan="4" class="px-6 py-16 text-center">
-
-                                <div class="flex flex-col items-center gap-3">
-
-                                    <div class="h-14 w-14 rounded-full
-                                                bg-gray-100 dark:bg-gray-800
-                                                flex items-center justify-center">
-
-                                        <svg class="w-6 h-6 text-gray-400"
+                                    <div class="flex h-14 w-14 items-center justify-center rounded-full bg-slate-100">
+                                        <svg
+                                            class="h-6 w-6 text-slate-400"
                                             fill="none"
                                             stroke="currentColor"
-                                            viewBox="0 0 24 24">
-
-                                            <path stroke-linecap="round"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path
+                                                stroke-linecap="round"
                                                 stroke-linejoin="round"
                                                 stroke-width="2"
-                                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0
-                                                    9 9 0 0118 0z"/>
-
+                                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                                            />
                                         </svg>
-
                                     </div>
 
-                                    <p class="text-sm font-semibold
-                                            text-gray-900 dark:text-white">
+                                    <div>
+                                        <p class="text-sm font-semibold text-slate-800">
+                                            No Pending Requisitions
+                                        </p>
 
-                                        No Pending Requisitions
-
-                                    </p>
-
-                                    <p class="text-xs
-                                            text-gray-500 dark:text-gray-400">
-
-                                        All requisitions have been processed
-
-                                    </p>
+                                        <p class="mt-0.5 text-xs text-slate-400">
+                                            All requisitions have been processed
+                                        </p>
+                                    </div>
 
                                 </div>
-
                             </td>
-
                         </tr>
 
                     @endforelse
 
                 </tbody>
-
             </table>
-
         </div>
 
-        {{-- ===== Mobile Cards (< md) ===== --}}
-        <div class="md:hidden divide-y divide-gray-100 dark:divide-gray-800">
+
+        {{-- ===== MOBILE / TABLET CARDS ===== --}}
+        <div class="divide-y divide-slate-100 lg:hidden">
 
             @forelse($this->hrRequisitions as $req)
 
-                <div class="p-4 space-y-4">
+                <div class="p-4">
 
                     {{-- Requester --}}
-                    <div class="flex items-center gap-3 min-w-0">
+                    <div class="mb-3 flex min-w-0 items-center justify-between gap-3">
 
-                        <div class="h-10 w-10 shrink-0 rounded-full
-                                    bg-gradient-to-br from-blue-500 to-indigo-600
-                                    text-white flex items-center justify-center
-                                    text-sm font-semibold shadow-sm">
-                            {{ strtoupper(substr($req->requester->name, 0, 1)) }}
+                        <div class="flex min-w-0 items-center gap-3">
+
+                            <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-100 text-xs font-semibold text-slate-600">
+                                {{ strtoupper(substr($req->requester->name, 0, 1)) }}
+                            </div>
+
+                            <div class="min-w-0">
+                                <p class="truncate text-sm font-semibold text-slate-800">
+                                    {{ $req->requester->name }}
+                                </p>
+
+                                <p class="truncate text-[11px] text-slate-400">
+                                    {{ $req->requester->department->name ?? 'Department' }}
+                                </p>
+                            </div>
+
                         </div>
 
-                        <div class="min-w-0">
-                            <p class="text-sm font-semibold text-gray-900 dark:text-white truncate">
-                                {{ $req->requester->name }}
-                            </p>
-
-                            <p class="text-xs text-gray-500 dark:text-gray-400 truncate">
-                                {{ $req->requester->department->name ?? 'Department' }}
-                            </p>
-                        </div>
+                        {{-- Casual Count --}}
+                        <span class="inline-flex shrink-0 items-center justify-center rounded-lg bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-700">
+                            {{ $req->no_of_casuals }} casuals
+                        </span>
 
                     </div>
 
 
-                    {{-- Casuals & Duration --}}
-                    <div class="grid grid-cols-2 gap-3">
+                    {{-- Details --}}
+                    <div class="mb-3 grid grid-cols-2 gap-2">
 
                         {{-- Casuals --}}
-                        <div class="rounded-lg bg-gray-50 dark:bg-gray-800/60 px-3 py-2.5">
-
-                            <p class="text-[11px] uppercase tracking-wide
-                                    text-gray-500 dark:text-gray-400">
+                        <div class="rounded-lg border border-slate-100 bg-slate-50/70 p-2.5">
+                            <p class="text-[10px] font-medium uppercase tracking-wide text-slate-400">
                                 Casuals
                             </p>
 
-                            <p class="mt-0.5 text-sm font-semibold text-gray-900 dark:text-white">
+                            <p class="mt-0.5 text-xs font-semibold text-slate-700">
                                 {{ $req->no_of_casuals }} Casuals
                             </p>
-
                         </div>
 
-
                         {{-- Duration --}}
-                        <div class="rounded-lg bg-gray-50 dark:bg-gray-800/60 px-3 py-2.5">
-
-                            <p class="text-[11px] uppercase tracking-wide
-                                    text-gray-500 dark:text-gray-400">
+                        <div class="rounded-lg border border-slate-100 bg-slate-50/70 p-2.5">
+                            <p class="text-[10px] font-medium uppercase tracking-wide text-slate-400">
                                 Duration
                             </p>
 
-                            <div class="mt-0.5 flex items-center gap-1.5
-                                        text-sm font-semibold text-gray-900 dark:text-white">
+                            <div class="mt-0.5 flex items-center gap-1.5 text-xs font-semibold text-slate-700">
 
-                                <svg class="w-4 h-4 text-gray-400 shrink-0"
+                                <svg
+                                    class="h-3.5 w-3.5 shrink-0 text-slate-400"
                                     fill="none"
                                     stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        stroke-linecap="round"
                                         stroke-linejoin="round"
                                         stroke-width="2"
-                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0
-                                            9 9 0 0118 0z"/>
+                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                                    />
                                 </svg>
 
-                                {{ $req->duration }} days
+                                {{ $req->duration }}
+                                {{ $req->duration == 1 ? 'day' : 'days' }}
 
                             </div>
-
                         </div>
 
                     </div>
@@ -2236,66 +2160,55 @@
                     <button
                         type="button"
                         wire:click="assignCasuals({{ $req->id }})"
-                        class="w-full px-4 py-2.5
-                            text-sm font-medium text-white
-                            bg-gradient-to-r from-emerald-600 to-green-600
-                            hover:from-emerald-700 hover:to-green-700
-                            rounded-lg
-                            transition-all duration-200
-                            shadow-sm hover:shadow-md
-                            flex items-center justify-center gap-2
-                            group/btn">
-
-                        <svg class="w-4 h-4 group-hover/btn:rotate-12 transition-transform"
+                        class="inline-flex w-full items-center justify-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-medium text-emerald-700 transition hover:bg-emerald-100"
+                    >
+                        <svg
+                            class="h-3.5 w-3.5"
                             fill="none"
                             stroke="currentColor"
-                            viewBox="0 0 24 24">
-
-                            <path stroke-linecap="round"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
                                 stroke-linejoin="round"
                                 stroke-width="2"
                                 d="M12 4.354a4 4 0 110 5.292
-                                    M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1
-                                    a6 6 0 00-9-5.197
-                                    m13.46 5.197a4 4 0 00-5.16-3.754"/>
-
+                                M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1
+                                a6 6 0 00-9-5.197
+                                m13.46 5.197a4 4 0 00-5.16-3.754"
+                            />
                         </svg>
 
                         Assign Workers
-
                     </button>
 
                 </div>
 
             @empty
 
-                {{-- Empty State --}}
                 <div class="py-14 text-center">
 
-                    <div class="mx-auto h-14 w-14 rounded-full
-                                bg-gray-100 dark:bg-gray-800
-                                flex items-center justify-center mb-3">
-
-                        <svg class="w-6 h-6 text-gray-400"
+                    <div class="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-slate-100">
+                        <svg
+                            class="h-6 w-6 text-slate-400"
                             fill="none"
                             stroke="currentColor"
-                            viewBox="0 0 24 24">
-
-                            <path stroke-linecap="round"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
                                 stroke-linejoin="round"
                                 stroke-width="2"
-                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0
-                                    9 9 0 0118 0z"/>
-
+                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                            />
                         </svg>
-
                     </div>
 
-                    <p class="text-sm font-semibold text-gray-900 dark:text-white">
+                    <p class="text-sm font-semibold text-slate-800">
                         No Pending Requisitions
                     </p>
 
-                    <p class="text-xs text-gray-500 dark:text-gray-400">
+                    <p class="mt-0.5 text-xs text-slate-400">
                         All requisitions have been processed
                     </p>
 
@@ -2306,14 +2219,14 @@
         </div>
 
 
-    </div>
+        {{-- ===== PAGINATION ===== --}}
+        @if($this->hrRequisitions->hasPages())
+            <div class="border-t border-slate-100 px-4 py-3 sm:px-6">
+                {{ $this->hrRequisitions->links() }}
+            </div>
+        @endif
 
-    {{-- Pagination --}}
-    @if($this->hrRequisitions->hasPages())
-        <div class="px-1">
-            {{ $this->hrRequisitions->links() }}
-        </div>
-    @endif
+    </div>
 
 </div>
 
