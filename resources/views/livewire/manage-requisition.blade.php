@@ -95,13 +95,46 @@
                             </td>
 
                             {{-- Reason --}}
-                            <td class="max-w-[260px] px-4 py-3 text-slate-600">
-                                <p
-                                    class="line-clamp-2"
-                                    title="{{ $requisition->reason }}"
-                                >
-                                    {{ $requisition->reason }}
-                                </p>
+                            <td class="px-4 py-3">
+
+                                @if($requisition->reason)
+
+                                    <div
+                                        x-data="{ open: false }"
+                                        class="max-w-xl"
+                                    >
+
+                                        <p
+                                            class="text-[11px] leading-relaxed text-slate-600
+                                                break-words whitespace-normal"
+                                            :class="open ? '' : 'line-clamp-2'"
+                                        >
+                                            {{ $requisition->reason }}
+                                        </p>
+
+
+                                        @if(mb_strlen($requisition->reason) > 110)
+
+                                            <button
+                                                type="button"
+                                                @click="open = !open"
+                                                class="mt-1 text-[10px] font-medium text-blue-600
+                                                    hover:text-blue-700 hover:underline"
+                                                x-text="open ? 'Show less' : 'Read more'"
+                                            ></button>
+
+                                        @endif
+
+                                    </div>
+
+                                @else
+
+                                    <span class="text-[11px] italic text-slate-400">
+                                        No reason provided
+                                    </span>
+
+                                @endif
+
                             </td>
 
                             {{-- Duration --}}
@@ -221,14 +254,54 @@
 
 
                     {{-- Reason --}}
-                    <div class="mb-3 rounded-lg border border-slate-100 bg-white p-3">
-                        <p class="mb-1 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
-                            Reason
-                        </p>
+                    <div class="mt-3 rounded-lg border border-slate-100 bg-white">
 
-                        <p class="line-clamp-3 text-xs leading-relaxed text-slate-600">
-                            {{ $requisition->reason }}
-                        </p>
+                        <div class="px-3 pt-2.5">
+
+                            <p class="text-[10px] font-semibold uppercase tracking-wide text-slate-400">
+                                Reason
+                            </p>
+
+                        </div>
+
+
+                        @if($requisition->reason)
+
+                            <div
+                                x-data="{ open: false }"
+                                class="px-3 pb-2.5 pt-1.5"
+                            >
+
+                                <p
+                                    class="text-[11px] leading-relaxed text-slate-600 break-words"
+                                    :class="open ? '' : 'line-clamp-3'"
+                                >
+                                    {{ $requisition->reason }}
+                                </p>
+
+
+                                @if(mb_strlen($requisition->reason) > 110)
+
+                                    <button
+                                        type="button"
+                                        @click="open = !open"
+                                        class="mt-1 text-[10px] font-medium text-blue-600
+                                            hover:text-blue-700 hover:underline"
+                                        x-text="open ? 'Show less' : 'Read more'"
+                                    ></button>
+
+                                @endif
+
+                            </div>
+
+                        @else
+
+                            <p class="px-3 pb-2.5 pt-1.5 text-[11px] italic text-slate-400">
+                                No reason provided
+                            </p>
+
+                        @endif
+
                     </div>
 
 
