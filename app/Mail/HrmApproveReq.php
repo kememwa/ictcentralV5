@@ -40,7 +40,7 @@ class HrmApproveReq extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'view.name',
+            view: 'mail.approvals.hrm-approved-req',
         );
     }
 

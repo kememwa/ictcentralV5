@@ -5,6 +5,9 @@ namespace App\Livewire;
 use Livewire\Component;
 use Livewire\Attributes\Layout;
 use App\Models\Requisition;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\HrmApprovedReq;
+use Illuminate\Support\Facades\Log;
 
 class HrmCasualManagement extends Component
 {
