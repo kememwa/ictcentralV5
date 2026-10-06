@@ -29,66 +29,154 @@
             </div>
         </div>
 
-        {{-- ===== DESKTOP TABLE ===== --}}
+
+        {{-- ===== DESKTOP TABLE (lg and up) ===== --}}
         <div class="hidden lg:block overflow-x-auto">
-            <table class="w-full text-sm">
-                <thead class="bg-gray-50 dark:bg-gray-800/50 text-left text-xs uppercase tracking-wider text-gray-500">
+            <table class="w-full text-xs">
+                <thead class="border-b border-slate-200 bg-slate-50/80 text-left">
                     <tr>
-                        <th class="px-4 py-3">Requested By</th>
-                        <th class="px-4 py-3 text-center"># Casuals</th>
-                        <th class="px-4 py-3">Reason</th>
-                        <th class="px-4 py-3">Duration</th>
-                        <th class="px-4 py-3">Start</th>
-                        <th class="px-4 py-3">End</th>
-                        <th class="px-4 py-3 hidden xl:table-cell">Submitted</th>
-                        <th class="px-4 py-3 text-right">Actions</th>
+                        <th class="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+                            Requested By
+                        </th>
+                        <th class="px-4 py-2.5 text-center text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+                            # Casuals
+                        </th>
+                        <th class="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+                            Reason
+                        </th>
+                        <th class="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+                            Duration
+                        </th>
+                        <th class="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+                            Start
+                        </th>
+                        <th class="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+                            End
+                        </th>
+                        <th class="hidden px-4 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-slate-500 xl:table-cell">
+                            Submitted
+                        </th>
+                        <th class="px-4 py-2.5 text-right text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+                            Actions
+                        </th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+
+                <tbody class="divide-y divide-slate-100">
                     @forelse($requisitions as $requisition)
-                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/40 transition">
+                        <tr class="group align-middle transition-colors hover:bg-slate-50/70">
+
+                            {{-- Requested By --}}
                             <td class="px-4 py-3">
-                                <div class="flex items-center gap-3 min-w-0">
-                                    <div class="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-white flex items-center justify-center font-semibold text-xs shrink-0">
+                                <div class="flex min-w-0 items-center gap-3">
+                                    <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-100 text-xs font-semibold text-slate-600">
                                         {{ strtoupper(substr($requisition->requester->name, 0, 1)) }}
                                     </div>
+
                                     <div class="min-w-0">
-                                        <p class="font-medium text-gray-900 dark:text-white truncate">{{ $requisition->requester->name }}</p>
-                                        <p class="text-xs text-gray-500 truncate">{{ $requisition->requester->email ?? '' }}</p>
+                                        <p class="truncate font-medium text-slate-800">
+                                            {{ $requisition->requester->name }}
+                                        </p>
+
+                                        @if($requisition->requester->email)
+                                            <p class="truncate text-[11px] text-slate-400">
+                                                {{ $requisition->requester->email }}
+                                            </p>
+                                        @endif
                                     </div>
                                 </div>
                             </td>
+
+                            {{-- Casuals --}}
                             <td class="px-4 py-3 text-center">
-                                <span class="inline-flex items-center justify-center min-w-[2rem] px-2 py-1 rounded-lg text-xs font-semibold bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300">
+                                <span class="inline-flex min-w-[2rem] items-center justify-center rounded-lg bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-700">
                                     {{ $requisition->no_of_casuals }}
                                 </span>
                             </td>
-                            <td class="px-4 py-3 text-gray-700 dark:text-gray-300 max-w-[260px]">
-                                <p class="line-clamp-2" title="{{ $requisition->reason }}">{{ $requisition->reason }}</p>
+
+                            {{-- Reason --}}
+                            <td class="max-w-[260px] px-4 py-3 text-slate-600">
+                                <p
+                                    class="line-clamp-2"
+                                    title="{{ $requisition->reason }}"
+                                >
+                                    {{ $requisition->reason }}
+                                </p>
                             </td>
-                            <td class="px-4 py-3 whitespace-nowrap text-gray-700 dark:text-gray-300">{{ $requisition->duration }} days</td>
-                            <td class="px-4 py-3 whitespace-nowrap text-gray-700 dark:text-gray-300">{{ \Carbon\Carbon::parse($requisition->start_date)->format('M d, Y') }}</td>
-                            <td class="px-4 py-3 whitespace-nowrap text-gray-700 dark:text-gray-300">{{ \Carbon\Carbon::parse($requisition->end_date)->format('M d, Y') }}</td>
-                            <td class="px-4 py-3 hidden xl:table-cell whitespace-nowrap text-xs text-gray-500">{{ $requisition->created_at->diffForHumans() }}</td>
+
+                            {{-- Duration --}}
+                            <td class="whitespace-nowrap px-4 py-3 text-slate-600">
+                                {{ $requisition->duration }}
+                                {{ $requisition->duration == 1 ? 'day' : 'days' }}
+                            </td>
+
+                            {{-- Start --}}
+                            <td class="whitespace-nowrap px-4 py-3 text-slate-600">
+                                {{ \Carbon\Carbon::parse($requisition->start_date)->format('M d, Y') }}
+                            </td>
+
+                            {{-- End --}}
+                            <td class="whitespace-nowrap px-4 py-3 text-slate-600">
+                                {{ \Carbon\Carbon::parse($requisition->end_date)->format('M d, Y') }}
+                            </td>
+
+                            {{-- Submitted --}}
+                            <td class="hidden whitespace-nowrap px-4 py-3 text-[11px] text-slate-400 xl:table-cell">
+                                {{ $requisition->created_at->diffForHumans() }}
+                            </td>
+
+                            {{-- Actions --}}
                             <td class="px-4 py-3">
-                                <div class="flex items-center justify-end gap-1.5">
-                                    <button type="button"
+                                <div class="flex items-center justify-end gap-2">
+
+                                    <button
+                                        type="button"
                                         wire:click="approveRequest({{ $requisition->id }})"
                                         wire:confirm="Approve this requisition?"
-                                        class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md text-xs font-medium text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm transition">
-                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                        class="inline-flex items-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-700 transition hover:bg-emerald-100"
+                                    >
+                                        <svg
+                                            class="h-3.5 w-3.5"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2.5"
+                                                d="M5 13l4 4L19 7"
+                                            />
+                                        </svg>
                                         Approve
                                     </button>
-                                    <button type="button"
+
+                                    <button
+                                        type="button"
                                         wire:click="reject({{ $requisition->id }})"
                                         wire:confirm="Reject this requisition?"
-                                        class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md text-xs font-medium text-white bg-rose-600 hover:bg-rose-700 shadow-sm transition">
-                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+                                        class="inline-flex items-center gap-1.5 rounded-lg border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-medium text-rose-700 transition hover:bg-rose-100"
+                                    >
+                                        <svg
+                                            class="h-3.5 w-3.5"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2.5"
+                                                d="M6 18L18 6M6 6l12 12"
+                                            />
+                                        </svg>
                                         Reject
                                     </button>
+
                                 </div>
                             </td>
                         </tr>
+
                     @empty
                         <tr>
                             <td colspan="8" class="py-16">
@@ -100,70 +188,150 @@
             </table>
         </div>
 
+
         {{-- ===== MOBILE / TABLET CARDS ===== --}}
-        <div class="lg:hidden divide-y divide-gray-100 dark:divide-gray-800">
+        <div class="divide-y divide-slate-100 lg:hidden">
             @forelse($requisitions as $requisition)
+
                 <div class="p-4">
-                    <div class="flex items-start justify-between gap-3 mb-3">
-                        <div class="flex items-center gap-3 min-w-0">
-                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-white flex items-center justify-center font-semibold text-sm shrink-0">
+
+                    {{-- Header --}}
+                    <div class="mb-3 flex items-start justify-between gap-3">
+                        <div class="flex min-w-0 items-center gap-3">
+
+                            <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-100 text-xs font-semibold text-slate-600">
                                 {{ strtoupper(substr($requisition->requester->name, 0, 1)) }}
                             </div>
+
                             <div class="min-w-0">
-                                <p class="font-semibold text-gray-900 dark:text-white truncate">{{ $requisition->requester->name }}</p>
-                                <p class="text-xs text-gray-500">{{ $requisition->created_at->diffForHumans() }}</p>
+                                <p class="truncate text-sm font-semibold text-slate-800">
+                                    {{ $requisition->requester->name }}
+                                </p>
+
+                                <p class="text-[11px] text-slate-400">
+                                    {{ $requisition->created_at->diffForHumans() }}
+                                </p>
                             </div>
                         </div>
-                        <span class="shrink-0 inline-flex items-center justify-center min-w-[2rem] px-2 py-1 rounded-lg text-xs font-semibold bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300">
+
+                        <span class="inline-flex shrink-0 items-center justify-center rounded-lg bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-700">
                             {{ $requisition->no_of_casuals }} casuals
                         </span>
                     </div>
 
-                    <p class="text-sm text-gray-700 dark:text-gray-300 mb-3 line-clamp-3">{{ $requisition->reason }}</p>
 
-                    <dl class="grid grid-cols-3 gap-2 text-xs mb-3">
-                        <div class="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-2">
-                            <dt class="text-gray-500">Duration</dt>
-                            <dd class="font-medium text-gray-900 dark:text-white mt-0.5">{{ $requisition->duration }}d</dd>
+                    {{-- Reason --}}
+                    <div class="mb-3 rounded-lg border border-slate-100 bg-white p-3">
+                        <p class="mb-1 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                            Reason
+                        </p>
+
+                        <p class="line-clamp-3 text-xs leading-relaxed text-slate-600">
+                            {{ $requisition->reason }}
+                        </p>
+                    </div>
+
+
+                    {{-- Details --}}
+                    <dl class="mb-3 grid grid-cols-3 gap-2">
+
+                        <div class="rounded-lg border border-slate-100 bg-slate-50/70 p-2.5">
+                            <dt class="text-[10px] font-medium uppercase tracking-wide text-slate-400">
+                                Duration
+                            </dt>
+
+                            <dd class="mt-0.5 text-xs font-semibold text-slate-700">
+                                {{ $requisition->duration }}d
+                            </dd>
                         </div>
-                        <div class="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-2">
-                            <dt class="text-gray-500">Start</dt>
-                            <dd class="font-medium text-gray-900 dark:text-white mt-0.5">{{ \Carbon\Carbon::parse($requisition->start_date)->format('M d') }}</dd>
+
+                        <div class="rounded-lg border border-slate-100 bg-slate-50/70 p-2.5">
+                            <dt class="text-[10px] font-medium uppercase tracking-wide text-slate-400">
+                                Start
+                            </dt>
+
+                            <dd class="mt-0.5 text-xs font-semibold text-slate-700">
+                                {{ \Carbon\Carbon::parse($requisition->start_date)->format('M d, Y') }}
+                            </dd>
                         </div>
-                        <div class="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-2">
-                            <dt class="text-gray-500">End</dt>
-                            <dd class="font-medium text-gray-900 dark:text-white mt-0.5">{{ \Carbon\Carbon::parse($requisition->end_date)->format('M d') }}</dd>
+
+                        <div class="rounded-lg border border-slate-100 bg-slate-50/70 p-2.5">
+                            <dt class="text-[10px] font-medium uppercase tracking-wide text-slate-400">
+                                End
+                            </dt>
+
+                            <dd class="mt-0.5 text-xs font-semibold text-slate-700">
+                                {{ \Carbon\Carbon::parse($requisition->end_date)->format('M d, Y') }}
+                            </dd>
                         </div>
+
                     </dl>
 
-                    <div class="flex gap-2">
-                        <button type="button"
-                            wire:click="approve({{ $requisition->id }})"
+
+                    {{-- Actions --}}
+                    <div class="flex items-center gap-2">
+
+                        <button
+                            type="button"
+                            wire:click="approveRequest({{ $requisition->id }})"
                             wire:confirm="Approve this requisition?"
-                            class="flex-1 inline-flex items-center justify-center gap-1 px-3 py-2 rounded-lg text-xs font-medium text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                            class="inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-medium text-emerald-700 transition hover:bg-emerald-100"
+                        >
+                            <svg
+                                class="h-3.5 w-3.5"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2.5"
+                                    d="M5 13l4 4L19 7"
+                                />
+                            </svg>
                             Approve
                         </button>
-                        <button type="button"
+
+                        <button
+                            type="button"
                             wire:click="reject({{ $requisition->id }})"
                             wire:confirm="Reject this requisition?"
-                            class="flex-1 inline-flex items-center justify-center gap-1 px-3 py-2 rounded-lg text-xs font-medium text-white bg-rose-600 hover:bg-rose-700 shadow-sm">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+                            class="inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-medium text-rose-700 transition hover:bg-rose-100"
+                        >
+                            <svg
+                                class="h-3.5 w-3.5"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2.5"
+                                    d="M6 18L18 6M6 6l12 12"
+                                />
+                            </svg>
                             Reject
                         </button>
+
                     </div>
+
                 </div>
+
             @empty
                 @include('partials.requisitions-empty')
             @endforelse
         </div>
 
+
+        {{-- ===== PAGINATION ===== --}}
         @if($requisitions->hasPages())
-            <div class="px-4 sm:px-6 py-4 border-t border-gray-100 dark:border-gray-800">
+            <div class="border-t border-slate-100 px-4 py-3 sm:px-6">
                 {{ $requisitions->links() }}
             </div>
         @endif
-    </div>
 
+    </div>
 
 </div>
