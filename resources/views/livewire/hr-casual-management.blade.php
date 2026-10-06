@@ -263,285 +263,812 @@
             </div>
         </div>
     </div>
+    
+        {{-- =========================================================
+            DATA CONTAINER
+        ========================================================= --}}
+        <div class="overflow-hidden">
 
-    {{-- ===== Data Container ===== --}}
-    <div class="rounded-2xl border border-gray-200/70 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm overflow-hidden">
 
-        {{-- ===== Desktop / Tablet Table (md+) ===== --}}
-        <div class="hidden md:block overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-800">
-                <thead class="bg-gray-50 dark:bg-gray-900/60">
-                    <tr class="text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                        <th class="px-2 py-3">Requested By</th>
-                        <th class="px-5 py-3">Casuals</th>
-                        <th class="px-5 py-3">Duration</th>
-                        <th class="px-2 py-3 w-48">Daily Rate (KES)</th>
-                        <th class="px-2 py-3">NSSF</th>
-                        <th class="px-2 py-3">SHA</th>
-                        <th class="px-2 py-3">Estimated Total</th>
-                        <th class="px-2 py-3 text-right">Action</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
-                    @forelse($this->hrRequisitions as $req)
-                        <tr class="hover:bg-gray-50/70 dark:hover:bg-gray-800/40 transition-colors">
-                            {{-- Requester --}}
-                            <td class="px-2 py-2">
-                                <div class="flex items-center gap-3 min-w-0">
-                                    <div class="h-9 w-9 shrink-0 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center text-sm font-semibold shadow-sm">
-                                        {{ strtoupper(substr($req->requester->name, 0, 1)) }}
+            {{-- =========================================================
+                DESKTOP TABLE (lg and up)
+            ========================================================= --}}
+            <div class="hidden lg:block overflow-x-auto">
+
+                <table class="w-full text-xs">
+
+                    <thead class="border-b border-slate-200 bg-slate-50/80">
+
+                        <tr class="text-left uppercase tracking-wider text-[10px] font-semibold text-slate-500">
+
+                            <th class="px-4 py-3 whitespace-nowrap">
+                                Requested By
+                            </th>
+
+                            <th class="px-4 py-3 whitespace-nowrap text-center">
+                                Casuals
+                            </th>
+
+                            <th class="px-4 py-3 whitespace-nowrap text-center">
+                                Duration
+                            </th>
+
+                            <th class="px-3 py-3 min-w-[145px]">
+                                Daily Rate
+                            </th>
+
+                            <th class="px-3 py-3 min-w-[125px]">
+                                NSSF
+                            </th>
+
+                            <th class="px-3 py-3 min-w-[125px]">
+                                SHA
+                            </th>
+
+                            <th class="px-4 py-3 whitespace-nowrap">
+                                Estimated Total
+                            </th>
+
+                            <th class="px-3 py-3 whitespace-nowrap text-right">
+                                Action
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody class="divide-y divide-slate-100">
+
+                        @forelse($this->hrRequisitions as $req)
+
+                            <tr
+                                wire:key="hr-req-{{ $req->id }}"
+                                class="group align-middle transition-colors hover:bg-slate-50/70"
+                            >
+
+                                {{-- =================================================
+                                    REQUESTED BY
+                                ================================================== --}}
+                                <td class="px-4 py-3 whitespace-nowrap">
+
+                                    <div class="flex items-center gap-2.5">
+
+                                        {{-- Initial --}}
+                                        <div
+                                            class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full
+                                                bg-slate-100 text-[10px] font-semibold text-slate-600"
+                                        >
+                                            {{ strtoupper(substr($req->requester->name ?? 'U', 0, 1)) }}
+                                        </div>
+
+
+                                        {{-- User --}}
+                                        <div class="min-w-0">
+
+                                            <p class="font-medium text-slate-800">
+                                                {{ $req->requester->name ?? 'Unknown User' }}
+                                            </p>
+
+                                            @if($req->requester?->department)
+                                                <p class="mt-0.5 text-[10px] text-slate-400">
+                                                    {{ $req->requester->department->name }}
+                                                </p>
+                                            @endif
+
+                                        </div>
+
                                     </div>
-                                    <div class="min-w-0">
-                                        <p class="text-sm font-medium text-gray-900 dark:text-white truncate">
-                                            {{ $req->requester->name }}
-                                        </p>
-                                        <p class="text-xs text-gray-500 dark:text-gray-400 truncate">
-                                            {{ $req->requester->department->name ?? 'Department' }}
-                                        </p>
+
+                                </td>
+
+
+                                {{-- =================================================
+                                    CASUALS
+                                ================================================== --}}
+                                <td class="px-4 py-3 text-center">
+
+                                    <span class="font-medium tabular-nums text-slate-700">
+                                        {{ number_format($req->no_of_casuals) }}
+                                    </span>
+
+                                </td>
+
+
+                                {{-- =================================================
+                                    DURATION
+                                ================================================== --}}
+                                <td class="px-4 py-3 text-center whitespace-nowrap">
+
+                                    <span class="font-medium tabular-nums text-slate-700">
+                                        {{ $req->duration }}
+                                    </span>
+
+                                    <span class="ml-0.5 text-[10px] text-slate-400">
+                                        {{ $req->duration == 1 ? 'day' : 'days' }}
+                                    </span>
+
+                                </td>
+
+
+                                {{-- =================================================
+                                    DAILY RATE
+                                ================================================== --}}
+                                <td class="px-3 py-3">
+
+                                    <div class="relative">
+
+                                        <span
+                                            class="pointer-events-none absolute inset-y-0 left-0 flex items-center
+                                                pl-2.5 text-[10px] font-semibold text-slate-400"
+                                        >
+                                            KES
+                                        </span>
+
+                                        <input
+                                            type="number"
+                                            min="0"
+                                            step="any"
+                                            wire:model.live.debounce.300ms="rates.{{ $req->id }}"
+                                            placeholder="0.00"
+                                            class="w-full rounded-lg border border-slate-200 bg-white
+                                                py-2 pl-10 pr-2 text-xs text-slate-700
+                                                placeholder:text-slate-300
+                                                focus:border-blue-500 focus:outline-none focus:ring-2
+                                                focus:ring-blue-500/10
+                                                @error('rates.'.$req->id)
+                                                    border-red-400 ring-1 ring-red-400
+                                                @enderror"
+                                        />
+
                                     </div>
+
+                                    @error("rates.$req->id")
+                                        <p class="mt-1 text-[10px] text-red-600">
+                                            {{ $message }}
+                                        </p>
+                                    @enderror
+
+                                </td>
+
+
+                                {{-- =================================================
+                                    NSSF
+                                ================================================== --}}
+                                <td class="px-3 py-3">
+
+                                    <div class="relative">
+
+                                        <span
+                                            class="pointer-events-none absolute inset-y-0 left-0 flex items-center
+                                                pl-2.5 text-[10px] font-semibold text-slate-400"
+                                        >
+                                            KES
+                                        </span>
+
+                                        <input
+                                            type="number"
+                                            min="0"
+                                            step="any"
+                                            wire:model.live.debounce.300ms="nssfRates"
+                                            placeholder="0.00"
+                                            class="w-full rounded-lg border border-slate-200 bg-white
+                                                py-2 pl-10 pr-2 text-xs text-slate-700
+                                                placeholder:text-slate-300
+                                                focus:border-blue-500 focus:outline-none focus:ring-2
+                                                focus:ring-blue-500/10
+                                                @error('nssfRates')
+                                                    border-red-400 ring-1 ring-red-400
+                                                @enderror"
+                                        />
+
+                                    </div>
+
+                                    @error('nssfRates')
+                                        <p class="mt-1 text-[10px] text-red-600">
+                                            {{ $message }}
+                                        </p>
+                                    @enderror
+
+                                </td>
+
+
+                                {{-- =================================================
+                                    SHA
+                                ================================================== --}}
+                                <td class="px-3 py-3">
+
+                                    <div class="relative">
+
+                                        <span
+                                            class="pointer-events-none absolute inset-y-0 left-0 flex items-center
+                                                pl-2.5 text-[10px] font-semibold text-slate-400"
+                                        >
+                                            KES
+                                        </span>
+
+                                        <input
+                                            type="number"
+                                            min="0"
+                                            step="any"
+                                            wire:model.live.debounce.300ms="shaRates"
+                                            placeholder="0.00"
+                                            class="w-full rounded-lg border border-slate-200 bg-white
+                                                py-2 pl-10 pr-2 text-xs text-slate-700
+                                                placeholder:text-slate-300
+                                                focus:border-blue-500 focus:outline-none focus:ring-2
+                                                focus:ring-blue-500/10
+                                                @error('shaRates')
+                                                    border-red-400 ring-1 ring-red-400
+                                                @enderror"
+                                        />
+
+                                    </div>
+
+                                    @error('shaRates')
+                                        <p class="mt-1 text-[10px] text-red-600">
+                                            {{ $message }}
+                                        </p>
+                                    @enderror
+
+                                </td>
+
+
+                                {{-- =================================================
+                                    ESTIMATED TOTAL
+                                ================================================== --}}
+                                <td class="px-4 py-3 whitespace-nowrap">
+
+                                    @if(!empty($rates[$req->id]) && is_numeric($rates[$req->id]))
+
+                                        <span class="font-semibold tabular-nums text-emerald-600">
+
+                                            KES
+                                            {{ number_format(
+                                                (
+                                                    ((float) $rates[$req->id]
+                                                    * (int) $req->no_of_casuals
+                                                    * (int) $req->duration)
+                                                    -
+                                                    (
+                                                        ((float) $nssfRates + (float) $shaRates)
+                                                        * (int) $req->no_of_casuals
+                                                    )
+                                                )
+                                            ) }}
+
+                                        </span>
+
+                                    @else
+
+                                        <span class="text-slate-400">
+                                            —
+                                        </span>
+
+                                    @endif
+
+                                </td>
+
+
+                                {{-- =================================================
+                                    ACTION
+                                ================================================== --}}
+                                <td class="px-3 py-2.5 text-right">
+
+                                    <button
+                                        type="button"
+                                        wire:click="submitRate({{ $req->id }})"
+                                        wire:loading.attr="disabled"
+                                        wire:target="submitRate({{ $req->id }})"
+                                        title="Submit rate"
+                                        aria-label="Submit rate"
+                                        class="inline-flex items-center justify-center rounded-lg
+                                            border border-emerald-200 bg-white
+                                            px-3 py-2 text-xs font-medium text-emerald-600
+                                            transition hover:bg-emerald-50 hover:text-emerald-700
+                                            focus:outline-none focus:ring-2 focus:ring-emerald-500/20
+                                            disabled:cursor-not-allowed disabled:opacity-50"
+                                    >
+
+                                        <svg
+                                            wire:loading.remove
+                                            wire:target="submitRate({{ $req->id }})"
+                                            class="h-4 w-4"
+                                            viewBox="0 0 20 20"
+                                            fill="currentColor"
+                                        >
+                                            <path
+                                                fill-rule="evenodd"
+                                                d="M16.704 4.884a1 1 0 01.012 1.414l-8.25 8.25a1 1 0 01-1.414 0l-3.75-3.75a1 1 0 011.414-1.414l3.043 3.043 7.543-7.543a1 1 0 011.402 0z"
+                                                clip-rule="evenodd"
+                                            />
+                                        </svg>
+
+                                        <svg
+                                            wire:loading
+                                            wire:target="submitRate({{ $req->id }})"
+                                            class="h-4 w-4 animate-spin"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                        >
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9
+                                                m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                                            />
+                                        </svg>
+
+                                    </button>
+
+                                </td>
+
+                            </tr>
+
+                        @empty
+
+                            <tr>
+
+                                <td colspan="8" class="px-4 py-16 text-center">
+
+                                    <div class="flex flex-col items-center justify-center">
+
+                                        <div
+                                            class="mb-3 flex h-10 w-10 items-center justify-center rounded-full
+                                                bg-slate-100"
+                                        >
+                                            <svg
+                                                class="h-5 w-5 text-slate-400"
+                                                viewBox="0 0 20 20"
+                                                fill="currentColor"
+                                            >
+                                                <path
+                                                    fill-rule="evenodd"
+                                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.707a1 1 0 00-1.414-1.414L9 11.172
+                                                    7.707 9.879a1 1 0 001.414 1.414l2 2a1 1 0 001.414 0l3.414-3.414z"
+                                                    clip-rule="evenodd"
+                                                />
+                                            </svg>
+                                        </div>
+
+                                        <p class="font-medium text-slate-700">
+                                            No pending requisitions
+                                        </p>
+
+                                        <p class="mt-1 text-[11px] text-slate-400">
+                                            All requisitions have been processed
+                                        </p>
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+                        @endforelse
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            {{-- =========================================================
+                MOBILE / TABLET CARDS
+            ========================================================= --}}
+            <div class="lg:hidden divide-y divide-slate-100">
+
+                @forelse($this->hrRequisitions as $req)
+
+                    <div
+                        wire:key="mobile-hr-req-{{ $req->id }}"
+                        class="p-4"
+                    >
+
+                        {{-- =================================================
+                            HEADER
+                        ================================================== --}}
+                        <div class="flex items-start justify-between gap-3">
+
+                            <div class="flex min-w-0 items-center gap-2.5">
+
+                                {{-- Initial --}}
+                                <div
+                                    class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full
+                                        bg-slate-100 text-xs font-semibold text-slate-600"
+                                >
+                                    {{ strtoupper(substr($req->requester->name ?? 'U', 0, 1)) }}
                                 </div>
-                            </td>
+
+
+                                {{-- Requester --}}
+                                <div class="min-w-0">
+
+                                    <p class="truncate text-sm font-semibold text-slate-800">
+                                        {{ $req->requester->name ?? 'Unknown User' }}
+                                    </p>
+
+                                    @if($req->requester?->department)
+                                        <p class="mt-0.5 truncate text-[10px] text-slate-400">
+                                            {{ $req->requester->department->name }}
+                                        </p>
+                                    @endif
+
+                                </div>
+
+                            </div>
+
+
+                            {{-- Awaiting --}}
+                            <span
+                                class="inline-flex shrink-0 items-center gap-1.5 text-[10px]
+                                    font-medium text-amber-700"
+                            >
+                                <span class="h-1.5 w-1.5 rounded-full bg-amber-500"></span>
+                                Awaiting
+                            </span>
+
+                        </div>
+
+
+                        {{-- =================================================
+                            SUMMARY
+                        ================================================== --}}
+                        <div class="mt-4 grid grid-cols-2 gap-2">
 
                             {{-- Casuals --}}
-                            <td class="px-5 py-2">
-                                <span class="inline-flex items-center px-1  rounded-md text-xs font-medium bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 border border-blue-100 dark:border-blue-900/50">
-                                    {{ $req->no_of_casuals }} Casuals
-                                </span>
-                            </td>
+                            <div class="rounded-lg border border-slate-100 bg-slate-50/70 p-2.5">
+
+                                <p class="text-[10px] font-medium uppercase tracking-wide text-slate-400">
+                                    Casuals
+                                </p>
+
+                                <p class="mt-1 text-xs font-semibold text-slate-700">
+                                    {{ number_format($req->no_of_casuals) }}
+                                </p>
+
+                            </div>
+
 
                             {{-- Duration --}}
-                            <td class="px-5 py-2">
-                                <div class="flex items-center gap-1.5 text-sm text-gray-700 dark:text-gray-300">
-                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                    </svg>
-                                    {{ $req->duration }} days
-                                </div>
-                            </td>
+                            <div class="rounded-lg border border-slate-100 bg-slate-50/70 p-2.5">
+
+                                <p class="text-[10px] font-medium uppercase tracking-wide text-slate-400">
+                                    Duration
+                                </p>
+
+                                <p class="mt-1 text-xs font-semibold text-slate-700">
+
+                                    {{ $req->duration }}
+
+                                    <span class="font-normal text-slate-400">
+                                        {{ $req->duration == 1 ? 'day' : 'days' }}
+                                    </span>
+
+                                </p>
+
+                            </div>
+
+                        </div>
 
 
-                            {{-- Rate Input --}}
-                            <td class="px-5 py-4">
+                        {{-- =================================================
+                            RATE INPUTS
+                        ================================================== --}}
+                        <div class="mt-4 space-y-3">
+
+                            {{-- Daily Rate --}}
+                            <div>
+
+                                <label
+                                    class="mb-1 block text-[10px] font-semibold uppercase
+                                        tracking-wide text-slate-400"
+                                >
+                                    Daily Rate
+                                </label>
+
                                 <div class="relative">
-                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-xs font-semibold text-gray-400 dark:text-gray-500 pointer-events-none">
+
+                                    <span
+                                        class="pointer-events-none absolute inset-y-0 left-0 flex
+                                            items-center pl-3 text-[10px] font-semibold text-slate-400"
+                                    >
                                         KES
                                     </span>
+
                                     <input
                                         type="number"
                                         min="0"
                                         step="any"
                                         wire:model.live.debounce.300ms="rates.{{ $req->id }}"
                                         placeholder="0.00"
-                                        class="w-full pl-12 pr-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition @error('rates.'.$req->id) border-red-500 ring-1 ring-red-500 @enderror">
+                                        class="w-full rounded-lg border border-slate-200 bg-white
+                                            py-2.5 pl-11 pr-3 text-xs text-slate-700
+                                            placeholder:text-slate-300
+                                            focus:border-blue-500 focus:outline-none
+                                            focus:ring-2 focus:ring-blue-500/10
+                                            @error('rates.'.$req->id)
+                                                border-red-400 ring-1 ring-red-400
+                                            @enderror"
+                                    />
+
                                 </div>
+
                                 @error("rates.$req->id")
-                                    <p class="mt-1 flex items-center gap-1 text-xs text-red-600 dark:text-red-400">
-                                        <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M18 10A8 8 0 11 2 10a8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                                        </svg>
+                                    <p class="mt-1 text-[10px] text-red-600">
                                         {{ $message }}
                                     </p>
                                 @enderror
-                            </td>
 
-                            {{-- NSSF Input --}}
-                            <td class="px-5 py-4">
-                                <div class="relative">
-                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-xs font-semibold text-gray-400 dark:text-gray-500 pointer-events-none">
-                                        KES
-                                    </span>
-                                    <input
-                                        type="number"
-                                        min="0"
-                                        step="any"
-                                        wire:model.live.debounce.300ms="nssfRates"
-                                        placeholder="0.00"
-                                        class="w-full pl-12 pr-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition @error('rates.'.$req->id) border-red-500 ring-1 ring-red-500 @enderror">
+                            </div>
+
+
+                            {{-- NSSF + SHA --}}
+                            <div class="grid grid-cols-2 gap-2">
+
+                                {{-- NSSF --}}
+                                <div>
+
+                                    <label
+                                        class="mb-1 block text-[10px] font-semibold uppercase
+                                            tracking-wide text-slate-400"
+                                    >
+                                        NSSF
+                                    </label>
+
+                                    <div class="relative">
+
+                                        <span
+                                            class="pointer-events-none absolute inset-y-0 left-0 flex
+                                                items-center pl-3 text-[10px] font-semibold text-slate-400"
+                                        >
+                                            KES
+                                        </span>
+
+                                        <input
+                                            type="number"
+                                            min="0"
+                                            step="any"
+                                            wire:model.live.debounce.300ms="nssfRates"
+                                            placeholder="0.00"
+                                            class="w-full rounded-lg border border-slate-200 bg-white
+                                                py-2.5 pl-11 pr-2 text-xs text-slate-700
+                                                placeholder:text-slate-300
+                                                focus:border-blue-500 focus:outline-none
+                                                focus:ring-2 focus:ring-blue-500/10
+                                                @error('nssfRates')
+                                                    border-red-400 ring-1 ring-red-400
+                                                @enderror"
+                                        />
+
+                                    </div>
+
+                                    @error('nssfRates')
+                                        <p class="mt-1 text-[10px] text-red-600">
+                                            {{ $message }}
+                                        </p>
+                                    @enderror
+
                                 </div>
-                                @error("nssfRates")
-                                    <p class="mt-1 flex items-center gap-1 text-xs text-red-600 dark:text-red-400">
-                                        <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M18 10A8 8 0 11 2 10a8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                                        </svg>
-                                        {{ $message }}
-                                    </p>
-                                @enderror
-                            </td>
 
 
-                            {{-- SHA Input --}}
-                            <td class="px-5 py-4">
-                                <div class="relative">
-                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-xs font-semibold text-gray-400 dark:text-gray-500 pointer-events-none">
-                                        KES
-                                    </span>
-                                    <input
-                                        type="number"
-                                        min="0"
-                                        step="any"
-                                        wire:model.live.debounce.300ms="shaRates"
-                                        placeholder="0.00"
-                                        class="w-full pl-12 pr-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition @error('rates.'.$req->id) border-red-500 ring-1 ring-red-500 @enderror">
+                                {{-- SHA --}}
+                                <div>
+
+                                    <label
+                                        class="mb-1 block text-[10px] font-semibold uppercase
+                                            tracking-wide text-slate-400"
+                                    >
+                                        SHA
+                                    </label>
+
+                                    <div class="relative">
+
+                                        <span
+                                            class="pointer-events-none absolute inset-y-0 left-0 flex
+                                                items-center pl-3 text-[10px] font-semibold text-slate-400"
+                                        >
+                                            KES
+                                        </span>
+
+                                        <input
+                                            type="number"
+                                            min="0"
+                                            step="any"
+                                            wire:model.live.debounce.300ms="shaRates"
+                                            placeholder="0.00"
+                                            class="w-full rounded-lg border border-slate-200 bg-white
+                                                py-2.5 pl-11 pr-2 text-xs text-slate-700
+                                                placeholder:text-slate-300
+                                                focus:border-blue-500 focus:outline-none
+                                                focus:ring-2 focus:ring-blue-500/10
+                                                @error('shaRates')
+                                                    border-red-400 ring-1 ring-red-400
+                                                @enderror"
+                                        />
+
+                                    </div>
+
+                                    @error('shaRates')
+                                        <p class="mt-1 text-[10px] text-red-600">
+                                            {{ $message }}
+                                        </p>
+                                    @enderror
+
                                 </div>
-                                @error("shaRates")
-                                    <p class="mt-1 flex items-center gap-1 text-xs text-red-600 dark:text-red-400">
-                                        <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M18 10A8 8 0 11 2 10a8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                                        </svg>
-                                        {{ $message }}
-                                    </p>
-                                @enderror
-                            </td>
 
+                            </div>
+
+                        </div>
+
+
+                        {{-- =================================================
+                            TOTAL + ACTION
+                        ================================================== --}}
+                        <div
+                            class="mt-4 flex items-center justify-between gap-3
+                                border-t border-slate-100 pt-3"
+                        >
 
                             {{-- Estimated Total --}}
-                            <td class="px-5 py-4">
-                                @if(!empty($rates[$req->id]) && is_numeric($rates[$req->id]))
-                                    <span class="text-sm font-semibold text-emerald-600 dark:text-emerald-400 whitespace-nowrap">
-                                        KES {{ number_format(
-                                            ((float) $rates[$req->id] * (int) $req->no_of_casuals * (int) $req->duration)
-                                            - (((float) $nssfRates + (float) $shaRates) * (int) $req->no_of_casuals)
-                                        ) }}
-                                    </span>
-                                @else
-                                    <span class="text-gray-400 dark:text-gray-500 italic text-sm">—</span>
-                                @endif
-                            </td>
-
-                            {{-- Action --}}
-                            <td class="px-5 py-4 text-right">
-                                <button
-                                    wire:click="submitRate({{ $req->id }})"
-                                    wire:loading.attr="disabled"
-                                    wire:target="submitRate({{ $req->id }})"
-                                    class="inline-flex items-center gap-2 px-3.5 py-2 text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 rounded-lg shadow-sm hover:shadow-md transition disabled:opacity-60 disabled:cursor-not-allowed">
-                                    <svg wire:loading.remove wire:target="submitRate({{ $req->id }})" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                                    </svg>
-                                    <svg wire:loading wire:target="submitRate({{ $req->id }})" class="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-                                    </svg>
-                                    <span wire:loading.remove wire:target="submitRate({{ $req->id }})">Submit</span>
-                                    <span wire:loading wire:target="submitRate({{ $req->id }})">Saving…</span>
-                                </button>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="7" class="px-6 py-16 text-center">
-                                <div class="flex flex-col items-center gap-3">
-                                    <div class="h-14 w-14 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-                                        <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                        </svg>
-                                    </div>
-                                    <p class="text-sm font-semibold text-gray-900 dark:text-white">No Pending Requisitions</p>
-                                    <p class="text-xs text-gray-500 dark:text-gray-400">All requisitions have been processed</p>
-                                </div>
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-
-        {{-- ===== Mobile Cards (< md) ===== --}}
-        <div class="md:hidden divide-y divide-gray-100 dark:divide-gray-800">
-            @forelse($this->hrRequisitions as $req)
-                <div class="p-4 space-y-4">
-                    {{-- Top row: requester + status --}}
-                    <div class="flex items-start justify-between gap-3">
-                        <div class="flex items-center gap-3 min-w-0">
-                            <div class="h-10 w-10 shrink-0 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center text-sm font-semibold">
-                                {{ strtoupper(substr($req->requester->name, 0, 1)) }}
-                            </div>
                             <div class="min-w-0">
-                                <p class="text-sm font-semibold text-gray-900 dark:text-white truncate">
-                                    {{ $req->requester->name }}
+
+                                <p class="text-[10px] font-medium uppercase tracking-wide text-slate-400">
+                                    Estimated Total
                                 </p>
-                                <p class="text-xs text-gray-500 dark:text-gray-400 truncate">
-                                    {{ $req->requester->department->name ?? 'Department' }}
-                                </p>
+
+                                @if(!empty($rates[$req->id]) && is_numeric($rates[$req->id]))
+
+                                    <p class="mt-0.5 truncate text-sm font-semibold text-emerald-600">
+
+                                        KES
+                                        {{ number_format(
+                                            (
+                                                ((float) $rates[$req->id]
+                                                * (int) $req->no_of_casuals
+                                                * (int) $req->duration)
+                                                -
+                                                (
+                                                    ((float) $nssfRates + (float) $shaRates)
+                                                    * (int) $req->no_of_casuals
+                                                )
+                                            )
+                                        ) }}
+
+                                    </p>
+
+                                @else
+
+                                    <p class="mt-0.5 text-sm italic text-slate-400">
+                                        —
+                                    </p>
+
+                                @endif
+
                             </div>
+
+
+                            {{-- Submit --}}
+                            <button
+                                type="button"
+                                wire:click="submitRate({{ $req->id }})"
+                                wire:loading.attr="disabled"
+                                wire:target="submitRate({{ $req->id }})"
+                                class="inline-flex h-9 shrink-0 items-center justify-center
+                                    rounded-lg border border-emerald-200 bg-white px-3
+                                    text-xs font-medium text-emerald-600
+                                    transition hover:bg-emerald-50 hover:text-emerald-700
+                                    focus:outline-none focus:ring-2 focus:ring-emerald-500/20
+                                    disabled:cursor-not-allowed disabled:opacity-50"
+                            >
+
+                                <svg
+                                    wire:loading.remove
+                                    wire:target="submitRate({{ $req->id }})"
+                                    class="mr-1.5 h-4 w-4"
+                                    viewBox="0 0 20 20"
+                                    fill="currentColor"
+                                >
+                                    <path
+                                        fill-rule="evenodd"
+                                        d="M16.704 4.884a1 1 0 01.012 1.414l-8.25 8.25a1 1 0 01-1.414 0l-3.75-3.75a1 1 0 011.414-1.414l3.043 3.043 7.543-7.543a1 1 0 011.402 0z"
+                                        clip-rule="evenodd"
+                                    />
+                                </svg>
+
+                                <svg
+                                    wire:loading
+                                    wire:target="submitRate({{ $req->id }})"
+                                    class="mr-1.5 h-4 w-4 animate-spin"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9
+                                        m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                                    />
+                                </svg>
+
+                                <span
+                                    wire:loading.remove
+                                    wire:target="submitRate({{ $req->id }})"
+                                >
+                                    Submit
+                                </span>
+
+                                <span
+                                    wire:loading
+                                    wire:target="submitRate({{ $req->id }})"
+                                >
+                                    Saving…
+                                </span>
+
+                            </button>
+
                         </div>
-                        <span class="inline-flex items-center px-2 py-1 rounded-full text-[11px] font-medium bg-amber-50 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300 border border-amber-200/60 dark:border-amber-800/50 whitespace-nowrap">
-                            <span class="w-1.5 h-1.5 bg-amber-500 rounded-full mr-1.5 animate-pulse"></span>
-                            Awaiting
-                        </span>
+
                     </div>
 
-                    {{-- Meta grid --}}
-                    <div class="grid grid-cols-2 gap-3 text-sm">
-                        <div class="rounded-lg bg-gray-50 dark:bg-gray-800/60 px-3 py-2">
-                            <p class="text-[11px] uppercase tracking-wide text-gray-500 dark:text-gray-400">Casuals</p>
-                            <p class="font-medium text-gray-900 dark:text-white">{{ $req->no_of_casuals }}</p>
+                @empty
+
+                    <div class="px-4 py-16 text-center">
+
+                        <div class="flex flex-col items-center justify-center">
+
+                            <div
+                                class="mb-3 flex h-10 w-10 items-center justify-center rounded-full
+                                    bg-slate-100"
+                            >
+                                <svg
+                                    class="h-5 w-5 text-slate-400"
+                                    viewBox="0 0 20 20"
+                                    fill="currentColor"
+                                >
+                                    <path
+                                        fill-rule="evenodd"
+                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.707a1 1 0 00-1.414-1.414L9 11.172
+                                        7.707 9.879a1 1 0 001.414 1.414l2 2a1 1 0 001.414 0l3.414-3.414a1 1 0 00-1.414 0z"
+                                        clip-rule="evenodd"
+                                    />
+                                </svg>
+                            </div>
+
+                            <p class="font-medium text-slate-700">
+                                No pending requisitions
+                            </p>
+
+                            <p class="mt-1 text-[11px] text-slate-400">
+                                All requisitions have been processed
+                            </p>
+
                         </div>
-                        <div class="rounded-lg bg-gray-50 dark:bg-gray-800/60 px-3 py-2">
-                            <p class="text-[11px] uppercase tracking-wide text-gray-500 dark:text-gray-400">Duration</p>
-                            <p class="font-medium text-gray-900 dark:text-white">{{ $req->duration }} days</p>
-                        </div>
+
                     </div>
 
-                    {{-- Rate input --}}
-                    <div>
-                        <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Daily Rate</label>
-                        <div class="relative">
-                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-xs font-semibold text-gray-400 dark:text-gray-500 pointer-events-none">KES</span>
-                            <input
-                                type="number"
-                                min="0"
-                                step="any"
-                                wire:model.live.debounce.300ms="rates.{{ $req->id }}"
-                                placeholder="0.00"
-                                class="w-full pl-12 pr-3 py-2.5 text-sm rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition @error('rates.'.$req->id) border-red-500 ring-1 ring-red-500 @enderror">
-                        </div>
-                        @error("rates.$req->id")
-                            <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
-                        @enderror
-                    </div>
+                @endforelse
 
-                    {{-- Total + action --}}
-                    <div class="flex items-center justify-between gap-3 pt-1">
-                        <div class="min-w-0">
-                            <p class="text-[11px] uppercase tracking-wide text-gray-500 dark:text-gray-400">Estimated Total</p>
-                            @if(!empty($rates[$req->id]) && is_numeric($rates[$req->id]))
-                                <p class="text-sm font-semibold text-emerald-600 dark:text-emerald-400 truncate">
-                                    KES {{ number_format((float) $rates[$req->id] * (int) $req->no_of_casuals * (int) $req->duration) }}
-                                </p>
-                            @else
-                                <p class="text-sm text-gray-400 italic">—</p>
-                            @endif
-                        </div>
-                        <button
-                            wire:click="submitRate({{ $req->id }})"
-                            wire:loading.attr="disabled"
-                            wire:target="submitRate({{ $req->id }})"
-                            class="shrink-0 inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 rounded-lg shadow-sm disabled:opacity-60">
-                            <span wire:loading.remove wire:target="submitRate({{ $req->id }})">Submit Rate</span>
-                            <span wire:loading wire:target="submitRate({{ $req->id }})">Saving…</span>
-                        </button>
-                    </div>
-                </div>
-            @empty
-                <div class="py-14 text-center">
-                    <div class="mx-auto h-14 w-14 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center mb-3">
-                        <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                    </div>
-                    <p class="text-sm font-semibold text-gray-900 dark:text-white">No Pending Requisitions</p>
-                    <p class="text-xs text-gray-500 dark:text-gray-400">All requisitions have been processed</p>
-                </div>
-            @endforelse
+            </div>
+
         </div>
-    </div>
 
-    {{-- Pagination --}}
-    @if($this->hrRequisitions->hasPages())
-        <div class="px-1">
-            {{ $this->hrRequisitions->links() }}
-        </div>
-    @endif
+
+        {{-- =========================================================
+            PAGINATION
+        ========================================================= --}}
+        @if($this->hrRequisitions->hasPages())
+
+            <div class="border-t border-slate-100 px-4 py-3 sm:px-6">
+                {{ $this->hrRequisitions->links() }}
+            </div>
+
+        @endif
 </div>
 
 @elseif($view === 'casual_management')
