@@ -11,6 +11,7 @@ use Livewire\WithPagination;
 use Illuminate\Support\Facades\Mail;
 use App\Models\User;
 use App\Mail\HodApproveRequisition;
+use Illuminate\Support\Facades\Log;
 
 class CasualWorkforce extends Component
 {

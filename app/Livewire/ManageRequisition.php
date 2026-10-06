@@ -8,6 +8,7 @@ use App\Models\Requisition;
 use App\Models\User;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\CooApproveRequisition;
+use Illuminate\Support\Facades\Log;
 
 
 
@@ -67,7 +68,7 @@ class ManageRequisition extends Component
                 'notify',
                 type: 'error',
                 title: 'Approval Failed',
-                message: 'The requisition could not be approved. Please try again.'
+                message: 'The requisition could not be approved. Please contact Admin.'
             );
         }
     }

@@ -34,8 +34,7 @@
                             </p>
 
                             <p style="font-size: 15px; line-height: 1.6;">
-                                A new casual requisition has been submitted and is
-                                awaiting your approval.
+                                A casual requisition has been approved by the COO and is now awaiting HR approval.
                             </p>
 
                             {{-- Requisition Details --}}
@@ -48,15 +47,6 @@
                                     </td>
                                     <td style="border-bottom: 1px solid #e5e7eb;">
                                         {{ $requisition->requester->name ?? 'N/A' }}
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td style="font-weight: bold; border-bottom: 1px solid #e5e7eb;">
-                                        HOD / Division Head (Approved By)
-                                    </td>
-                                    <td style="border-bottom: 1px solid #e5e7eb;">
-                                        {{ $requisition->hod->name ?? 'N/A' }}
                                     </td>
                                 </tr>
 
@@ -125,10 +115,83 @@
 
                             </table>
 
+                            {{-- Approval History --}}
+                            <div style="margin-top: 30px;">
+
+                                <h3 style="margin: 0 0 15px 0; font-size: 16px; color: #1f2937;">
+                                    Approval History
+                                </h3>
+
+                                <table width="100%" cellpadding="10" cellspacing="0"
+                                       style="border-collapse: collapse; border: 1px solid #e5e7eb;">
+
+                                    {{-- HOD --}}
+                                    <tr>
+                                        <td style="font-weight: bold; border-bottom: 1px solid #e5e7eb; width: 35%;">
+                                            HOD Approval
+                                        </td>
+
+                                        <td style="border-bottom: 1px solid #e5e7eb; color: #166534;">
+                                            <strong>Approved</strong><br>
+
+                                            <span style="color: #374151; font-size: 13px;">
+                                                {{ $requisition->hod->name ?? 'N/A' }}
+                                            </span>
+
+                                            @if($requisition->hod_approval_date)
+                                                <br>
+                                                <span style="color: #6b7280; font-size: 12px;">
+                                                    {{ \Carbon\Carbon::parse($requisition->hod_approval_date)->format('d M Y, h:i A') }}
+                                                </span>
+                                            @endif
+                                        </td>
+                                    </tr>
+
+                                    {{-- COO --}}
+                                    <tr>
+                                        <td style="font-weight: bold;">
+                                            COO Approval
+                                        </td>
+
+                                        <td style="color: #166534;">
+                                            <strong>Approved</strong><br>
+
+                                            <span style="color: #374151; font-size: 13px;">
+                                                {{ $requisition->coo->name ?? 'N/A' }}
+                                            </span>
+
+                                            @if($requisition->coo_approval_date)
+                                                <br>
+                                                <span style="color: #6b7280; font-size: 12px;">
+                                                    {{ \Carbon\Carbon::parse($requisition->coo_approval_date)->format('d M Y, h:i A') }}
+                                                </span>
+                                            @endif
+                                        </td>
+                                    </tr>
+
+                                    {{-- HR --}}
+                                    <tr>
+                                        <td style="font-weight: bold;">
+                                            HR Approval
+                                        </td>
+
+                                        <td style="color: #d97706;">
+                                            <strong>Pending</strong><br>
+
+                                            <span style="color: #6b7280; font-size: 12px;">
+                                                Awaiting HR action
+                                            </span>
+                                        </td>
+                                    </tr>
+
+                                </table>
+
+                            </div>
+
                             {{-- Approval Button --}}
                             <div style="text-align: center; margin-top: 30px;">
 
-                                <a href="{{route('coo-approval')}}"
+                                <a href="{{ route('hr.casual.manage') }}"
                                    style="
                                        display: inline-block;
                                        padding: 12px 24px;
@@ -162,7 +225,7 @@
                         <td style="background: #f9fafb; padding: 20px; text-align: center;">
 
                             <p style="margin: 0; font-size: 12px; color: #6b7280;">
-                                This is an automated email from ict central system.
+                                This is an automated email from ICT Central system.
                             </p>
 
                         </td>

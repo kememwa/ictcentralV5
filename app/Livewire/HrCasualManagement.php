@@ -8,6 +8,10 @@ use App\Models\Requisition;
 use Livewire\WithPagination;
 use App\Models\Casual;
 use App\Models\Assignment;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\HrmApproveRequisition;
+use Illuminate\Support\Facades\Log;
+use App\Models\User;
 
 class HrCasualManagement extends Component
 {
@@ -257,42 +261,87 @@ class HrCasualManagement extends Component
             "shaRates" => 'required|numeric|min:0',
         ]);
 
-        $req = Requisition::findOrFail($id);
+        try{
 
-        $dailyRate = (float) $this->rates[$id];
-        $nssfRate = (float) $this->nssfRates;
-        $shaRate = (float) $this->shaRates;
-        $casuals = (int) $req->no_of_casuals;
-        $duration = (int) $req->duration;
+            $req = Requisition::findOrFail($id);
 
-        // Gross amount before deductions
-        $grossAmount = $dailyRate * $duration * $casuals;
+            $dailyRate = (float) $this->rates[$id];
+            $nssfRate = (float) $this->nssfRates;
+            $shaRate = (float) $this->shaRates;
+            $casuals = (int) $req->no_of_casuals;
+            $duration = (int) $req->duration;
 
-        // NSSF + SHA deductions
-        $deductions = ($nssfRate + $shaRate) * $casuals;
+            // Gross amount before deductions
+            $grossAmount = $dailyRate * $duration * $casuals;
 
-        // Final amount
-        $totalAmount = $grossAmount - $deductions;
+            // NSSF + SHA deductions
+            $deductions = ($nssfRate + $shaRate) * $casuals;
 
-        $req->update([
-            'daily_rate' => $dailyRate,
-            'nssf_rate' => $nssfRate,
-            'sha_rate' => $shaRate,
-            'hr_approval_status' => true,
-            'hr_approval_date' => now(),
-            'hr_rep_id' => auth()->user()->id,
-            'total_amount' => $totalAmount,
-        ]);
+            // Final amount
+            $totalAmount = $grossAmount - $deductions;
 
-        unset($this->rates[$id]);
+            $req->update([
+                'daily_rate' => $dailyRate,
+                'nssf_rate' => $nssfRate,
+                'sha_rate' => $shaRate,
+                'hr_approval_status' => true,
+                'hr_approval_date' => now(),
+                'hr_rep_id' => auth()->user()->id,
+                'total_amount' => $totalAmount,
+            ]);
 
-        // Flash message for Livewire UI
-        $this->dispatch(
-            'notify',
-            type: 'success',
-            title: 'Rate Submitted',
-            message: 'Daily rate submitted successfully.'
-        );
+            unset($this->rates[$id]);
+
+            // send notification to HRM for approval
+            $hrmApprovers = User::whereHas('roles', function ($query) {
+                $query->where('name', 'hrm');
+            })
+            ->whereNotNull('email')
+            ->get();
+
+            $hrm_delegate = User::whereHas('roles', function ($query) {
+                $query->where('name', 'hrm delegate');
+            })
+            ->whereNotNull('email')
+            ->get();
+
+            // Get HR email addresses
+            $hrm_emails = $hrmApprovers->pluck('email')->toArray();
+            $hrm_delegate_emails = $hrm_delegate->pluck('email')->toArray();
+
+            // Send notification to HR
+            if (!empty($hrm_emails)) {
+                Mail::to($hrm_emails)
+                    ->cc($hrm_delegate_emails)
+                    ->queue(new HrmApproveRequisition($req));
+            }
+
+            // Flash message for Livewire UI
+            $this->dispatch(
+                'notify',
+                type: 'success',
+                title: 'Rate Submitted',
+                message: 'Daily rate submitted successfully.'
+            );
+
+        }catch(\Throwable $e){
+
+            Log::error('COO requisition approval failed', [
+            'requisition_id' => $id,
+            'user_id' => auth()->id(),
+            'error' => $e->getMessage(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+            ]);
+
+            $this->dispatch(
+                'notify',
+                type: 'error',
+                title: 'Approval Failed',
+                message: 'The requisition could not be approved. Please try again.'
+            );
+        }
+        
     }
 
 
