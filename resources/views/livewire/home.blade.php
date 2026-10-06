@@ -97,134 +97,527 @@
         </span>
     </div>
 
-    {{-- Table --}}
-    <div class="overflow-x-auto">
-        <table class="w-full text-sm">
-            <thead class="bg-gray-50 text-left text-xs uppercase tracking-wider text-gray-500">
+
+    {{-- ===== DESKTOP TABLE (lg and up) ===== --}}
+    <div class="hidden overflow-x-auto lg:block">
+        <table class="w-full text-xs">
+
+            <thead class="border-b border-slate-200 bg-slate-50/80 text-left">
                 <tr>
-                    <th class="px-6 py-3">Device</th>
-                    <th class="px-6 py-3">Model Number</th>
-                    <th class="px-6 py-3">Tag Number</th>
-                    <th class="px-6 py-3">Status</th>
-                    <th class="px-6 py-3 text-right">Action</th>
+                    <th class="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+                        Device
+                    </th>
+
+                    <th class="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+                        Model Number
+                    </th>
+
+                    <th class="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+                        Tag Number
+                    </th>
+
+                    <th class="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+                        Status
+                    </th>
+
+                    <th class="px-4 py-2.5 text-right text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+                        Action
+                    </th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-100">
+
+            <tbody class="divide-y divide-slate-100">
+
                 @forelse($devices as $device)
+
                     @php
                         if (!$device->line_manager_approval) {
                             $status = ['label' => 'Awaiting manager', 'color' => 'amber'];
                         } elseif (!$device->user_accepted) {
-                            $status = ['label' => 'Awaiting you',     'color' => 'orange'];
+                            $status = ['label' => 'Awaiting you', 'color' => 'orange'];
                         } else {
-                            $status = ['label' => 'In use',           'color' => 'emerald'];
+                            $status = ['label' => 'In use', 'color' => 'emerald'];
                         }
+
                         $canAccept = $device->line_manager_approval && !$device->user_accepted;
                     @endphp
 
-                    <tr class="hover:bg-gray-50 transition">
+                    <tr class="group align-middle transition-colors hover:bg-slate-50/70">
+
                         {{-- Device --}}
-                        <td class="px-6 py-3">
-                            <div class="flex items-center gap-3">
-                                <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 text-white flex items-center justify-center font-semibold text-xs">
+                        <td class="px-4 py-3">
+                            <div class="flex min-w-0 items-center gap-3">
+
+                                <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-xs font-semibold text-slate-600">
                                     {{ strtoupper(substr($device->name, 0, 2)) }}
                                 </div>
-                                <div>
-                                    <p class="font-medium text-gray-900 ">{{ $device->name }}</p>
-                                    <p class="text-xs text-gray-500 capitalize">{{ $device->type }}</p>
+
+                                <div class="min-w-0">
+                                    <p class="truncate font-medium text-slate-800">
+                                        {{ $device->name }}
+                                    </p>
+
+                                    <p class="truncate text-[11px] capitalize text-slate-400">
+                                        {{ $device->type }}
+                                    </p>
                                 </div>
+
                             </div>
                         </td>
 
-                        <td class="px-6 py-3 text-gray-700">{{ $device->model ?? '—' }}</td>
+                        {{-- Model Number --}}
+                        <td class="px-4 py-3 text-slate-600">
+                            {{ $device->model ?? '—' }}
+                        </td>
 
-                        <td class="px-6 py-3">
-                            <span class="font-mono text-xs px-2 py-1 rounded-md bg-gray-100 text-gray-700">
+                        {{-- Tag Number --}}
+                        <td class="px-4 py-3">
+                            <span class="inline-flex rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 font-mono text-[11px] text-slate-600">
                                 {{ $device->tag_number ?? '—' }}
                             </span>
                         </td>
 
                         {{-- Status --}}
-                        <td class="px-6 py-3">
-                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-{{ $status['color'] }}-50 text-{{ $status['color'] }}-700 ring-1 ring-{{ $status['color'] }}-200">
-                                <span class="h-1.5 w-1.5 rounded-full bg-{{ $status['color'] }}-500 {{ $canAccept ? 'animate-pulse' : '' }}"></span>
+                        <td class="px-4 py-3">
+
+                            @php
+                                $statusClasses = match ($status['color']) {
+                                    'amber' => 'bg-amber-50 text-amber-700 ring-amber-200',
+                                    'orange' => 'bg-orange-50 text-orange-700 ring-orange-200',
+                                    'emerald' => 'bg-emerald-50 text-emerald-700 ring-emerald-200',
+                                    default => 'bg-slate-50 text-slate-600 ring-slate-200',
+                                };
+
+                                $dotClasses = match ($status['color']) {
+                                    'amber' => 'bg-amber-500',
+                                    'orange' => 'bg-orange-500',
+                                    'emerald' => 'bg-emerald-500',
+                                    default => 'bg-slate-400',
+                                };
+                            @endphp
+
+                            <span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium ring-1 {{ $statusClasses }}">
+                                <span class="h-1.5 w-1.5 rounded-full {{ $dotClasses }} {{ $canAccept ? 'animate-pulse' : '' }}"></span>
                                 {{ $status['label'] }}
                             </span>
+
                         </td>
 
                         {{-- Action --}}
-                        <td class="px-6 py-3 text-right">
-                            <div x-data="{ open: false }">
-                                <button @click="open = true"
+                        <td class="px-4 py-3">
+                            <div
+                                x-data="{ open: false }"
+                                class="flex justify-end"
+                            >
+
+                                <button
+                                    type="button"
+                                    @click="open = true"
                                     @disabled(!$canAccept)
-                                    class="inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 px-3 py-1.5 text-xs font-medium text-white shadow-sm hover:shadow-md transition disabled:bg-none disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed disabled:shadow-none">
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                    class="inline-flex items-center gap-1.5 rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-1.5 text-xs font-medium text-indigo-700 transition hover:bg-indigo-100 disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-50 disabled:text-slate-400"
+                                >
+                                    <svg
+                                        class="h-3.5 w-3.5"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2.5"
+                                            d="M5 13l4 4L19 7"
+                                        />
                                     </svg>
+
                                     Accept
                                 </button>
 
-                                {{-- Confirm Modal (teleported) --}}
+
+                                {{-- Confirm Modal --}}
                                 <template x-teleport="body">
-                                    <div x-show="open" x-cloak class="fixed inset-0 z-[100] flex items-center justify-center p-4">
-                                        <div x-show="open" x-transition.opacity @click="open = false"
-                                             class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"></div>
 
-                                        <div x-show="open" x-transition.scale.origin.center
-                                             @keydown.escape.window="open = false"
-                                             class="relative w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden">
+                                    <div
+                                        x-show="open"
+                                        x-cloak
+                                        class="fixed inset-0 z-[100] flex items-center justify-center p-4"
+                                    >
 
-                                            <div class="p-6">
-                                                <div class="flex items-center gap-3 mb-4">
-                                                    <div class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center">
-                                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                        <div
+                                            x-show="open"
+                                            x-transition.opacity
+                                            @click="open = false"
+                                            class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
+                                        ></div>
+
+
+                                        <div
+                                            x-show="open"
+                                            x-transition.scale.origin.center
+                                            @keydown.escape.window="open = false"
+                                            class="relative w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl"
+                                        >
+
+                                            <div class="p-5 sm:p-6">
+
+                                                <div class="mb-4 flex items-center gap-3">
+
+                                                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
+                                                        <svg
+                                                            class="h-5 w-5"
+                                                            fill="none"
+                                                            stroke="currentColor"
+                                                            viewBox="0 0 24 24"
+                                                        >
+                                                            <path
+                                                                stroke-linecap="round"
+                                                                stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                                                            />
                                                         </svg>
                                                     </div>
-                                                    <div>
-                                                        <h3 class="text-base font-semibold text-gray-900">Accept Device</h3>
-                                                        <p class="text-xs text-gray-500">{{ $device->name }} · {{ $device->tag_number }}</p>
+
+                                                    <div class="min-w-0">
+                                                        <h3 class="text-sm font-semibold text-slate-800">
+                                                            Accept Device
+                                                        </h3>
+
+                                                        <p class="truncate text-[11px] text-slate-400">
+                                                            {{ $device->name }} · {{ $device->tag_number }}
+                                                        </p>
                                                     </div>
+
                                                 </div>
 
-                                                <p class="text-sm text-gray-600">
+                                                <p class="text-xs leading-relaxed text-slate-600">
                                                     By accepting, you confirm responsibility for this device and that it has been received in good condition.
                                                 </p>
+
                                             </div>
 
-                                            <div class="flex justify-end gap-2 px-6 py-4 bg-gray-50 border-gray-100">
-                                                <button @click="open = false"
-                                                    class="px-4 py-2 text-sm border border-gray-300 rounded-lg text-gray-700 hover:bg-white">
+
+                                            <div class="flex justify-end gap-2 border-t border-slate-100 bg-slate-50/70 px-5 py-3 sm:px-6">
+
+                                                <button
+                                                    type="button"
+                                                    @click="open = false"
+                                                    class="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600 transition hover:bg-slate-50"
+                                                >
                                                     Cancel
                                                 </button>
-                                                <button @click="open = false; $nextTick(() => $wire.acceptDevice({{ $device->id }}))"
-                                                    class="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 rounded-lg shadow-sm">
+
+                                                <button
+                                                    type="button"
+                                                    @click="open = false; $nextTick(() => $wire.acceptDevice({{ $device->id }}))"
+                                                    class="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-700 transition hover:bg-emerald-100"
+                                                >
                                                     Confirm
                                                 </button>
+
                                             </div>
+
                                         </div>
+
                                     </div>
+
                                 </template>
+
                             </div>
                         </td>
+
                     </tr>
+
                 @empty
+
                     <tr>
-                        <td colspan="5" class="py-16 text-center">
-                            <div class="flex flex-col items-center gap-2 text-gray-500">
-                                <svg class="w-12 h-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                          d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                                </svg>
-                                <p class="font-medium text-gray-700">No devices assigned</p>
-                                <p class="text-xs">Devices issued to you will appear here</p>
+                        <td colspan="5" class="py-16">
+
+                            <div class="flex flex-col items-center gap-3 text-center">
+
+                                <div class="flex h-14 w-14 items-center justify-center rounded-full bg-slate-100">
+                                    <svg
+                                        class="h-6 w-6 text-slate-400"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="1.5"
+                                            d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                                        />
+                                    </svg>
+                                </div>
+
+                                <div>
+                                    <p class="text-sm font-semibold text-slate-800">
+                                        No devices assigned
+                                    </p>
+
+                                    <p class="mt-0.5 text-xs text-slate-400">
+                                        Devices issued to you will appear here
+                                    </p>
+                                </div>
+
                             </div>
+
                         </td>
                     </tr>
+
                 @endforelse
+
             </tbody>
         </table>
     </div>
+
+
+    {{-- ===== MOBILE / TABLET CARDS ===== --}}
+    <div class="divide-y divide-slate-100 lg:hidden">
+
+        @forelse($devices as $device)
+
+            @php
+                if (!$device->line_manager_approval) {
+                    $status = ['label' => 'Awaiting manager', 'color' => 'amber'];
+                } elseif (!$device->user_accepted) {
+                    $status = ['label' => 'Awaiting you', 'color' => 'orange'];
+                } else {
+                    $status = ['label' => 'In use', 'color' => 'emerald'];
+                }
+
+                $canAccept = $device->line_manager_approval && !$device->user_accepted;
+
+                $statusClasses = match ($status['color']) {
+                    'amber' => 'bg-amber-50 text-amber-700 ring-amber-200',
+                    'orange' => 'bg-orange-50 text-orange-700 ring-orange-200',
+                    'emerald' => 'bg-emerald-50 text-emerald-700 ring-emerald-200',
+                    default => 'bg-slate-50 text-slate-600 ring-slate-200',
+                };
+
+                $dotClasses = match ($status['color']) {
+                    'amber' => 'bg-amber-500',
+                    'orange' => 'bg-orange-500',
+                    'emerald' => 'bg-emerald-500',
+                    default => 'bg-slate-400',
+                };
+            @endphp
+
+            <div class="p-4">
+
+                {{-- Device Header --}}
+                <div class="mb-3 flex items-start justify-between gap-3">
+
+                    <div class="flex min-w-0 items-center gap-3">
+
+                        <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-xs font-semibold text-slate-600">
+                            {{ strtoupper(substr($device->name, 0, 2)) }}
+                        </div>
+
+                        <div class="min-w-0">
+                            <p class="truncate text-sm font-semibold text-slate-800">
+                                {{ $device->name }}
+                            </p>
+
+                            <p class="truncate text-[11px] capitalize text-slate-400">
+                                {{ $device->type }}
+                            </p>
+                        </div>
+
+                    </div>
+
+                    {{-- Status --}}
+                    <span class="inline-flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-medium ring-1 {{ $statusClasses }}">
+                        <span class="h-1.5 w-1.5 rounded-full {{ $dotClasses }} {{ $canAccept ? 'animate-pulse' : '' }}"></span>
+                        {{ $status['label'] }}
+                    </span>
+
+                </div>
+
+
+                {{-- Device Details --}}
+                <div class="mb-3 grid grid-cols-2 gap-2">
+
+                    {{-- Model --}}
+                    <div class="rounded-lg border border-slate-100 bg-slate-50/70 p-2.5">
+                        <p class="text-[10px] font-medium uppercase tracking-wide text-slate-400">
+                            Model Number
+                        </p>
+
+                        <p class="mt-0.5 truncate text-xs font-semibold text-slate-700">
+                            {{ $device->model ?? '—' }}
+                        </p>
+                    </div>
+
+                    {{-- Tag Number --}}
+                    <div class="rounded-lg border border-slate-100 bg-slate-50/70 p-2.5">
+                        <p class="text-[10px] font-medium uppercase tracking-wide text-slate-400">
+                            Tag Number
+                        </p>
+
+                        <p class="mt-0.5 truncate font-mono text-xs font-semibold text-slate-700">
+                            {{ $device->tag_number ?? '—' }}
+                        </p>
+                    </div>
+
+                </div>
+
+
+                {{-- Action --}}
+                <div x-data="{ open: false }">
+
+                    <button
+                        type="button"
+                        @click="open = true"
+                        @disabled(!$canAccept)
+                        class="inline-flex w-full items-center justify-center gap-1.5 rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-xs font-medium text-indigo-700 transition hover:bg-indigo-100 disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-50 disabled:text-slate-400"
+                    >
+                        <svg
+                            class="h-3.5 w-3.5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2.5"
+                                d="M5 13l4 4L19 7"
+                            />
+                        </svg>
+
+                        Accept
+                    </button>
+
+
+                    {{-- Confirm Modal --}}
+                    <template x-teleport="body">
+
+                        <div
+                            x-show="open"
+                            x-cloak
+                            class="fixed inset-0 z-[100] flex items-center justify-center p-4"
+                        >
+
+                            <div
+                                x-show="open"
+                                x-transition.opacity
+                                @click="open = false"
+                                class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
+                            ></div>
+
+
+                            <div
+                                x-show="open"
+                                x-transition.scale.origin.center
+                                @keydown.escape.window="open = false"
+                                class="relative w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl"
+                            >
+
+                                <div class="p-5">
+
+                                    <div class="mb-4 flex items-center gap-3">
+
+                                        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
+                                            <svg
+                                                class="h-5 w-5"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    stroke-width="2"
+                                                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                                                />
+                                            </svg>
+                                        </div>
+
+                                        <div class="min-w-0">
+                                            <h3 class="text-sm font-semibold text-slate-800">
+                                                Accept Device
+                                            </h3>
+
+                                            <p class="truncate text-[11px] text-slate-400">
+                                                {{ $device->name }} · {{ $device->tag_number }}
+                                            </p>
+                                        </div>
+
+                                    </div>
+
+                                    <p class="text-xs leading-relaxed text-slate-600">
+                                        By accepting, you confirm responsibility for this device and that it has been received in good condition.
+                                    </p>
+
+                                </div>
+
+
+                                <div class="flex justify-end gap-2 border-t border-slate-100 bg-slate-50/70 px-5 py-3">
+
+                                    <button
+                                        type="button"
+                                        @click="open = false"
+                                        class="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600 transition hover:bg-slate-50"
+                                    >
+                                        Cancel
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        @click="open = false; $nextTick(() => $wire.acceptDevice({{ $device->id }}))"
+                                        class="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-700 transition hover:bg-emerald-100"
+                                    >
+                                        Confirm
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </template>
+
+                </div>
+
+            </div>
+
+        @empty
+
+            <div class="py-14 text-center">
+
+                <div class="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-slate-100">
+                    <svg
+                        class="h-6 w-6 text-slate-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="1.5"
+                            d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                        />
+                    </svg>
+                </div>
+
+                <p class="text-sm font-semibold text-slate-800">
+                    No devices assigned
+                </p>
+
+                <p class="mt-0.5 text-xs text-slate-400">
+                    Devices issued to you will appear here
+                </p>
+
+            </div>
+
+        @endforelse
+
+    </div>
+
 </div>
 
     {{-- ===== Knowledge Base (collapsible, compact) ===== --}}
