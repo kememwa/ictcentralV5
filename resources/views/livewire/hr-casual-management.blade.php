@@ -683,11 +683,10 @@
                                         {{ $req->requester->name ?? 'Unknown User' }}
                                     </p>
 
-                                    @if($req->requester?->department)
-                                        <p class="mt-0.5 truncate text-[10px] text-slate-400">
-                                            {{ $req->requester->department->name }}
-                                        </p>
-                                    @endif
+                                    <p class="mt-0.5 truncate text-[10px] text-blue-600">
+                                        {{ $req->ref_number}}
+                                    </p>
+                                    
 
                                 </div>
 
