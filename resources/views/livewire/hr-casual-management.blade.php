@@ -275,41 +275,45 @@
             ========================================================= --}}
             <div class="hidden lg:block overflow-x-auto">
 
-                <table class="w-full text-xs">
+                <table class="w-full table-auto text-xs">
 
                     <thead class="border-b border-slate-200 bg-slate-50/80">
 
                         <tr class="text-left uppercase tracking-wider text-[10px] font-semibold text-slate-500">
 
-                            <th class="px-4 py-3 whitespace-nowrap">
+                            <th class="px-2.5 py-2.5 whitespace-nowrap">
+                                Requisition Num
+                            </th>
+
+                            <th class="px-2.5 py-2.5 whitespace-nowrap">
                                 Requested By
                             </th>
 
-                            <th class="px-4 py-3 whitespace-nowrap text-center">
+                            <th class="px-2 py-2.5 whitespace-nowrap text-center">
                                 Casuals
                             </th>
 
-                            <th class="px-4 py-3 whitespace-nowrap text-center">
+                            <th class="px-2 py-2.5 whitespace-nowrap text-center">
                                 Duration
                             </th>
 
-                            <th class="px-3 py-3 min-w-[145px]">
+                            <th class="px-1.5 py-2.5 w-[105px]">
                                 Daily Rate
                             </th>
 
-                            <th class="px-3 py-3 min-w-[125px]">
+                            <th class="px-1.5 py-2.5 w-[105px]">
                                 NSSF
                             </th>
 
-                            <th class="px-3 py-3 min-w-[125px]">
+                            <th class="px-1.5 py-2.5 w-[105px]">
                                 SHA
                             </th>
 
-                            <th class="px-4 py-3 whitespace-nowrap">
+                            <th class="px-2.5 py-2.5 whitespace-nowrap">
                                 Estimated Total
                             </th>
 
-                            <th class="px-3 py-3 whitespace-nowrap text-right">
+                            <th class="px-2 py-2.5 w-[70px] whitespace-nowrap text-center">
                                 Action
                             </th>
 
@@ -327,46 +331,44 @@
                                 class="group align-middle transition-colors hover:bg-slate-50/70"
                             >
 
-                                {{-- =================================================
-                                    REQUESTED BY
-                                ================================================== --}}
-                                <td class="px-4 py-3 whitespace-nowrap">
+                                {{-- REQUISITION NUMBER --}}
+                                <td class="px-2.5 py-2.5 whitespace-nowrap">
 
-                                    <div class="flex items-center gap-2.5">
+                                    <p class="font-medium text-blue-600">
+                                        {{ $req->ref_number }}
+                                    </p>
 
-                                        {{-- Initial --}}
-                                        <div
-                                            class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full
-                                                bg-slate-100 text-[10px] font-semibold text-slate-600"
-                                        >
-                                            {{ strtoupper(substr($req->requester->name ?? 'U', 0, 1)) }}
-                                        </div>
+                                    <p class="mt-0.5 text-[9px] text-slate-400">
+                                        {{ $req->created_at->diffForHumans() }}
+                                    </p>
+
+                                </td>
 
 
-                                        {{-- User --}}
-                                        <div class="min-w-0">
+                                {{-- REQUESTED BY --}}
+                                <td class="px-2.5 py-2.5 whitespace-nowrap">
 
-                                            <p class="font-medium text-slate-800">
-                                                {{ $req->requester->name ?? 'Unknown User' }}
+                                    <div class="min-w-0">
+
+                                        <p class="font-medium text-slate-800 truncate max-w-[150px]">
+                                            {{ $req->requester->name ?? 'Unknown User' }}
+                                        </p>
+
+                                        @if($req->requester?->department)
+
+                                            <p class="mt-0.5 text-[9px] text-slate-400 truncate max-w-[150px]">
+                                                {{ $req->requester->department->name }}
                                             </p>
 
-                                            @if($req->requester?->department)
-                                                <p class="mt-0.5 text-[10px] text-slate-400">
-                                                    {{ $req->requester->department->name }}
-                                                </p>
-                                            @endif
-
-                                        </div>
+                                        @endif
 
                                     </div>
 
                                 </td>
 
 
-                                {{-- =================================================
-                                    CASUALS
-                                ================================================== --}}
-                                <td class="px-4 py-3 text-center">
+                                {{-- CASUALS --}}
+                                <td class="px-2 py-2.5 text-center whitespace-nowrap">
 
                                     <span class="font-medium tabular-nums text-slate-700">
                                         {{ number_format($req->no_of_casuals) }}
@@ -375,32 +377,28 @@
                                 </td>
 
 
-                                {{-- =================================================
-                                    DURATION
-                                ================================================== --}}
-                                <td class="px-4 py-3 text-center whitespace-nowrap">
+                                {{-- DURATION --}}
+                                <td class="px-2 py-2.5 text-center whitespace-nowrap">
 
                                     <span class="font-medium tabular-nums text-slate-700">
                                         {{ $req->duration }}
                                     </span>
 
-                                    <span class="ml-0.5 text-[10px] text-slate-400">
+                                    <span class="ml-0.5 text-[9px] text-slate-400">
                                         {{ $req->duration == 1 ? 'day' : 'days' }}
                                     </span>
 
                                 </td>
 
 
-                                {{-- =================================================
-                                    DAILY RATE
-                                ================================================== --}}
-                                <td class="px-3 py-3">
+                                {{-- DAILY RATE --}}
+                                <td class="px-1.5 py-2.5">
 
                                     <div class="relative">
 
                                         <span
                                             class="pointer-events-none absolute inset-y-0 left-0 flex items-center
-                                                pl-2.5 text-[10px] font-semibold text-slate-400"
+                                                pl-2 text-[9px] font-semibold text-slate-400"
                                         >
                                             KES
                                         </span>
@@ -411,8 +409,8 @@
                                             step="any"
                                             wire:model.live.debounce.300ms="rates.{{ $req->id }}"
                                             placeholder="0.00"
-                                            class="w-full rounded-lg border border-slate-200 bg-white
-                                                py-2 pl-10 pr-2 text-xs text-slate-700
+                                            class="w-[105px] rounded-md border border-slate-200 bg-white
+                                                py-1.5 pl-9 pr-1.5 text-[11px] text-slate-700
                                                 placeholder:text-slate-300
                                                 focus:border-blue-500 focus:outline-none focus:ring-2
                                                 focus:ring-blue-500/10
@@ -424,7 +422,7 @@
                                     </div>
 
                                     @error("rates.$req->id")
-                                        <p class="mt-1 text-[10px] text-red-600">
+                                        <p class="mt-1 text-[9px] text-red-600">
                                             {{ $message }}
                                         </p>
                                     @enderror
@@ -432,16 +430,14 @@
                                 </td>
 
 
-                                {{-- =================================================
-                                    NSSF
-                                ================================================== --}}
-                                <td class="px-3 py-3">
+                                {{-- NSSF --}}
+                                <td class="px-1.5 py-2.5">
 
                                     <div class="relative">
 
                                         <span
                                             class="pointer-events-none absolute inset-y-0 left-0 flex items-center
-                                                pl-2.5 text-[10px] font-semibold text-slate-400"
+                                                pl-2 text-[9px] font-semibold text-slate-400"
                                         >
                                             KES
                                         </span>
@@ -452,8 +448,8 @@
                                             step="any"
                                             wire:model.live.debounce.300ms="nssfRates"
                                             placeholder="0.00"
-                                            class="w-full rounded-lg border border-slate-200 bg-white
-                                                py-2 pl-10 pr-2 text-xs text-slate-700
+                                            class="w-[105px] rounded-md border border-slate-200 bg-white
+                                                py-1.5 pl-9 pr-1.5 text-[11px] text-slate-700
                                                 placeholder:text-slate-300
                                                 focus:border-blue-500 focus:outline-none focus:ring-2
                                                 focus:ring-blue-500/10
@@ -465,7 +461,7 @@
                                     </div>
 
                                     @error('nssfRates')
-                                        <p class="mt-1 text-[10px] text-red-600">
+                                        <p class="mt-1 text-[9px] text-red-600">
                                             {{ $message }}
                                         </p>
                                     @enderror
@@ -473,16 +469,14 @@
                                 </td>
 
 
-                                {{-- =================================================
-                                    SHA
-                                ================================================== --}}
-                                <td class="px-3 py-3">
+                                {{-- SHA --}}
+                                <td class="px-1.5 py-2.5">
 
                                     <div class="relative">
 
                                         <span
                                             class="pointer-events-none absolute inset-y-0 left-0 flex items-center
-                                                pl-2.5 text-[10px] font-semibold text-slate-400"
+                                                pl-2 text-[9px] font-semibold text-slate-400"
                                         >
                                             KES
                                         </span>
@@ -493,8 +487,8 @@
                                             step="any"
                                             wire:model.live.debounce.300ms="shaRates"
                                             placeholder="0.00"
-                                            class="w-full rounded-lg border border-slate-200 bg-white
-                                                py-2 pl-10 pr-2 text-xs text-slate-700
+                                            class="w-[105px] rounded-md border border-slate-200 bg-white
+                                                py-1.5 pl-9 pr-1.5 text-[11px] text-slate-700
                                                 placeholder:text-slate-300
                                                 focus:border-blue-500 focus:outline-none focus:ring-2
                                                 focus:ring-blue-500/10
@@ -506,7 +500,7 @@
                                     </div>
 
                                     @error('shaRates')
-                                        <p class="mt-1 text-[10px] text-red-600">
+                                        <p class="mt-1 text-[9px] text-red-600">
                                             {{ $message }}
                                         </p>
                                     @enderror
@@ -514,10 +508,8 @@
                                 </td>
 
 
-                                {{-- =================================================
-                                    ESTIMATED TOTAL
-                                ================================================== --}}
-                                <td class="px-4 py-3 whitespace-nowrap">
+                                {{-- ESTIMATED TOTAL --}}
+                                <td class="px-2.5 py-2.5 whitespace-nowrap">
 
                                     @if(!empty($rates[$req->id]) && is_numeric($rates[$req->id]))
 
@@ -550,10 +542,8 @@
                                 </td>
 
 
-                                {{-- =================================================
-                                    ACTION
-                                ================================================== --}}
-                                <td class="px-3 py-2.5 text-right">
+                                {{-- ACTION --}}
+                                <td class="px-2 py-2.5 whitespace-nowrap text-center">
 
                                     <button
                                         type="button"
@@ -562,14 +552,16 @@
                                         wire:target="submitRate({{ $req->id }})"
                                         title="Submit rate"
                                         aria-label="Submit rate"
-                                        class="inline-flex items-center justify-center rounded-lg
-                                            border border-emerald-200 bg-white
-                                            px-3 py-2 text-xs font-medium text-emerald-600
-                                            transition hover:bg-emerald-50 hover:text-emerald-700
-                                            focus:outline-none focus:ring-2 focus:ring-emerald-500/20
+                                        class="inline-flex h-8 w-8 items-center justify-center
+                                            rounded-lg border border-emerald-200 bg-white
+                                            text-emerald-600 transition
+                                            hover:bg-emerald-50 hover:text-emerald-700
+                                            focus:outline-none focus:ring-2
+                                            focus:ring-emerald-500/20
                                             disabled:cursor-not-allowed disabled:opacity-50"
                                     >
 
+                                        {{-- CHECK --}}
                                         <svg
                                             wire:loading.remove
                                             wire:target="submitRate({{ $req->id }})"
@@ -584,6 +576,7 @@
                                             />
                                         </svg>
 
+                                        {{-- LOADING --}}
                                         <svg
                                             wire:loading
                                             wire:target="submitRate({{ $req->id }})"
@@ -611,13 +604,13 @@
 
                             <tr>
 
-                                <td colspan="8" class="px-4 py-16 text-center">
+                                <td colspan="9" class="px-4 py-16 text-center">
 
                                     <div class="flex flex-col items-center justify-center">
 
                                         <div
-                                            class="mb-3 flex h-10 w-10 items-center justify-center rounded-full
-                                                bg-slate-100"
+                                            class="mb-3 flex h-10 w-10 items-center justify-center
+                                                rounded-full bg-slate-100"
                                         >
                                             <svg
                                                 class="h-5 w-5 text-slate-400"
@@ -654,7 +647,6 @@
                 </table>
 
             </div>
-
 
             {{-- =========================================================
                 MOBILE / TABLET CARDS

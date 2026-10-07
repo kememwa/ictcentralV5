@@ -161,20 +161,7 @@
                                         wire:click="approveRequest({{ $requisition->id }})"
                                         wire:confirm="Approve this requisition?"
                                         class="inline-flex items-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-700 transition hover:bg-emerald-100"
-                                    >
-                                        <svg
-                                            class="h-3.5 w-3.5"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path
-                                                stroke-linecap="round"
-                                                stroke-linejoin="round"
-                                                stroke-width="2.5"
-                                                d="M5 13l4 4L19 7"
-                                            />
-                                        </svg>
+                                    >  
                                         Approve
                                     </button>
 
@@ -184,19 +171,6 @@
                                         wire:confirm="Reject this requisition?"
                                         class="inline-flex items-center gap-1.5 rounded-lg border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-medium text-rose-700 transition hover:bg-rose-100"
                                     >
-                                        <svg
-                                            class="h-3.5 w-3.5"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path
-                                                stroke-linecap="round"
-                                                stroke-linejoin="round"
-                                                stroke-width="2.5"
-                                                d="M6 18L18 6M6 6l12 12"
-                                            />
-                                        </svg>
                                         Reject
                                     </button>
 
