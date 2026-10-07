@@ -304,17 +304,17 @@
 
             <input
                 type="text"
-                wire:model.live.debounce.300ms="search"
+                wire:model.live.debounce.300ms="hrSearch"
                 placeholder="Search requisitions..."
                 class="w-full rounded-lg border border-slate-200 bg-white py-2 pl-9 pr-9
                        text-xs text-slate-700 placeholder:text-slate-400
                        focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
             />
 
-            @if($search)
+            @if($hrSearch)
                 <button
                     type="button"
-                    wire:click="$set('search', '')"
+                    wire:click="$set('hrSearch', '')"
                     class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400
                            transition hover:text-slate-600"
                     title="Clear search"

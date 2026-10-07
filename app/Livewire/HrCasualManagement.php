@@ -28,7 +28,15 @@ class HrCasualManagement extends Component
         'assignment_details' => '',
     ];
 
+    // For searching casuals
+    public $hrSearch = '';
     // For assignment modal
+
+    public function updatedhrSearch()
+    {
+        $this->resetPage();
+    }
+    
     public $selectedCasuals = [];
     public $search = '';
     public $filteredCasuals = [];
@@ -422,8 +430,8 @@ class HrCasualManagement extends Component
             })
 
             // Search
-            ->when($this->search, function ($q) {
-                $search = '%' . $this->search . '%';
+            ->when($this->hrSearch, function ($q) {
+                $search = '%' . $this->hrSearch . '%';
 
                 $q->where(function ($query) use ($search) {
                     $query->where('ref_number', 'like', $search)
