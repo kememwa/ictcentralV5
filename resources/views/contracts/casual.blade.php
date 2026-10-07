@@ -21,6 +21,7 @@
      | 1. DATA
      ------------------------------------------------------------------ */
 
+    $Requisition_Number = $requisition->ref_number ?? 'NULL';
     $hod_name = $requisition->hod->name ?? 'NULL';
     $hod_sig = $requisition->hod->signature_image_path;
     $hr_sig = $requisition->hrRep->signature_image_path ?? 'NULL';
@@ -784,7 +785,7 @@
     {{-- FRAME 1 : reference, engagement, wages --}}
     <div class="frame">
 
-        <div class="ref">Reference Token: <span style="font-weight: normal;">{{ "Reference Number" }}</span></div>
+        <div class="ref">Reference Token: <span style="font-weight: normal;">{{ $Requisition_Number }}</span></div>
 
         <div class="a-head">ENGAGEMENT DETAILS</div>
 
@@ -812,8 +813,8 @@
         <div class="wages">
             <div class="dl-line">Daily Payment Rate: <span>Ksh. {{ $dailyRate }}</span></div>
             <div class="dl-line">No. of Casuals: <span>{{ $no_casuals }}</span></div>
-            <div class="dl-line">Total Deductions(PP): <span>Ksh. {{ $totalDed }}</span></div>
-            <div class="dl-line">Total Amount Payable(PP): <span>Ksh. {{ $totalPay }}</span></div>
+            <div class="dl-line">Total Deductions: <span>Ksh. {{ $totalDed }}</span></div>
+            <div class="dl-line">Total Amount Payable: <span>Ksh. {{ $totalPay }}</span></div>
         </div>
 
     </div>
