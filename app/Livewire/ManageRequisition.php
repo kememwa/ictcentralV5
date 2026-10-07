@@ -9,16 +9,27 @@ use App\Models\User;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\CooApproveRequisition;
 use Illuminate\Support\Facades\Log;
-
+use Livewire\WithPagination;
 
 
 
 class ManageRequisition extends Component
 {
+    use WithPagination;
 
 
     public $search = '';
     public $actionFilter = '';
+
+    public function updatedSearch()
+    {
+        $this->resetPage();
+    }
+
+    public function actionFilter()
+    {
+        $this->resetPage();
+    }
 
 
     public function approveRequest($id)

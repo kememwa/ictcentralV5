@@ -40,6 +40,16 @@ class CasualWorkforce extends Component
         'duration' => 'min:1',
     ];
 
+    public function updatedSearch()
+    {
+        $this->resetPage();
+    }
+
+    public function actionFilter()
+    {
+        $this->resetPage();
+    }
+
     public function updated($field)
     {
         $this->calculateDuration();
