@@ -1670,12 +1670,12 @@
                     <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"/>
                     </svg>
-                    <input type="text" wire:model.live.debounce.300ms="search" placeholder="Search devices…"
+                    <input type="text" wire:model.live.debounce.300ms="searchCasual" placeholder="Search casuals…"
                         class="w-full pl-10 pr-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500">
                 </div>
 
-                @if($search)
-                    <button wire:click="$set('search', ''); $set('actionFilter', '')"
+                @if($searchCasual)
+                    <button wire:click="$set('searchCasual', ''); $set('actionFilter', '')"
                         class="inline-flex items-center justify-center gap-1 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-600 hover:bg-slate-50">
                         Clear
                     </button>
@@ -1856,6 +1856,58 @@
 
    
 @elseif($view === 'Print_Casual_Contracts')
+
+    {{-- Search --}}
+    <div class="mb-3 flex items-center justify-end">
+        <div class="relative w-full sm:w-64">
+            <svg
+                class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+            >
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"
+                />
+            </svg>
+
+            <input
+                type="text"
+                wire:model.live.debounce.300ms="hrSearch"
+                placeholder="Search requisitions..."
+                class="w-full rounded-lg border border-slate-200 bg-white py-2 pl-9 pr-9
+                    text-xs text-slate-700 placeholder:text-slate-400
+                    focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+            />
+
+            @if($hrSearch)
+                <button
+                    type="button"
+                    wire:click="$set('hrSearch', '')"
+                    class="absolute right-2.5 top-1/2 -translate-y-1/2
+                        text-slate-400 transition hover:text-slate-600"
+                    title="Clear search"
+                >
+                    <svg
+                        class="h-3.5 w-3.5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12"
+                        />
+                    </svg>
+                </button>
+            @endif
+        </div>
+    </div>
 
     {{-- ===== DESKTOP TABLE (lg and up) ===== --}}
     <div class="hidden lg:block overflow-x-auto">
@@ -2199,21 +2251,61 @@
                         Approved Requisitions by HRM
                     </h2>
                     <p class="text-sm text-gray-500 dark:text-gray-400">
-                        These are the requisitions that have been approved by the HR Manager and are ready for casual worker assignment.
+                        These are the requisitions that have been approved by the HRM and are ready for casual worker assignment.
                     </p>
                 </div>
             </div>
 
             {{-- Right-side stats --}}
             <div class="flex items-center gap-3">
-                <div class="flex items-center gap-2 px-3 py-2 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200/70 dark:border-amber-800/50">
-                    <span class="relative flex h-2 w-2">
-                        <span class="absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75 animate-ping"></span>
-                        <span class="relative inline-flex h-2 w-2 rounded-full bg-amber-500"></span>
-                    </span>
-                    <span class="text-xs font-medium text-amber-800 dark:text-amber-300 whitespace-nowrap">
-                        Awaiting Casual Assignment
-                    </span>
+                {{-- Search --}}
+                <div class="relative w-full sm:w-64">
+                    <svg
+                        class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"
+                        />
+                    </svg>
+
+                    <input
+                        type="text"
+                        wire:model.live.debounce.300ms="hrSearch"
+                        placeholder="Search requisitions..."
+                        class="w-full rounded-lg border border-slate-200 bg-white py-2 pl-9 pr-9
+                            text-xs text-slate-700 placeholder:text-slate-400
+                            focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+                    />
+
+                    @if($hrSearch)
+                        <button
+                            type="button"
+                            wire:click="$set('hrSearch', '')"
+                            class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400
+                                transition hover:text-slate-600"
+                            title="Clear search"
+                        >
+                            <svg
+                                class="h-3.5 w-3.5"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12"
+                                />
+                            </svg>
+                        </button>
+                    @endif
                 </div>
             </div>
         </div>

@@ -30,13 +30,21 @@ class HrCasualManagement extends Component
 
     // For searching casuals
     public $hrSearch = '';
+    public $searchCasual = '';
+    public $actionFilter = '';
     // For assignment modal
 
     public function updatedhrSearch()
     {
         $this->resetPage();
     }
-    
+
+    public function updatedsearchCasual()
+    {
+        $this->resetPage();
+    }
+
+
     public $selectedCasuals = [];
     public $search = '';
     public $filteredCasuals = [];
@@ -447,7 +455,18 @@ class HrCasualManagement extends Component
 
     public function getCasualsDataProperty()
     {
-        return Casual::latest()->paginate(5);
+        return Casual::query()
+            ->when($this->searchCasual, function ($query) {
+                $search = '%' . $this->searchCasual . '%';
+
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', $search)
+                        ->orWhere('id_number', 'like', $search)
+                        ->orWhere('phone_number', 'like', $search);
+                });
+            })
+            ->latest()
+            ->paginate(5);
     }
 
     #[Layout('layouts.dashboard')]
