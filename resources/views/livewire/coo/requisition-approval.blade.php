@@ -31,6 +31,10 @@
                     <tr class="text-left uppercase tracking-wider text-[10px] font-semibold text-slate-500">
                         
                         <th class="px-4 py-3 whitespace-nowrap">
+                            Requisition Num
+                        </th>
+
+                        <th class="px-4 py-3 whitespace-nowrap">
                             Requested By
                         </th>
 
@@ -69,28 +73,30 @@
                             class="group align-top transition-colors hover:bg-slate-50/70"
                         >
 
+                            <td class="px-4 py-3 whitespace-nowrap">
+
+                                <div class="flex items-center gap-2.5">
+
+
+                                    {{-- Name --}}
+                                    <div class="min-w-0">
+                                        <p class="font-medium text-blue-600">
+                                            {{ $req->ref_number }}
+                                        </p>
+                                    </div>
+
+                                </div>
+
+                            </td>
+
                             {{-- Requested By --}}
                             <td class="px-4 py-3 whitespace-nowrap">
                                 <div class="flex items-center gap-2.5">
-
-                                    {{-- Initial --}}
-                                    <div
-                                        class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full
-                                            bg-slate-100 text-[10px] font-semibold text-slate-600"
-                                    >
-                                        {{ strtoupper(substr($req->requester->name ?? 'U', 0, 1)) }}
-                                    </div>
 
                                     <div>
                                         <p class="font-medium text-slate-800">
                                             {{ $req->requester->name ?? 'Unknown User' }}
                                         </p>
-
-                                        @if($req->requester?->designation)
-                                            <p class="mt-0.5 text-[10px] text-slate-400">
-                                                {{ $req->requester->designation->name }}
-                                            </p>
-                                        @endif
                                     </div>
 
                                 </div>
@@ -279,8 +285,8 @@
                                 </p>
 
                                 @if($req->requester?->designation)
-                                    <p class="mt-0.5 truncate text-[10px] text-slate-400">
-                                        {{ $req->requester->designation->name }}
+                                    <p class="mt-0.5 truncate text-[10px] text-blue-600">
+                                        {{ $req->ref_number }}
                                     </p>
                                 @endif
                             </div>
@@ -291,7 +297,7 @@
                         {{-- Casual Count --}}
                         <div class="shrink-0 text-right">
                             <p class="text-[10px] uppercase tracking-wide text-slate-400">
-                                Casuals
+                                No of Casuals
                             </p>
 
                             <p class="mt-0.5 text-sm font-semibold tabular-nums text-slate-700">
