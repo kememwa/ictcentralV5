@@ -1,4 +1,4 @@
-<div class="flex flex-col items-center justify-center px-4 py-12 text-center">
+<div class="flex flex-col items-center justify-center px-4 py-6 text-center">
     <div class="mb-3 flex h-11 w-11 items-center justify-center rounded-full bg-slate-100">
         <svg
             class="h-5 w-5 text-slate-400"
