@@ -314,8 +314,8 @@ class HrCasualManagement extends Component
     {
         $this->validate([
             "rates.$id" => 'required|numeric|min:1',
-            "nssfRates" => 'required|numeric|min:0',
-            "shaRates" => 'required|numeric|min:0',
+            "nssfRates.$id" => 'required|numeric|min:0',
+            "shaRates.$id" => 'required|numeric|min:0',
         ]);
 
         try{
@@ -323,8 +323,8 @@ class HrCasualManagement extends Component
             $req = Requisition::findOrFail($id);
 
             $dailyRate = (float) $this->rates[$id];
-            $nssfRate = (float) $this->nssfRates;
-            $shaRate = (float) $this->shaRates;
+            $nssfRate = (float) $this->nssfRates[$id];
+            $shaRate = (float) $this->shaRates[$id];
             $casuals = (int) $req->no_of_casuals;
             $duration = (int) $req->duration;
 

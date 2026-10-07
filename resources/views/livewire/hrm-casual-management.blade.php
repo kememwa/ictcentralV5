@@ -511,7 +511,7 @@
         </div>
 
         {{-- ===== PAGINATION ===== --}}
-        <div class="mt-6">
+        <div class="border-t border-slate-100 px-4 py-3 sm:px-6">
             {{ $hrm_requisitions->links() }}
         </div>
 
