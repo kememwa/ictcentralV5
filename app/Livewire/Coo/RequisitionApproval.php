@@ -9,9 +9,27 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\HrApproveRequisition;
 use Illuminate\Support\Facades\Log;
 use App\Models\User;
+use Livewire\WithPagination;
 
 class RequisitionApproval extends Component 
 {
+    use WithPagination;
+
+    public $search = '';
+    public $actionFilter = '';
+
+
+    public function updatedSearch()
+    {
+        $this->resetPage();
+    }
+
+    public function actionFilter()
+    {
+        $this->resetPage();
+    }
+
+
     public function approveCoo($id)
     {
         try {
@@ -72,9 +90,24 @@ class RequisitionApproval extends Component
     #[Layout('layouts.dashboard')]
     public function render()
     {
-        return view('livewire.coo.requisition-approval',[
-            'coo_requisitions' => Requisition::where('hod_approval_status', true)
-            ->where('coo_approval_status', 'false')->latest()->paginate(10)
+        return view('livewire.coo.requisition-approval', [
+            'coo_requisitions' => Requisition::query()
+                ->where('hod_approval_status', true)
+                ->where('coo_approval_status', 'false')
+
+                ->when($this->search, function ($query) {
+                    $search = '%' . $this->search . '%';
+
+                    $query->where(function ($q) use ($search) {
+                        $q->where('ref_number', 'like', $search)
+                            ->orWhereHas('requester', function ($q) use ($search) {
+                                $q->where('name', 'like', $search);
+                            });
+                    });
+                })
+
+                ->latest()
+                ->paginate(10),
         ]);
     }
 }

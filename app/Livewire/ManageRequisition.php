@@ -119,7 +119,6 @@ class ManageRequisition extends Component
 
                     $query->where(function ($q) use ($search) {
                         $q->where('ref_number', 'like', $search)
-                            ->orWhere('reason', 'like', $search)
                             ->orWhereHas('requester', function ($q) use ($search) {
                                 $q->where('name', 'like', $search);
                             });
