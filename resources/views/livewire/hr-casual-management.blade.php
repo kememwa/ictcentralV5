@@ -1781,86 +1781,326 @@
    
 @elseif($view === 'Print_Casual_Contracts')
 
-<table class="w-full text-sm">
-    <thead>
-        <tr class="bg-gray-100">
-            <th class="px-4 py-3 text-left">#</th>
-            <th class="px-4 py-3 text-left">Requisition No</th>
-            <th class="px-4 py-3 text-left">Department</th>
-            <th class="px-4 py-3 text-left">Casuals Assigned</th>
-            <th class="px-4 py-3 text-left">Status</th>
-            <th class="px-4 py-3 text-left">Actions</th>
-        </tr>
-    </thead>
-    <tbody class="divide-y divide-gray-200">
-        @forelse($this->AssignedRequisitions as $req)
-        <tr class="hover:bg-gray-50">
-            <td class="px-4 py-3">{{ $loop->iteration }}</td>
-            <td class="px-4 py-3 font-medium text-blue-600">
-                {{ $req->requisition_no ?? 'REQ-' . str_pad($req->id, 6, '0', STR_PAD_LEFT) }}
-            </td>
-            <td class="px-4 py-3">
-                {{ $req->requester->name ?? 'N/A' }}
-                <!-- Assuming you have a User model with department relationship -->
-            </td>
-            <td class="px-4 py-3">
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
-                    {{ $req->casual_assignments_count > 0 ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' }}">
-                    {{ $req->casual_assignments_count ?? 0 }} / {{ $req->no_of_casuals }}
-                </span>
-            </td>
-            <td class="px-4 py-3">
-                @if($req->coo_approval_status && $req->casual_assignment_status)
-                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                        Assigned
-                    </span>
-                @elseif($req->coo_approval_status)
-                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                        Approved
-                    </span>
-                @else
-                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                        Pending
-                    </span>
-                @endif
-            </td>
-            <td class="px-4 py-3 space-x-2">
-                @if($req->casual_assignments_count > 0)
-                <a href="{{ route('contracts.print', ['requisitionId' => $req->uuid]) }}" 
-                   target="_blank"
-                   rel="noopener"
-                   class="inline-flex items-center px-3 py-1.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-xs">
-                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
-                    </svg>
-                    Print Contracts
-                </a>
-                @endif
-                
-                <a href="#"
-                   class="inline-flex items-center px-3 py-1.5 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors text-xs">
-                    View Details
-                </a>
-            </td>
-        </tr>
-        @empty
-        <tr>
-            <td colspan="6" class="px-4 py-8 text-center text-gray-500">
-                <svg class="w-12 h-12 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                </svg>
-                <p class="mt-2 text-sm">No requisitions with assigned casuals found</p>
-                <p class="text-xs text-gray-400 mt-1">All approved requisitions with casual assignments will appear here</p>
-            </td>
-        </tr>
-        @endforelse
-    </tbody>
-</table>
+    {{-- ===== DESKTOP TABLE (lg and up) ===== --}}
+    <div class="hidden lg:block overflow-x-auto">
+        <table class="w-full text-xs">
+            <thead class="border-b border-gray-200 bg-gray-50">
+                <tr class="text-left text-[11px] font-medium uppercase tracking-wide text-gray-500">
+                    <th class="px-3 py-2.5 whitespace-nowrap">#</th>
+                    <th class="px-3 py-2.5 whitespace-nowrap">Requisition No.</th>
+                    <th class="px-3 py-2.5 whitespace-nowrap">Department</th>
+                    <th class="px-3 py-2.5 whitespace-nowrap">Casuals Assigned</th>
+                    <th class="px-3 py-2.5 whitespace-nowrap">Status</th>
+                    <th class="px-3 py-2.5 whitespace-nowrap text-right">Actions</th>
+                </tr>
+            </thead>
 
-@if($this->AssignedRequisitions->hasPages())
-<div class="px-4 py-3 border-t border-gray-200 sm:px-6">
-    {{ $this->AssignedRequisitions->links() }}
-</div>
+            <tbody class="divide-y divide-gray-100">
+                @forelse($this->AssignedRequisitions as $req)
+
+                    <tr class="align-middle transition hover:bg-gray-50">
+
+                        {{-- # --}}
+                        <td class="px-3 py-3 text-gray-400 tabular-nums">
+                            {{ $loop->iteration }}
+                        </td>
+
+                        {{-- Requisition Number --}}
+                        <td class="px-3 py-3 whitespace-nowrap">
+                            <span class="font-medium text-blue-600">
+                                {{ $req->ref_number }}
+                            </span>
+                        </td>
+
+                        {{-- Department / Requester --}}
+                        <td class="px-3 py-3">
+                            <p class="font-medium text-gray-900">
+                                {{ $req->requester->name ?? 'N/A' }}
+                            </p>
+                        </td>
+
+                        {{-- Casuals Assigned --}}
+                        <td class="px-3 py-3 whitespace-nowrap">
+                            <span
+                                class="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium
+                                {{ $req->casual_assignments_count > 0
+                                    ? 'bg-green-50 text-green-700'
+                                    : 'bg-yellow-50 text-yellow-700' }}"
+                            >
+                                {{ $req->casual_assignments_count ?? 0 }}
+                                /
+                                {{ $req->no_of_casuals }}
+                            </span>
+                        </td>
+
+                        {{-- Status --}}
+                        <td class="px-3 py-3 whitespace-nowrap">
+                            @if($req->coo_approval_status && $req->casual_assignment_status)
+
+                                <span class="inline-flex items-center gap-1.5 text-[11px] font-medium text-blue-600">
+                                    <span class="h-1.5 w-1.5 rounded-full bg-blue-500"></span>
+                                    Assigned
+                                </span>
+
+                            @elseif($req->coo_approval_status)
+
+                                <span class="inline-flex items-center gap-1.5 text-[11px] font-medium text-green-600">
+                                    <span class="h-1.5 w-1.5 rounded-full bg-green-500"></span>
+                                    Approved
+                                </span>
+
+                            @else
+
+                                <span class="inline-flex items-center gap-1.5 text-[11px] font-medium text-yellow-600">
+                                    <span class="h-1.5 w-1.5 rounded-full bg-yellow-500"></span>
+                                    Pending
+                                </span>
+
+                            @endif
+                        </td>
+
+                        {{-- Actions --}}
+                        <td class="px-3 py-2.5">
+                            <div class="flex items-center justify-end gap-1.5">
+
+                                @if($req->casual_assignments_count > 0)
+                                    <a
+                                        href="{{ route('contracts.print', ['requisitionId' => $req->uuid]) }}"
+                                        target="_blank"
+                                        rel="noopener"
+                                        title="Print Contracts"
+                                        class="inline-flex h-7 items-center gap-1 rounded-md
+                                            border border-blue-200 bg-blue-50 px-2
+                                            text-[11px] font-medium text-blue-600
+                                            transition hover:bg-blue-100"
+                                    >
+                                        <svg
+                                            class="h-3.5 w-3.5"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"
+                                            />
+                                        </svg>
+                                        Print
+                                    </a>
+                                @endif
+
+                                <a
+                                    href="#"
+                                    class="inline-flex h-7 items-center rounded-md
+                                        border border-gray-200 bg-white px-2
+                                        text-[11px] font-medium text-gray-600
+                                        transition hover:bg-gray-50"
+                                >
+                                    View
+                                </a>
+
+                            </div>
+                        </td>
+
+                    </tr>
+
+                @empty
+
+                    <tr>
+                        <td colspan="6" class="px-4 py-12 text-center">
+
+                            <svg
+                                class="mx-auto h-10 w-10 text-gray-300"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                                />
+                            </svg>
+
+                            <p class="mt-2 text-sm font-medium text-gray-600">
+                                No requisitions with assigned casuals found
+                            </p>
+
+                            <p class="mt-1 text-xs text-gray-400">
+                                Approved requisitions with casual assignments will appear here
+                            </p>
+
+                        </td>
+                    </tr>
+
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+
+    {{-- ===== MOBILE VIEW (below lg) ===== --}}
+    <div class="lg:hidden space-y-2.5">
+
+        @forelse($this->AssignedRequisitions as $req)
+
+            <div
+                wire:key="mobile-assigned-req-{{ $req->id }}"
+                class="rounded-lg border border-gray-200 bg-white p-3"
+            >
+
+                {{-- Header --}}
+                <div class="flex items-start justify-between gap-3">
+
+                    <div class="min-w-0">
+                        <p class="text-[10px] font-medium uppercase tracking-wide text-gray-400">
+                            Requisition
+                        </p>
+
+                        <p class="mt-0.5 truncate text-sm font-semibold text-blue-600">
+                            {{ $req->ref_number }}
+                        </p>
+                    </div>
+
+                    {{-- Status --}}
+                    <div class="shrink-0">
+                        @if($req->coo_approval_status && $req->casual_assignment_status)
+
+                            <span class="inline-flex items-center gap-1.5 text-[10px] font-medium text-blue-600">
+                                <span class="h-1.5 w-1.5 rounded-full bg-blue-500"></span>
+                                Assigned
+                            </span>
+
+                        @elseif($req->coo_approval_status)
+
+                            <span class="inline-flex items-center gap-1.5 text-[10px] font-medium text-green-600">
+                                <span class="h-1.5 w-1.5 rounded-full bg-green-500"></span>
+                                Approved
+                            </span>
+
+                        @else
+
+                            <span class="inline-flex items-center gap-1.5 text-[10px] font-medium text-yellow-600">
+                                <span class="h-1.5 w-1.5 rounded-full bg-yellow-500"></span>
+                                Pending
+                            </span>
+
+                        @endif
+                    </div>
+
+                </div>
+
+                {{-- Details --}}
+                <div class="mt-3 grid grid-cols-2 gap-x-4 gap-y-2.5">
+
+                    {{-- Requester --}}
+                    <div>
+                        <p class="text-[10px] uppercase tracking-wide text-gray-400">
+                            Requested By
+                        </p>
+
+                        <p class="mt-0.5 truncate text-xs font-medium text-gray-800">
+                            {{ $req->requester->name ?? 'N/A' }}
+                        </p>
+                    </div>
+
+                    {{-- Casuals --}}
+                    <div>
+                        <p class="text-[10px] uppercase tracking-wide text-gray-400">
+                            Casuals Assigned
+                        </p>
+
+                        <p class="mt-0.5 text-xs font-medium text-gray-800">
+                            {{ $req->casual_assignments_count ?? 0 }}
+                            /
+                            {{ $req->no_of_casuals }}
+                        </p>
+                    </div>
+
+                </div>
+
+                {{-- Actions --}}
+                <div class="mt-3 flex items-center justify-end gap-1.5 border-t border-gray-100 pt-2.5">
+
+                    @if($req->casual_assignments_count > 0)
+                        <a
+                            href="{{ route('contracts.print', ['requisitionId' => $req->uuid]) }}"
+                            target="_blank"
+                            rel="noopener"
+                            class="inline-flex items-center gap-1.5 rounded-md
+                                border border-blue-200 bg-blue-50 px-2.5 py-1.5
+                                text-[11px] font-medium text-blue-600
+                                transition hover:bg-blue-100"
+                        >
+                            <svg
+                                class="h-3.5 w-3.5"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 002 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"
+                                />
+                            </svg>
+                            Print Contracts
+                        </a>
+                    @endif
+
+                    <a
+                        href="#"
+                        class="inline-flex items-center rounded-md
+                            border border-gray-200 bg-white px-2.5 py-1.5
+                            text-[11px] font-medium text-gray-600
+                            transition hover:bg-gray-50"
+                    >
+                        View Details
+                    </a>
+
+                </div>
+
+            </div>
+
+        @empty
+
+            <div class="rounded-lg border border-gray-200 bg-white px-4 py-10 text-center">
+
+                <svg
+                    class="mx-auto h-10 w-10 text-gray-300"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                    />
+                </svg>
+
+                <p class="mt-2 text-sm font-medium text-gray-600">
+                    No requisitions with assigned casuals found
+                </p>
+
+                <p class="mt-1 text-xs text-gray-400">
+                    Approved requisitions with casual assignments will appear here
+                </p>
+
+            </div>
+
+        @endforelse
+
+    </div>
+
+    @if($this->AssignedRequisitions->hasPages())
+    <div class="px-4 py-3 border-t border-gray-200 sm:px-6">
+        {{ $this->AssignedRequisitions->links() }}
+    </div>
 @endif
 
 

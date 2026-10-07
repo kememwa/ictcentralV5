@@ -24,7 +24,7 @@
             </span>
         </div>
 
-        {{-- ===== DESKTOP TABLE (lg and up) ===== --}}
+        {{-- ===== DESKTOP TABLE (lg and up) ===== }}
         <div class="hidden lg:block w-full overflow-x-auto">
             <table class="w-full table-fixed text-xs">
 
@@ -477,5 +477,11 @@
 
             @endforelse
         </div>
+    </div>
+
+    {{-- ===== PAGINATION ===== --}}
+    <div class="mt-6">
+        {{ $hrm_requisitions->links() }}
+    </div>
 
 </div>
