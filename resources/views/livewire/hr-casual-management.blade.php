@@ -3,58 +3,79 @@
 
     <x-page-header title="Casual Detail Management" subtitle="Review, approve and manage casual worker records">
         <x-slot name="actions">
-            {{-- Print Contracts --}}
-            <button
-                type="button"
-                wire:click="setView('Print_Casual_Contracts')"
-                class="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-slate-600 to-gray-700 hover:from-slate-700 hover:to-gray-800 text-white text-sm font-medium rounded-xl shadow-sm hover:shadow-md transition-all duration-200 group"
-            >
-                <svg
-                    class="w-4 h-4 transition-transform duration-200 group-hover:scale-110"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    stroke-width="2"
+            <div class="flex items-center gap-2">
+
+                {{-- Print Contracts --}}
+                <button
+                    type="button"
+                    wire:click="setView('Print_Casual_Contracts')"
+                    class="inline-flex items-center justify-center gap-1.5
+                        rounded-lg bg-gradient-to-r from-slate-600 to-gray-700
+                        px-2.5 py-2
+                        text-[11px] font-medium text-white
+                        shadow-sm transition-all duration-200
+                        hover:from-slate-700 hover:to-gray-800
+                        sm:gap-2 sm:px-4 sm:py-2.5 sm:text-sm"
                 >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4H7v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"
-                    />
-                </svg>
-
-                <span>Print Contracts</span>
-            </button>
-
-
-            {{-- Casual Details Management --}}
-            <button
-                type="button"
-                wire:click="setView('casual_management')"
-                class="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white text-sm font-medium rounded-xl shadow-sm hover:shadow-md transition-all duration-200 group relative"
-            >
-                <svg
-                    class="w-4 h-4 transition-transform duration-200 group-hover:scale-110"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                    <svg
+                        class="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
                         stroke-width="2"
-                        d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.46 5.197a4 4 0 00-5.16-3.754"
-                    />
-                </svg>
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4H7v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"
+                        />
+                    </svg>
 
-                <span>Casual Details Management</span>
+                    <span class="whitespace-nowrap">Print Contracts</span>
+                </button>
 
-                @if($pendingCasualsCount ?? 0)
-                    <span class="absolute -top-2 -right-2 min-w-5 h-5 px-1 bg-amber-500 text-white text-xs font-semibold rounded-full flex items-center justify-center shadow-sm ring-2 ring-white">
-                        {{ $pendingCasualsCount }}
-                    </span>
-                @endif
-            </button>
+
+                {{-- Casual Details Management --}}
+                <button
+                    type="button"
+                    wire:click="setView('casual_management')"
+                    class="relative inline-flex items-center justify-center gap-1.5
+                        rounded-lg bg-gradient-to-r from-emerald-600 to-green-600
+                        px-2.5 py-2
+                        text-[11px] font-medium text-white
+                        shadow-sm transition-all duration-200
+                        hover:from-emerald-700 hover:to-green-700
+                        sm:gap-2 sm:px-4 sm:py-2.5 sm:text-sm"
+                >
+                    <svg
+                        class="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.46 5.197a4 4 0 00-5.16-3.754"
+                        />
+                    </svg>
+
+                    <span class="whitespace-nowrap">Casual Details</span>
+
+                    @if($pendingCasualsCount ?? 0)
+                        <span
+                            class="absolute -right-1.5 -top-1.5 flex h-4.5 min-w-4.5
+                                items-center justify-center rounded-full
+                                bg-amber-500 px-1 text-[9px] font-semibold text-white
+                                shadow-sm ring-2 ring-white"
+                        >
+                            {{ $pendingCasualsCount }}
+                        </span>
+                    @endif
+                </button>
+
+            </div>
         </x-slot>
     </x-page-header>
 
