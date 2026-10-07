@@ -414,6 +414,17 @@ class HrCasualManagement extends Component
             ->where('hrm_approval_status', 'approved')
             ->where('casual_assignment_status', true)
             ->withCount('casualAssignments')
+            // Search
+            ->when($this->hrSearch, function ($q) {
+                $search = '%' . $this->hrSearch . '%';
+
+                $q->where(function ($query) use ($search) {
+                    $query->where('ref_number', 'like', $search)
+                        ->orWhereHas('requester', function ($query) use ($search) {
+                            $query->where('name', 'like', $search);
+                        });
+                });
+            })
             ->latest()
             ->paginate(10);
     }
