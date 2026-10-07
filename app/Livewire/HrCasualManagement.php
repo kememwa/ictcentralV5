@@ -407,16 +407,32 @@ class HrCasualManagement extends Component
         return Requisition::query()
             ->where('hod_approval_status', '1')
             ->where('coo_approval_status', '1')
+
             ->when($this->view === 'pending', function ($q) {
                 $q->whereNull('hr_approval_status');
             })
+
             ->when($this->view === 'hrm_approved', function ($q) {
                 $q->where('hrm_approval_status', 'approved')
                 ->where('casual_assignment_status', false);
             })
+
             ->when($this->view === 'rejected', function ($q) {
                 $q->where('hrm_approval_status', 'rejected');
             })
+
+            // Search
+            ->when($this->search, function ($q) {
+                $search = '%' . $this->search . '%';
+
+                $q->where(function ($query) use ($search) {
+                    $query->where('ref_number', 'like', $search)
+                        ->orWhereHas('requester', function ($query) use ($search) {
+                            $query->where('name', 'like', $search);
+                        });
+                });
+            })
+
             ->latest()
             ->paginate(10);
     }

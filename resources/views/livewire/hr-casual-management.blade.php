@@ -252,37 +252,92 @@
     <div class="relative overflow-hidden rounded-2xl border border-gray-200/70 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm">
         <div class="absolute inset-0 bg-gradient-to-r from-blue-50 via-indigo-50 to-transparent dark:from-blue-950/30 dark:via-indigo-950/20 dark:to-transparent pointer-events-none"></div>
 
-        <div class="relative flex flex-col gap-4 p-3 sm:flex-row sm:items-center sm:justify-between">
-            {{-- Title --}}
-            <div class="flex items-start gap-3">
-                <div class="hidden sm:flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white shadow-md">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V6m0 12v-2m0-8a3 3 0 013 3M9 10a3 3 0 013-3"/>
-                    </svg>
-                </div>
-                <div class="min-w-0">
-                    <h2 class="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">
-                        HR Rate Approval
-                    </h2>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">
-                        Set approved daily rates for pending requisitions
-                    </p>
-                </div>
-            </div>
+        <div class="relative flex flex-col gap-3 border-b border-slate-100 p-3 sm:flex-row sm:items-center sm:justify-between">
 
-            {{-- Right-side stats --}}
-            <div class="flex items-center gap-3">
-                <div class="flex items-center gap-2 px-3 py-2 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200/70 dark:border-amber-800/50">
-                    <span class="relative flex h-2 w-2">
-                        <span class="absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75 animate-ping"></span>
-                        <span class="relative inline-flex h-2 w-2 rounded-full bg-amber-500"></span>
-                    </span>
-                    <span class="text-xs font-medium text-amber-800 dark:text-amber-300 whitespace-nowrap">
-                        Awaiting Rate Input
-                    </span>
-                </div>
-            </div>
+    {{-- Title --}}
+    <div class="flex min-w-0 items-start gap-3">
+        <div class="hidden h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white shadow-md sm:flex">
+            <svg
+                class="h-5 w-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+            >
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V6m0 12v-2m0-8a3 3 0 013 3M9 10a3 3 0 013-3"
+                />
+            </svg>
         </div>
+
+        <div class="min-w-0">
+            <h2 class="text-lg font-semibold text-gray-900 sm:text-xl">
+                HR Rate Approval
+            </h2>
+
+            <p class="text-sm text-gray-500">
+                Set approved daily rates for pending requisitions
+            </p>
+        </div>
+    </div>
+
+    {{-- Search + Stats --}}
+    <div class="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
+
+        {{-- Search --}}
+        <div class="relative w-full sm:w-64">
+            <svg
+                class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+            >
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"
+                />
+            </svg>
+
+            <input
+                type="text"
+                wire:model.live.debounce.300ms="search"
+                placeholder="Search requisitions..."
+                class="w-full rounded-lg border border-slate-200 bg-white py-2 pl-9 pr-9
+                       text-xs text-slate-700 placeholder:text-slate-400
+                       focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+            />
+
+            @if($search)
+                <button
+                    type="button"
+                    wire:click="$set('search', '')"
+                    class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400
+                           transition hover:text-slate-600"
+                    title="Clear search"
+                >
+                    <svg
+                        class="h-3.5 w-3.5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12"
+                        />
+                    </svg>
+                </button>
+            @endif
+        </div>
+
+    </div>
+</div>
     </div>
 
         {{-- =========================================================
