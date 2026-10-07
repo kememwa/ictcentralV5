@@ -17,6 +17,10 @@ class ManageRequisition extends Component
 {
 
 
+    public $search = '';
+    public $actionFilter = '';
+
+
     public function approveRequest($id)
     {
         try {
@@ -92,16 +96,28 @@ class ManageRequisition extends Component
         $designationId = auth()->user()->designation->id;
 
         return view('livewire.manage-requisition', [
-            'requisitions' => Requisition::where('department_id', $departmentId)
+            'requisitions' => Requisition::query()
+                ->where('department_id', $departmentId)
                 ->where('hod_approval_status', '0')
                 ->whereHas('requester.designation', function ($query) use ($designationId) {
                     $query->where('reports_to', $designationId);
                 })
+
+                ->when($this->search, function ($query) {
+                    $search = '%' . $this->search . '%';
+
+                    $query->where(function ($q) use ($search) {
+                        $q->where('ref_number', 'like', $search)
+                            ->orWhere('reason', 'like', $search)
+                            ->orWhereHas('requester', function ($q) use ($search) {
+                                $q->where('name', 'like', $search);
+                            });
+                    });
+                })
+
                 ->latest()
                 ->paginate(10),
         ]);
-        
-
     }
 
 }

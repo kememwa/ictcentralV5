@@ -1,14 +1,31 @@
-@props(['title' => null, 'subtitle' => null])
+<div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
 
-<div class="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
     @if($title)
-        <div class="flex items-center justify-between border-b border-slate-100 px-5 sm:px-6 py-4">
-            <div>
-                <h2 class="text-base font-semibold text-slate-900">{{ $title }}</h2>
-                @if($subtitle)<p class="mt-0.5 text-xs text-slate-500">{{ $subtitle }}</p>@endif
+        <div class="flex flex-col gap-3 border-b border-slate-100 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+
+            {{-- Title --}}
+            <div class="min-w-0">
+                <h2 class="truncate text-base font-semibold text-slate-900">
+                    {{ $title }}
+                </h2>
+
+                @if($subtitle)
+                    <p class="mt-0.5 text-xs text-slate-500">
+                        {{ $subtitle }}
+                    </p>
+                @endif
             </div>
-            @isset($actions)<div>{{ $actions }}</div>@endisset
+
+            {{-- Actions --}}
+            @isset($actions)
+                <div class="w-full shrink-0 sm:w-auto">
+                    {{ $actions }}
+                </div>
+            @endisset
+
         </div>
     @endif
+
     {{ $slot }}
+
 </div>
