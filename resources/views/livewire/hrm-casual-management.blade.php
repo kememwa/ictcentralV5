@@ -6,23 +6,54 @@
         subtitle="Review HR-approved rates and approve or reject requisitions">
     </x-page-header>
 
-    {{-- ===== Card ===== --}}
-    <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden">
+    <x-data-card title="Requisitions Awaiting Your Approval" 
+        subtitle="Review and approve casual worker requests">
+        <x-slot:actions>
+            <div class="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center sm:gap-2">
 
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-5 border-b border-gray-100 dark:border-gray-800">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-violet-100 text-violet-600 dark:bg-violet-900/30 dark:text-violet-300 flex items-center justify-center">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m6-9a4 4 0 11-8 0 4 4 0 018 0zm6 4a3 3 0 11-6 0 3 3 0 016 0z"/>
-                    </svg>
+                {{-- Search --}}
+                <div class="flex w-full gap-2 sm:w-auto">
+                    <div class="relative w-full sm:w-72">
+                        <svg
+                            class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"
+                            />
+                        </svg>
+
+                        <input
+                            type="text"
+                            wire:model.live.debounce.300ms="search"
+                            placeholder="Search devices…"
+                            class="w-full rounded-lg border border-gray-200 bg-white py-2 pl-10 pr-3
+                                text-sm text-slate-700 placeholder:text-slate-400
+                                focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+                        />
+                    </div>
+
+                    @if($search)
+                        <button
+                            type="button"
+                            wire:click="$set('search', ''); $set('actionFilter', '')"
+                            class="inline-flex shrink-0 items-center justify-center rounded-lg
+                                border border-slate-200 bg-white px-3 py-2
+                                text-xs font-medium text-slate-600
+                                transition hover:bg-slate-50"
+                        >
+                            Clear
+                        </button>
+                    @endif
                 </div>
-            </div>
 
-            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-violet-50 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300">
-                {{ $hrm_requisitions->total() ?? count($hrm_requisitions) }} awaiting
-            </span>
-        </div>
+            </div>
+        </x-slot:actions>
 
         {{-- ===== DESKTOP TABLE (lg and up) ===== --}}
         <div class="hidden lg:block w-full overflow-x-auto">
@@ -478,11 +509,12 @@
 
             @endforelse
         </div>
-    </div>
 
-    {{-- ===== PAGINATION ===== --}}
-    <div class="mt-6">
-        {{ $hrm_requisitions->links() }}
-    </div>
+        {{-- ===== PAGINATION ===== --}}
+        <div class="mt-6">
+            {{ $hrm_requisitions->links() }}
+        </div>
+
+    </x-data-card>
 
 </div>

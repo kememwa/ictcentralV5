@@ -8,9 +8,20 @@ use App\Models\Requisition;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\HrmApproveReq;
 use Illuminate\Support\Facades\Log;
+use Livewire\WithPagination;
 
 class HrmCasualManagement extends Component
 {
+    use WithPagination;
+
+    public $search = '';
+    public $actionFilter = '';
+
+
+    public function updatedSearch()
+    {
+        $this->resetPage();
+    }
 
     public function approveHrm($id)
     {
@@ -66,7 +77,17 @@ class HrmCasualManagement extends Component
     {
         return view('livewire.hrm-casual-management',[
             'hrm_requisitions' => Requisition::where('hr_approval_status', true)
-            ->where('hrm_approval_status', 'pending')->latest()->paginate(10)
+            ->where('hrm_approval_status', 'pending')
+            ->when($this->search, function ($query) {
+                $search = '%' . $this->search . '%';
+
+                $query->where(function ($q) use ($search) {
+                    $q->where('ref_number', 'like', $search)
+                        ->orWhereHas('requester', function ($q) use ($search) {
+                            $q->where('name', 'like', $search);
+                        });
+                });
+            })->latest()->paginate(10)
         ]);
     }
 }

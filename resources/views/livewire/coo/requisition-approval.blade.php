@@ -513,6 +513,14 @@
 
         </div>
 
+        @if($coo_requisitions->hasPages())
+
+            <div class="border-t border-slate-100 px-4 py-3 sm:px-6">
+                {{ $coo_requisitions->links() }}
+            </div>
+
+        @endif
+
     </x-data-card>
 
 </div>
