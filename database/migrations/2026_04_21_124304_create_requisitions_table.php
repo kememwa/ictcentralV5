@@ -14,6 +14,10 @@ public function up(): void
         Schema::create('requisitions', function (Blueprint $table) {
             $table->id();
 
+            $table->string('ref_number', 20)
+            ->unique()
+            ->nullable();
+
             // Request originator
             $table->foreignId('requested_by')
                 ->constrained('users')

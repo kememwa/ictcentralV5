@@ -114,7 +114,7 @@
                     <tr class="text-left uppercase tracking-wider text-[10px] font-semibold text-slate-500">
 
                         <th class="px-4 py-3 whitespace-nowrap">
-                            Requested By
+                            Requisition Number
                         </th>
 
                         <th class="px-4 py-3 whitespace-nowrap text-center">
@@ -133,9 +133,6 @@
                             Period
                         </th>
 
-                        <th class="px-4 py-3 whitespace-nowrap">
-                            Submitted
-                        </th>
 
                         <th class="px-4 py-3 whitespace-nowrap">
                             Status
@@ -162,22 +159,12 @@
 
                                 <div class="flex items-center gap-2.5">
 
-                                    {{-- Initial --}}
-                                    <div
-                                        class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full
-                                            bg-slate-100 text-[10px] font-semibold text-slate-600"
-                                    >
-                                        {{ strtoupper(substr($req->requester->name ?? 'U', 0, 1)) }}
-                                    </div>
-
 
                                     {{-- Name --}}
                                     <div class="min-w-0">
-
-                                        <p class="font-medium text-slate-800">
-                                            {{ $req->requester->name ?? 'Unknown User' }}
+                                        <p class="font-medium text-blue-600">
+                                            {{ $req->ref_number }}
                                         </p>
-
                                     </div>
 
                                 </div>
@@ -284,38 +271,33 @@
 
 
                             {{-- =================================================
-                                SUBMITTED
-                            ================================================== --}}
-                            <td class="px-4 py-3 whitespace-nowrap">
-
-                                <span class="text-slate-500 tabular-nums">
-                                    {{ $req->created_at->format('d M Y') }}
-                                </span>
-
-                            </td>
-
-
-                            {{-- =================================================
                                 STATUS
                             ================================================== --}}
                             <td class="px-4 py-3 whitespace-nowrap">
 
-                                <span
-                                    class="inline-flex items-center gap-1.5 text-[11px]
-                                        font-medium text-slate-600"
-                                >
+                                @if($req->casual_assignment_status == 1)
 
-                                    <span
-                                        class="h-1.5 w-1.5 shrink-0 rounded-full
-                                            {{ $statusDots[$req->status] ?? 'bg-slate-300' }}"
-                                    ></span>
+                                    <span class="inline-flex items-center gap-1.5 text-[11px] font-medium text-emerald-600">
 
-                                    {{ ucfirst(str_replace('-', ' ', $req->status)) }}
+                                        <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500"></span>
 
-                                </span>
+                                        Approved
+
+                                    </span>
+
+                                @else
+
+                                    <span class="inline-flex items-center gap-1.5 text-[11px] font-medium text-amber-600">
+
+                                        <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-amber-500"></span>
+
+                                        Pending
+
+                                    </span>
+
+                                @endif
 
                             </td>
-
                         </tr>
 
                     @empty
@@ -386,20 +368,12 @@
 
                         <div class="flex min-w-0 items-center gap-2.5">
 
-                            {{-- Initial --}}
-                            <div
-                                class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full
-                                    bg-slate-100 text-xs font-semibold text-slate-600"
-                            >
-                                {{ strtoupper(substr($req->requester->name ?? 'U', 0, 1)) }}
-                            </div>
-
 
                             {{-- Requested By --}}
                             <div class="min-w-0">
 
-                                <p class="truncate text-sm font-semibold text-slate-800">
-                                    {{ $req->requester->name ?? 'Unknown User' }}
+                                <p class="font-medium text-blue-600">
+                                    {{ $req->ref_number }}
                                 </p>
 
                                 <p class="mt-0.5 text-[10px] text-slate-400">
@@ -413,16 +387,20 @@
 
                         {{-- Status --}}
                         <span
-                            class="inline-flex shrink-0 items-center gap-1.5 text-[10px]
-                                font-medium text-slate-600"
+                            class="inline-flex shrink-0 items-center gap-1.5 text-[10px] font-medium
+                                {{ $req->casual_assignment_status == 1
+                                    ? 'text-emerald-600'
+                                    : 'text-amber-600' }}"
                         >
 
                             <span
                                 class="h-1.5 w-1.5 rounded-full
-                                    {{ $statusDots[$req->status] ?? 'bg-slate-300' }}"
+                                    {{ $req->casual_assignment_status == 1
+                                        ? 'bg-emerald-500'
+                                        : 'bg-amber-500' }}"
                             ></span>
 
-                            {{ ucfirst(str_replace('-', ' ', $req->status)) }}
+                            {{ $req->casual_assignment_status == 1 ? 'Approved' : 'Pending' }}
 
                         </span>
 

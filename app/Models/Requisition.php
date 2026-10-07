@@ -15,6 +15,7 @@ class Requisition extends Model
     use HasFactory;
 
     protected $fillable = [
+        'ref_number',
         'requested_by',
         'department_id',
         'requested_date',
