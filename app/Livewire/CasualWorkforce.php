@@ -19,6 +19,8 @@ class CasualWorkforce extends Component
 {
     use WithPagination;
 
+    public $search = '';
+    public $actionFilter = '';
     public $statusFilter = '';
     public $no_of_casuals;
     public $start_date;
@@ -250,9 +252,20 @@ class CasualWorkforce extends Component
 
     #[Layout('layouts.dashboard')]
     public function render()
-    {
-        return view('livewire.casual-workforce', [
-            'MyRequisitions' => Requisition::where('requested_by', auth()->id())->latest()->paginate(5),
+            {
+            return view('livewire.casual-workforce', [
+            'MyRequisitions' => Requisition::query()
+                ->where('requested_by', auth()->id())
+                ->when($this->search, function ($query) {
+                    $search = '%' . $this->search . '%';
+
+                    $query->where(function ($q) use ($search) {
+                        $q->where('ref_number', 'like', $search)
+                        ->orWhere('reason', 'like', $search);
+                    });
+                })
+                ->latest()
+                ->paginate(5),
         ]);
     }
 }

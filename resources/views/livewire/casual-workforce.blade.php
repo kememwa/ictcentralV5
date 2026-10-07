@@ -80,17 +80,73 @@
     {{-- ===== My Requisitions ===== --}}
     <x-data-card title="My Requisitions" subtitle="Track and manage requests you've submitted.">
         <x-slot:actions>
-            <div class="flex items-center gap-2">
-                <select wire:model.live="statusFilter"
-                    class="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-700 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100">
-                    <option value="">All status</option>
-                    <option value="approved">Approved</option>
-                    <option value="in-progress">In Progress</option>
-                    <option value="rejected">Rejected</option>
-                </select>
-                <span class="hidden sm:inline-flex items-center rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700">
-                    {{ count($MyRequisitions) }} total
-                </span>
+            <div class="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center sm:gap-2">
+
+                {{-- Search --}}
+                <div class="flex w-full gap-2 sm:w-auto">
+                    <div class="relative w-full sm:w-72">
+                        <svg
+                            class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"
+                            />
+                        </svg>
+
+                        <input
+                            type="text"
+                            wire:model.live.debounce.300ms="search"
+                            placeholder="Search devices…"
+                            class="w-full rounded-lg border border-gray-200 bg-white py-2 pl-10 pr-3
+                                text-sm text-slate-700 placeholder:text-slate-400
+                                focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+                        />
+                    </div>
+
+                    @if($search)
+                        <button
+                            type="button"
+                            wire:click="$set('search', ''); $set('actionFilter', '')"
+                            class="inline-flex shrink-0 items-center justify-center rounded-lg
+                                border border-slate-200 bg-white px-3 py-2
+                                text-xs font-medium text-slate-600
+                                transition hover:bg-slate-50"
+                        >
+                            Clear
+                        </button>
+                    @endif
+                </div>
+
+                {{-- Filter + Count --}}
+                <div class="flex w-full items-center gap-2 sm:w-auto">
+
+                    <select
+                        wire:model.live="statusFilter"
+                        class="min-w-0 flex-1 rounded-lg border border-slate-200 bg-white
+                            px-3 py-2 text-xs text-slate-700
+                            focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100
+                            sm:flex-none"
+                    >
+                        <option value="">All status</option>
+                        <option value="approved">Approved</option>
+                        <option value="in-progress">In Progress</option>
+                        <option value="rejected">Rejected</option>
+                    </select>
+
+                    <span
+                        class="inline-flex shrink-0 items-center rounded-lg bg-slate-100
+                            px-2.5 py-2 text-xs font-medium text-slate-600"
+                    >
+                        {{ count($MyRequisitions) }} total
+                    </span>
+
+                </div>
             </div>
         </x-slot:actions>
 
