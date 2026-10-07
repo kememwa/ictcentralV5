@@ -139,8 +139,8 @@ class HrCasualManagement extends Component
     public string $view = 'pending';
     protected $queryString = ['view'];
     public array $rates = [];
-    public $nssfRates;
-    public $shaRates;
+    public array $nssfRates = [];
+    public array $shaRates = [];
 
     public $casualSearch = '';
     public $casualStatusFilter = '';

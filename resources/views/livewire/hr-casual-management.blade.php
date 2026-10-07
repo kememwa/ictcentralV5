@@ -522,28 +522,27 @@
                                             type="number"
                                             min="0"
                                             step="any"
-                                            wire:model.live.debounce.300ms="nssfRates"
+                                            wire:model.live.debounce.300ms="nssfRates.{{ $req->id }}"
                                             placeholder="0.00"
                                             class="w-[105px] rounded-md border border-slate-200 bg-white
                                                 py-1.5 pl-9 pr-1.5 text-[11px] text-slate-700
                                                 placeholder:text-slate-300
                                                 focus:border-blue-500 focus:outline-none focus:ring-2
                                                 focus:ring-blue-500/10
-                                                @error('nssfRates')
+                                                @error('nssfRates.'.$req->id)
                                                     border-red-400 ring-1 ring-red-400
                                                 @enderror"
                                         />
 
                                     </div>
 
-                                    @error('nssfRates')
+                                    @error("nssfRates.$req->id")
                                         <p class="mt-1 text-[9px] text-red-600">
                                             {{ $message }}
                                         </p>
                                     @enderror
 
                                 </td>
-
 
                                 {{-- SHA --}}
                                 <td class="px-1.5 py-2.5">
@@ -561,21 +560,21 @@
                                             type="number"
                                             min="0"
                                             step="any"
-                                            wire:model.live.debounce.300ms="shaRates"
+                                            wire:model.live.debounce.300ms="shaRates.{{ $req->id }}"
                                             placeholder="0.00"
                                             class="w-[105px] rounded-md border border-slate-200 bg-white
                                                 py-1.5 pl-9 pr-1.5 text-[11px] text-slate-700
                                                 placeholder:text-slate-300
                                                 focus:border-blue-500 focus:outline-none focus:ring-2
                                                 focus:ring-blue-500/10
-                                                @error('shaRates')
+                                                @error('shaRates.'.$req->id)
                                                     border-red-400 ring-1 ring-red-400
                                                 @enderror"
                                         />
 
                                     </div>
 
-                                    @error('shaRates')
+                                    @error("shaRates.$req->id")
                                         <p class="mt-1 text-[9px] text-red-600">
                                             {{ $message }}
                                         </p>
@@ -583,28 +582,31 @@
 
                                 </td>
 
-
                                 {{-- ESTIMATED TOTAL --}}
                                 <td class="px-2.5 py-2.5 whitespace-nowrap">
 
                                     @if(!empty($rates[$req->id]) && is_numeric($rates[$req->id]))
 
                                         <span class="font-semibold tabular-nums text-emerald-600">
-
                                             KES
                                             {{ number_format(
                                                 (
-                                                    ((float) $rates[$req->id]
-                                                    * (int) $req->no_of_casuals
-                                                    * (int) $req->duration)
+                                                    (
+                                                        (float) $rates[$req->id]
+                                                        * (int) $req->no_of_casuals
+                                                        * (int) $req->duration
+                                                    )
                                                     -
                                                     (
-                                                        ((float) $nssfRates + (float) $shaRates)
+                                                        (
+                                                            (float) ($nssfRates[$req->id] ?? 0)
+                                                            +
+                                                            (float) ($shaRates[$req->id] ?? 0)
+                                                        )
                                                         * (int) $req->no_of_casuals
                                                     )
                                                 )
                                             ) }}
-
                                         </span>
 
                                     @else
