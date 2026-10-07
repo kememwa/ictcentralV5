@@ -25,88 +25,140 @@
         </div>
 
         {{-- ===== DESKTOP TABLE (lg and up) ===== --}}
-        <div class="hidden lg:block overflow-x-auto">
-            <table class="w-full text-xs">
-                <thead class="bg-gray-50 text-left uppercase tracking-wider text-[11px] text-gray-500">
+        <div class="hidden lg:block w-full overflow-x-auto">
+            <table class="w-full table-fixed text-xs">
+
+                <thead class="bg-gray-50 text-left uppercase tracking-wider text-[10px] text-gray-500">
                     <tr>
-                        <th class="px-3 py-2.5 whitespace-nowrap">Requested By</th>
-                        <th class="px-3 py-2.5 whitespace-nowrap text-center">No. of Casuals</th>
-                        <th class="px-3 py-2.5 whitespace-nowrap">Days</th>
-                        <th class="px-3 py-2.5 w-2/5 min-w-[280px]">Reason</th>
-                        <th class="px-3 py-2.5 whitespace-nowrap text-right">Daily Rate</th>
-                        <th class="px-3 py-2.5 whitespace-nowrap text-right">NSSF Rate</th>
-                        <th class="px-3 py-2.5 whitespace-nowrap text-right">SHA Rate</th>
-                        <th class="px-3 py-2.5 whitespace-nowrap text-right">Estimated Total</th>
-                        <th class="px-3 py-2.5 whitespace-nowrap text-right">Actions</th>
+                        <th class="w-[90px] px-2.5 py-2.5 whitespace-nowrap">
+                            Requisition No.
+                        </th>
+
+                        <th class="w-[130px] px-2.5 py-2.5 whitespace-nowrap">
+                            Requested By
+                        </th>
+
+                        <th class="w-[75px] px-2.5 py-2.5 whitespace-nowrap text-center">
+                            Casuals
+                        </th>
+
+                        <th class="w-[55px] px-2.5 py-2.5 whitespace-nowrap">
+                            Days
+                        </th>
+
+                        <th class="w-[22%] px-2.5 py-2.5">
+                            Reason
+                        </th>
+
+                        <th class="w-[85px] px-2.5 py-2.5 whitespace-nowrap text-right">
+                            Daily Rate
+                        </th>
+
+                        <th class="w-[80px] px-2.5 py-2.5 whitespace-nowrap text-right">
+                            NSSF
+                        </th>
+
+                        <th class="w-[80px] px-2.5 py-2.5 whitespace-nowrap text-right">
+                            SHA
+                        </th>
+
+                        <th class="w-[100px] px-2.5 py-2.5 whitespace-nowrap text-right">
+                            Estimated Total
+                        </th>
+
+                        <th class="w-[65px] px-2.5 py-2.5 whitespace-nowrap text-right">
+                            Actions
+                        </th>
                     </tr>
                 </thead>
 
                 <tbody class="divide-y divide-gray-100">
                     @forelse($hrm_requisitions as $req)
-                        <tr wire:key="hrm-req-{{ $req->id }}" class="align-top hover:bg-gray-50 transition">
+
+                        <tr
+                            wire:key="hrm-req-{{ $req->id }}"
+                            class="align-top hover:bg-gray-50 transition"
+                        >
+
+                            {{-- Requisition Number --}}
+                            <td class="px-2.5 py-3 whitespace-nowrap">
+                                <span class="font-medium text-blue-600">
+                                    {{ $req->ref_number }}
+                                </span>
+                            </td>
 
                             {{-- Requested By --}}
-                            <td class="px-3 py-3 whitespace-nowrap">
-                                <p class="font-medium text-gray-900">
+                            <td class="px-2.5 py-3">
+                                <p class="font-medium text-gray-900 truncate">
                                     {{ $req->requester->name }}
                                 </p>
                             </td>
 
                             {{-- No of Casuals --}}
-                            <td class="px-3 py-3 text-center text-gray-700 tabular-nums">
+                            <td class="px-2.5 py-3 text-center text-gray-700 tabular-nums">
                                 {{ $req->no_of_casuals }}
                             </td>
 
                             {{-- Duration --}}
-                            <td class="px-3 py-3 whitespace-nowrap text-gray-500">
+                            <td class="px-2.5 py-3 whitespace-nowrap text-gray-500">
                                 {{ $req->duration }}
                             </td>
 
-                            {{-- Reason (wide, wraps, expandable) --}}
-                            <td class="px-3 py-3">
+                            {{-- Reason --}}
+                            <td class="px-2.5 py-3">
                                 @if($req->reason)
-                                    <div x-data="{ open: false }" class="max-w-xl">
+
+                                    <div x-data="{ open: false }">
+
                                         <p
-                                            class="text-[12px] leading-relaxed text-slate-600 break-words whitespace-normal"
+                                            class="text-[11px] leading-relaxed text-slate-600 break-words"
                                             :class="open ? '' : 'line-clamp-3'"
-                                        >{{ $req->reason }}</p>
+                                        >
+                                            {{ $req->reason }}
+                                        </p>
 
                                         @if(mb_strlen($req->reason) > 140)
                                             <button
                                                 type="button"
                                                 @click="open = !open"
-                                                class="mt-1 text-[11px] font-medium text-blue-600 hover:text-blue-700 hover:underline"
+                                                class="mt-1 text-[10px] font-medium text-blue-600 hover:text-blue-700 hover:underline"
                                                 x-text="open ? 'Show less' : 'Read more'"
                                             ></button>
                                         @endif
+
                                     </div>
+
                                 @else
-                                    <span class="text-slate-400 text-[11px] italic">No reason provided</span>
+
+                                    <span class="text-slate-400 text-[10px] italic">
+                                        No reason provided
+                                    </span>
+
                                 @endif
                             </td>
 
                             {{-- Daily Rate --}}
-                            <td class="px-3 py-3 whitespace-nowrap text-right text-gray-700 tabular-nums">
+                            <td class="px-2.5 py-3 whitespace-nowrap text-right text-gray-700 tabular-nums">
                                 {{ number_format((float) $req->daily_rate, 2) }}
                             </td>
 
                             {{-- NSSF Rate --}}
-                            <td class="px-3 py-3 whitespace-nowrap text-right text-gray-700 tabular-nums">
+                            <td class="px-2.5 py-3 whitespace-nowrap text-right text-gray-700 tabular-nums">
                                 {{ number_format((float) $req->nssf_rate, 2) }}
                             </td>
 
                             {{-- SHA Rate --}}
-                            <td class="px-3 py-3 whitespace-nowrap text-right text-gray-700 tabular-nums">
+                            <td class="px-2.5 py-3 whitespace-nowrap text-right text-gray-700 tabular-nums">
                                 {{ number_format((float) $req->sha_rate, 2) }}
                             </td>
 
                             {{-- Estimated Total --}}
-                            <td class="px-3 py-3 whitespace-nowrap text-right font-semibold text-gray-900 tabular-nums">
+                            <td class="px-2.5 py-3 whitespace-nowrap text-right font-semibold text-gray-900 tabular-nums">
                                 {{ number_format((float) $req->total_amount, 2) }}
                             </td>
 
                             {{-- Actions --}}
-                            <td class="px-3 py-2.5 text-right">
+                            <td class="px-2.5 py-2.5">
                                 <div class="flex items-center justify-end gap-1">
 
                                     {{-- Approve --}}
@@ -118,10 +170,16 @@
                                         aria-label="Approve requisition"
                                         class="p-1.5 rounded-md text-green-600 hover:bg-green-50 hover:text-green-700 transition"
                                     >
-                                        <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                            <path fill-rule="evenodd"
+                                        <svg
+                                            class="h-4 w-4"
+                                            viewBox="0 0 20 20"
+                                            fill="currentColor"
+                                        >
+                                            <path
+                                                fill-rule="evenodd"
                                                 d="M16.704 4.884a1 1 0 01.012 1.414l-8.25 8.25a1 1 0 01-1.414 0l-3.75-3.75a1 1 0 011.414-1.414l3.043 3.043 7.543-7.543a1 1 0 011.402 0z"
-                                                clip-rule="evenodd"/>
+                                                clip-rule="evenodd"
+                                            />
                                         </svg>
                                     </button>
 
@@ -134,28 +192,43 @@
                                         aria-label="Reject requisition"
                                         class="p-1.5 rounded-md text-red-600 hover:bg-red-50 hover:text-red-700 transition"
                                     >
-                                        <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                            <path fill-rule="evenodd"
+                                        <svg
+                                            class="h-4 w-4"
+                                            viewBox="0 0 20 20"
+                                            fill="currentColor"
+                                        >
+                                            <path
+                                                fill-rule="evenodd"
                                                 d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                                clip-rule="evenodd"/>
+                                                clip-rule="evenodd"
+                                            />
                                         </svg>
                                     </button>
 
                                 </div>
                             </td>
+
                         </tr>
+
                     @empty
+
                         <tr>
-                            <td colspan="9" class="py-16 text-center">
-                                <p class="font-medium text-gray-700 dark:text-gray-200">No requisitions awaiting HRM approval</p>
-                                <p class="text-xs text-gray-500 mt-1">All caught up 🎉</p>
+                            <td colspan="10" class="py-16 text-center">
+                                <p class="font-medium text-gray-700">
+                                    No requisitions awaiting HRM approval
+                                </p>
+
+                                <p class="text-xs text-gray-500 mt-1">
+                                    All caught up 🎉
+                                </p>
                             </td>
                         </tr>
+
                     @endforelse
                 </tbody>
+
             </table>
         </div>
-
 
         {{-- ===== MOBILE / TABLET CARDS ===== --}}
         <div class="lg:hidden divide-y divide-gray-100">
@@ -183,8 +256,8 @@
                                     {{ $req->requester->name }}
                                 </p>
 
-                                <p class="text-[11px] text-gray-500 mt-0.5">
-                                    Casual Requisition
+                                <p class="text-[11px] text-blue-600 mt-0.5">
+                                    {{ $req->ref_number }}
                                 </p>
                             </div>
                         </div>
