@@ -36,10 +36,13 @@
                 <thead class="border-b border-slate-200 bg-slate-50/80 text-left">
                     <tr>
                         <th class="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+                            Requisition Number
+                        </th>
+                        <th class="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
                             Requested By
                         </th>
                         <th class="px-4 py-2.5 text-center text-[10px] font-semibold uppercase tracking-wider text-slate-500">
-                            # Casuals
+                            No of  Casuals
                         </th>
                         <th class="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
                             Reason
@@ -53,9 +56,7 @@
                         <th class="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
                             End
                         </th>
-                        <th class="hidden px-4 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-slate-500 xl:table-cell">
-                            Submitted
-                        </th>
+                       
                         <th class="px-4 py-2.5 text-right text-[10px] font-semibold uppercase tracking-wider text-slate-500">
                             Actions
                         </th>
@@ -66,23 +67,21 @@
                     @forelse($requisitions as $requisition)
                         <tr class="group align-middle transition-colors hover:bg-slate-50/70">
 
+                            <td class="px-4 py-3">
+                                <p class="text-[11px] font-medium text-blue-600">
+                                    {{ $requisition->ref_number }}
+                                </p>
+                            </td>
+
                             {{-- Requested By --}}
                             <td class="px-4 py-3">
                                 <div class="flex min-w-0 items-center gap-3">
-                                    <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-100 text-xs font-semibold text-slate-600">
-                                        {{ strtoupper(substr($requisition->requester->name, 0, 1)) }}
-                                    </div>
-
+                                    
                                     <div class="min-w-0">
                                         <p class="truncate font-medium text-slate-800">
                                             {{ $requisition->requester->name }}
                                         </p>
 
-                                        @if($requisition->requester->email)
-                                            <p class="truncate text-[11px] text-slate-400">
-                                                {{ $requisition->requester->email }}
-                                            </p>
-                                        @endif
                                     </div>
                                 </div>
                             </td>
@@ -151,11 +150,6 @@
                             {{-- End --}}
                             <td class="whitespace-nowrap px-4 py-3 text-slate-600">
                                 {{ \Carbon\Carbon::parse($requisition->end_date)->format('M d, Y') }}
-                            </td>
-
-                            {{-- Submitted --}}
-                            <td class="hidden whitespace-nowrap px-4 py-3 text-[11px] text-slate-400 xl:table-cell">
-                                {{ $requisition->created_at->diffForHumans() }}
                             </td>
 
                             {{-- Actions --}}
@@ -241,9 +235,10 @@
                                     {{ $requisition->requester->name }}
                                 </p>
 
-                                <p class="text-[11px] text-slate-400">
-                                    {{ $requisition->created_at->diffForHumans() }}
+                                <p class="text-[11px] text-blue-600">
+                                    {{ $requisition->ref_number }}
                                 </p>
+     
                             </div>
                         </div>
 
@@ -306,7 +301,7 @@
 
 
                     {{-- Details --}}
-                    <dl class="mb-3 grid grid-cols-3 gap-2">
+                    <dl class="mb-3 mt-1 grid grid-cols-3 gap-2">
 
                         <div class="rounded-lg border border-slate-100 bg-slate-50/70 p-2.5">
                             <dt class="text-[10px] font-medium uppercase tracking-wide text-slate-400">
