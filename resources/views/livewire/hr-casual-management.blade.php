@@ -1914,11 +1914,14 @@
                 <thead class="border-b border-slate-200 bg-slate-50/80 text-left">
                     <tr>
                         <th class="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+                            Requisition No
+                        </th>
+                        <th class="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
                             Requested By
                         </th>
 
                         <th class="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
-                            Casuals
+                            No of Casuals
                         </th>
 
                         <th class="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
@@ -1937,21 +1940,30 @@
 
                         <tr class="group align-middle transition-colors hover:bg-slate-50/70">
 
+                            {{-- Requisition No --}}
+                            <td class="px-4 py-3 whitespace-nowrap">
+
+                                <div class="flex items-center gap-2.5">
+
+
+                                    {{-- Name --}}
+                                    <div class="min-w-0">
+                                        <p class="font-medium text-blue-600">
+                                            {{ $req->ref_number }}
+                                        </p>
+                                    </div>
+
+                                </div>
+
+                            </td>
+
                             {{-- Requested By --}}
                             <td class="px-4 py-3">
                                 <div class="flex min-w-0 items-center gap-3">
 
-                                    <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-100 text-xs font-semibold text-slate-600">
-                                        {{ strtoupper(substr($req->requester->name, 0, 1)) }}
-                                    </div>
-
                                     <div class="min-w-0">
                                         <p class="truncate font-medium text-slate-800">
                                             {{ $req->requester->name }}
-                                        </p>
-
-                                        <p class="mt-0.5 truncate text-[11px] text-slate-400">
-                                            {{ $req->requester->department->name ?? 'Department' }}
                                         </p>
                                     </div>
 
@@ -2087,8 +2099,8 @@
                                     {{ $req->requester->name }}
                                 </p>
 
-                                <p class="truncate text-[11px] text-slate-400">
-                                    {{ $req->requester->department->name ?? 'Department' }}
+                                <p class="truncate text-[11px] text-blue-600">
+                                    {{ $req->ref_number }}
                                 </p>
                             </div>
 
