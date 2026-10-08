@@ -806,10 +806,14 @@ document.addEventListener('alpine:init', () => {
 
         handleFileSelect(event) {
             const file = event.target.files[0];
-            if (!file) return;
 
-            // basic client-side size guard (mirrors backend limits)
+            if (!file) {
+                return;
+            }
+
+            // Keep your existing file size limits
             const maxMb = target === 'signature' ? 1 : 2;
+
             if (file.size > maxMb * 1024 * 1024) {
                 alert(`File too large. Max ${maxMb}MB.`);
                 event.target.value = '';
@@ -817,25 +821,96 @@ document.addEventListener('alpine:init', () => {
             }
 
             const reader = new FileReader();
+
             reader.onload = (e) => {
                 this.imageSrc = e.target.result;
                 this.showModal = true;
-                this.$nextTick(() => this.initCropper());
+
+                /*
+                 * Wait until Alpine has rendered the modal and image
+                 * before trying to initialize Cropper.
+                 */
+                this.$nextTick(() => {
+                    const image = this.$refs.cropperImage;
+
+                    if (!image) {
+                        console.error('Cropper image element was not found.');
+                        return;
+                    }
+
+                    const initialize = async () => {
+                        try {
+                            /*
+                             * Wait for the image to finish decoding.
+                             * This is important because $nextTick() only
+                             * guarantees that Alpine updated the DOM.
+                             */
+                            if (image.decode) {
+                                await image.decode();
+                            }
+                        } catch (error) {
+                            /*
+                             * Some browsers may throw when decode()
+                             * is unavailable or interrupted. We can
+                             * safely continue because the image may
+                             * already be loaded.
+                             */
+                        }
+
+                        /*
+                         * Give the browser one rendering frame to make
+                         * sure the modal/image dimensions are available.
+                         */
+                        requestAnimationFrame(() => {
+                            this.initCropper();
+                        });
+                    };
+
+                    /*
+                     * If the image is already loaded, initialize immediately.
+                     * Otherwise wait for the image load event.
+                     */
+                    if (image.complete && image.naturalWidth > 0) {
+                        initialize();
+                    } else {
+                        image.onload = initialize;
+                    }
+                });
             };
+
+            reader.onerror = () => {
+                alert('Unable to read the selected image.');
+                event.target.value = '';
+            };
+
             reader.readAsDataURL(file);
 
-            event.target.value = ''; // allow re-selecting the same file later
+            /*
+             * Clear the input so the same image can be selected again
+             * without requiring a page refresh.
+             */
+            event.target.value = '';
         },
 
         initCropper() {
-            if (this.cropper) {
-                this.cropper.destroy();
-            }
-
             const image = this.$refs.cropperImage;
 
+            if (!image) {
+                console.error('Cropper image element was not found.');
+                return;
+            }
+
+            /*
+             * Prevent multiple Cropper instances from being created
+             * on the same image.
+             */
+            if (this.cropper) {
+                this.cropper.destroy();
+                this.cropper = null;
+            }
+
             this.cropper = new Cropper(image, {
-                aspectRatio: aspectRatio,           // 1 = square for profile pic, NaN = free crop for signature
+                aspectRatio: aspectRatio,
                 viewMode: 1,
                 autoCropArea: 1,
                 dragMode: 'move',
@@ -846,29 +921,50 @@ document.addEventListener('alpine:init', () => {
         },
 
         crop() {
-            if (!this.cropper) return;
+            if (!this.cropper) {
+                return;
+            }
 
             const isSignature = target === 'signature';
 
             const canvas = this.cropper.getCroppedCanvas({
                 imageSmoothingEnabled: true,
                 imageSmoothingQuality: 'high',
-                // transparent background for signature, white for profile pic
                 fillColor: isSignature ? 'transparent' : '#ffffff',
-                ...(target === 'profile' ? { width: 512, height: 512 } : {}),
+
+                ...(target === 'profile'
+                    ? {
+                        width: 512,
+                        height: 512
+                    }
+                    : {}),
             });
 
-            const mimeType = isSignature ? 'image/png' : 'image/jpeg';
-            const quality = isSignature ? undefined : 0.9;
-            const dataUrl = canvas.toDataURL(mimeType, quality);
+            const mimeType = isSignature
+                ? 'image/png'
+                : 'image/jpeg';
 
+            const quality = isSignature
+                ? undefined
+                : 0.9;
+
+            const dataUrl = canvas.toDataURL(
+                mimeType,
+                quality
+            );
+
+            /*
+             * Keep your existing Livewire methods unchanged.
+             */
             this.$wire.call(wireSaveMethod, dataUrl);
+
             this.closeModal();
         },
 
         closeModal() {
             this.showModal = false;
             this.imageSrc = null;
+
             if (this.cropper) {
                 this.cropper.destroy();
                 this.cropper = null;
