@@ -207,6 +207,7 @@
             <!-- ============ SIGNATURE ============ -->
             <div
                 x-data="imageCropper({ aspectRatio: NaN, target: 'signature', wireSaveMethod: 'saveSignature' })"
+                x-on:signature-deleted.window="closeModal()"
                 class="p-4 border border-gray-200 rounded-lg"
             >
                 <div class="flex items-center justify-between mb-4">

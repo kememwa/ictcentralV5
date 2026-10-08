@@ -80,6 +80,14 @@ class EditProfile extends Component
             auth()->user()->update(['signature_image_path' => null]);
             $this->existingSignature = null;
         }
+
+        $this->dispatch('signature-deleted');
+
+        $this->dispatch('notify', 
+            type: 'success',
+            title: 'Signature Deleted',
+            message: "Your signature has been deleted successfully."
+        );
     }
 
     /**
