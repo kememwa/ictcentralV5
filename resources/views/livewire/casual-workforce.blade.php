@@ -640,7 +640,7 @@
         @if($MyRequisitions->hasPages())
 
             <div class="border-t border-slate-100 px-4 py-3 sm:px-6">
-                {{ $MyRequisitions->links() }}
+                {{ $MyRequisitions->onEachSide(0)->links() }}
             </div>
 
         @endif

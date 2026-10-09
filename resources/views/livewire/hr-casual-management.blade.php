@@ -1134,7 +1134,7 @@
         @if($this->hrRequisitions->hasPages())
 
             <div class="border-t border-slate-100 px-4 py-3 sm:px-6">
-                {{ $this->hrRequisitions->links() }}
+                {{ $this->hrRequisitions->onEachSide(0)->links() }}
             </div>
 
         @endif
@@ -1848,7 +1848,7 @@
 
             @if($this->casualsData->hasPages())
                 <div class="px-4 sm:px-6 py-4 border-t border-gray-100">
-                    {{ $this->casualsData->links() }}
+                    {{ $this->casualsData->onEachSide(0)->links() }}
                 </div>
             @endif
     </x-data-card>
@@ -2229,7 +2229,7 @@
 
     @if($this->AssignedRequisitions->hasPages())
     <div class="px-4 py-3 border-t border-gray-200 sm:px-6">
-        {{ $this->AssignedRequisitions->links() }}
+        {{ $this->AssignedRequisitions->onEachSide(0)->links() }}
     </div>
 @endif
 
@@ -2635,7 +2635,7 @@
         {{-- ===== PAGINATION ===== --}}
         @if($this->hrRequisitions->hasPages())
             <div class="border-t border-slate-100 px-4 py-3 sm:px-6">
-                {{ $this->hrRequisitions->links() }}
+                {{ $this->hrRequisitions->onEachSide(0)->links() }}
             </div>
         @endif
 

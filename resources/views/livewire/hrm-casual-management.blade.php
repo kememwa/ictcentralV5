@@ -512,7 +512,7 @@
 
         {{-- ===== PAGINATION ===== --}}
         <div class="border-t border-slate-100 px-4 py-3 sm:px-6">
-            {{ $hrm_requisitions->links() }}
+            {{ $hrm_requisitions->onEachSide(0)->links() }}
         </div>
 
     </x-data-card>

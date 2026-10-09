@@ -516,7 +516,7 @@
         @if($coo_requisitions->hasPages())
 
             <div class="border-t border-slate-100 px-4 py-3 sm:px-6">
-                {{ $coo_requisitions->links() }}
+                {{ $coo_requisitions->onEachSide(0)->links() }}
             </div>
 
         @endif
