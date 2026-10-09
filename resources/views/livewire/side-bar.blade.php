@@ -258,6 +258,8 @@
                 <li><a wire:navigate href="{{ route('permissionmanagement') }}" class="flex items-center gap-2 rounded-md px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-100 hover:text-slate-900"><span>🔑</span>Permissions</a></li>
                 <li><a wire:navigate href="{{ route('offboarding.index') }}" class="flex items-center gap-2 rounded-md px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-100 hover:text-slate-900"><span>🚪</span>Offboard User</a></li>
                 @endhasanyrole
+
+                @hasanyrole('SuperAdmin')
                 <li>
                     <a wire:navigate href="{{ route('login-activities') }}"
                     class="flex items-center gap-2 rounded-md px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-100 hover:text-slate-900">
@@ -265,6 +267,7 @@
                         Login Activity
                     </a>
                 </li>
+                @endhasanyrole
             </ul>
             @endhasanyrole
 
