@@ -42,9 +42,6 @@ Route::get('/reset-password/{token}', ResetPassword::class)->name('password.rese
 Route::middleware(['auth'])->group(function(){
 
 
-Route::get('/home', Home::class)->name('home');
-
-
 Route::get('/offboarding', OffboardingOverview::class)
     // ->middleware('permission:view all offboarding')
     ->name('offboarding.index');
@@ -100,10 +97,14 @@ Route::middleware(['role:Finance|SuperAdmin'])->group(function () {
     Route::get('/mpesa-analytics', MpesaAnalytics::class)->name('mpesa-analytics');
 });
 
+// Finance and SuperAdmin only
+Route::middleware(['role:Hod|SuperAdmin'])->group(function () {
+   Route::get('/pendingapproval', PendingApproval::class)->name('pendingapproval');
+   Route::get('/requisition', ManageRequisition::class)->name('requisition');
+});
+
  // All authenticated users
-Route::get('/pendingapproval', PendingApproval::class)->name('pendingapproval');
 Route::get('/casual-workforce', CasualWorkforce::class)->name('casual-workforce');
-Route::get('/requisition', ManageRequisition::class)->name('requisition');
 Route::get('/edit-profile', EditProfile::class)->name('edit-profile');
- 
+Route::get('/home', Home::class)->name('home');
 });

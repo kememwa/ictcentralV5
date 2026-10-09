@@ -60,6 +60,7 @@
         <div>
             <p class="px-3 pb-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Operations</p>
 
+            @hasanyrole('SuperAdmin|It|Finance')
             {{-- Inventory (collapsible) --}}
             <button @click="inventoryOpen = !inventoryOpen"
                     :aria-expanded="inventoryOpen"
@@ -85,7 +86,9 @@
                     </a>
                 </li>
             </ul>
+            @endhasanyrole
 
+            @hasanyrole('Production')
             {{-- MT-Management (NEW, collapsible) --}}
             <button @click="mtMgmtOpen = !mtMgmtOpen"
                     :aria-expanded="mtMgmtOpen"
@@ -104,6 +107,7 @@
                 <li><a href="#" class="flex items-center gap-2 rounded-md px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-100 hover:text-slate-900"><span>🛠️</span>Maintenance</a></li>
                 <li><a href="#" class="flex items-center gap-2 rounded-md px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-100 hover:text-slate-900"><span>📈</span>Reports</a></li>
             </ul>
+            @endhasanyrole
 
             {{-- Casual Workforce (collapsible) --}}
             <button @click="casualOpen = !casualOpen"
@@ -133,33 +137,42 @@
                     </a>
                 </li>
 
+                @hasanyrole('SuperAdmin|Coo')
                 <li>
                     <a wire:navigate href="{{ route('coo-approval') }}"
                     class="flex items-center gap-2 rounded-md px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-100 hover:text-slate-900">
                         <span>👔</span> COO Approval
                     </a>
                 </li>
+                @endhasanyrole
 
+                @hasanyrole('SuperAdmin|Hod')
                 <li>
                     <a wire:navigate href="{{route('requisition')}}"
                     class="flex items-center gap-2 rounded-md px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-100 hover:text-slate-900">
                         <span>✅</span> HOD Approve Request
                     </a>
                 </li>
+                @endhasanyrole
 
+                @hasanyrole('SuperAdmin|Hr')
                 <li>
                     <a wire:navigate href="{{route('hr.casual.manage')}}"
                     class="flex items-center gap-2 rounded-md px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-100 hover:text-slate-900">
                         <span>👥</span> HR Casual MGMT
                     </a>
                 </li>
+                @endhasanyrole
 
+                @hasanyrole('SuperAdmin|Hrm|hrm_delegate')
                 <li>
                     <a wire:navigate href="{{route('hrm.casual.manage')}}"
                     class="flex items-center gap-2 rounded-md px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-100 hover:text-slate-900">
                         <span>🧾</span> HRM Casual MGMT
                     </a>
                 </li>
+                @endhasanyrole
+
                 <li>
                     <a wire:navigate href="#"
                         class="flex items-center gap-2 rounded-md px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-100 hover:text-slate-900">
@@ -170,6 +183,7 @@
         </div>
 
 
+        @hasanyrole('SuperAdmin|It|Finance|Coo')
         {{-- ===== Section: Payments ===== --}}
         <div>
             <p class="px-3 pb-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Payments</p>
@@ -218,8 +232,9 @@
                 
             </ul>
         </div>
+        @endhasanyrole
 
-
+        @hasanyrole('SuperAdmin|It|Hr')
         {{-- ===== Section: Administration ===== --}}
         <div>
             <p class="px-3 pb-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Administration</p>
@@ -238,11 +253,15 @@
             </button>
             <ul x-show="userMgmtOpen" x-collapse class="mt-1 space-y-0.5 pl-9">
                 <li><a wire:navigate href="{{ route('usermanagement') }}" class="flex items-center gap-2 rounded-md px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-100 hover:text-slate-900"><span>👥</span>Users</a></li>
+                @hasanyrole('SuperAdmin|It')
                 <li><a wire:navigate href="{{ route('rolemanagement') }}" class="flex items-center gap-2 rounded-md px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-100 hover:text-slate-900"><span>🛡️</span>Roles</a></li>
                 <li><a wire:navigate href="{{ route('permissionmanagement') }}" class="flex items-center gap-2 rounded-md px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-100 hover:text-slate-900"><span>🔑</span>Permissions</a></li>
                 <li><a wire:navigate href="{{ route('offboarding.index') }}" class="flex items-center gap-2 rounded-md px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-100 hover:text-slate-900"><span>🚪</span>Offboard User</a></li>
+                @endhasanyrole
             </ul>
+            @endhasanyrole
 
+            @hasanyrole('SuperAdmin|It|Hr')
             {{-- Organization Setup --}}
             <button @click="orgSetupOpen = !orgSetupOpen"
                     :aria-expanded="orgSetupOpen"
@@ -298,6 +317,9 @@
                     </a>
                 </li>
             </ul>
+            @endhasanyrole
+
+            @hasanyrole('SuperAdmin|It')
             {{-- Onboarding --}}
             <a wire:navigate href="{{ route('onboarding') }}" class="group mt-1 flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 hover:text-slate-900">
                 <svg class="h-5 w-5 text-slate-400 group-hover:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -305,6 +327,7 @@
                 </svg>
                 Onboarding
             </a>
+            @endhasanyrole
         </div>
 
         {{-- ===== Section: Account ===== --}}
