@@ -42,6 +42,12 @@ class EditProfile extends Component
         $this->existingProfilePicture = $path;
 
         $this->dispatch('profile-picture-updated');
+
+        $this->dispatch('notify', 
+            type: 'success',
+            title: 'Profile Pic Updated',
+            message: "Your Profile Picture Has been Updated successfully."
+        );
     }
 
     public function saveSignature($base64Image)
@@ -62,6 +68,12 @@ class EditProfile extends Component
         $this->existingSignature = $path;
 
         $this->dispatch('signature-updated');
+
+        $this->dispatch('notify', 
+            type: 'success',
+            title: 'Signature Updated',
+            message: "Your signature has been Updated successfully."
+        );
     }
 
     public function deleteProfilePicture()
