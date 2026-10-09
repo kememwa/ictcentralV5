@@ -48,7 +48,7 @@
                             
                             {{-- Order Number --}}
                             <td class="px-3 py-2">
-                                <p class="font-medium text-gray-900 truncate max-w-[140px]">
+                                <p class="font-medium text-blue-600 truncate max-w-[140px]">
                                     {{ $transaction->order_number }}
                                 </p>
                             </td>
