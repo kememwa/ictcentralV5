@@ -31,6 +31,7 @@ use App\Livewire\EditProfile;
 use App\Livewire\Coo\RequisitionApproval;
 use App\Livewire\ForgotPassword;
 use App\Livewire\ResetPassword;
+use App\Livewire\MpesaAnalytics;
 
 
 Route::get('/', Login::class)->name('login');
@@ -74,5 +75,6 @@ Route::middleware(['auth'])->group(function(){
  Route::get('/contracts/print/{requisitionId}',[ContractController::class, 'print'])->name('contracts.print');
  Route::get('edit-profile', EditProfile::class)->name('edit-profile');
  Route::get('coo-approval', RequisitionApproval::class)->name('coo-approval');
+ Route::get('mpesa-analytics', MpesaAnalytics::class)->name('mpesa-analytics');
  
 });
