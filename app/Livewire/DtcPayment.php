@@ -35,7 +35,7 @@ public function actionFilter()
                             ->orWhere('mpesa_receipt_number', 'like', '%' . $this->search . '%')
                             ->orWhere('status', 'like', '%' . $this->search . '%')
                               ->latest()
-                            ->paginate(8),
+                            ->paginate(7),
         ]);
     }
 }

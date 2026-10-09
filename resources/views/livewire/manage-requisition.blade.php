@@ -4,10 +4,6 @@
         title="HOD Approval – Casual Requisitions"
         subtitle="Review HR-approved rates and approve or reject requisitions">
 
-        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300 ring-1 ring-amber-200 dark:ring-amber-800">
-            <span class="w-1.5 h-1.5 bg-amber-500 rounded-full animate-pulse"></span>
-            {{ count($requisitions) }} Pending
-        </span>
     </x-page-header>
 
     <x-data-card title="Requisitions Awaiting Your Approval" 
