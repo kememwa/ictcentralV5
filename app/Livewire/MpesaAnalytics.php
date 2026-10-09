@@ -44,14 +44,22 @@ class MpesaAnalytics extends Component
 
         $count = fn ($s) => (int) ($rows[$s]->count ?? 0);
 
+        $total     = (int) $rows->sum('count');   // every transaction in the period
+        $success   = $count('SUCCESS');
+        $cancelled = $count('CANCELLED');
+        $timeout   = $count('TIMEOUT');
+        $pending   = $count('PENDING');
+
         return [
-            'collected' => (float) ($rows['SUCCESS']->total ?? 0),
-            'success'   => $count('SUCCESS'),
-            'failed'    => $count('FAILED'),
-            'cancelled' => $count('CANCELLED'),
-            'timeout'   => $count('TIMEOUT'),
-            'pending'   => $count('PENDING'),
-            'total'     => (int) $rows->sum('count'),
+            'collected'  => (float) ($rows['SUCCESS']->total ?? 0),
+            'success'    => $success,
+            'failed'     => $total - $success,   // anything that is not SUCCESS
+            'cancelled'  => $cancelled,
+            'timeout'    => $timeout,
+            'pending'    => $pending,
+            // status FAILED plus any other unlisted status, so the donut still adds up
+            'failed_raw' => $total - $success - $cancelled - $timeout - $pending,
+            'total'      => $total,
         ];
     }
 
@@ -69,7 +77,7 @@ class MpesaAnalytics extends Component
         $cur  = $this->summary($start, $end);
         $prev = $this->summary($pStart, $pEnd);
 
-        $resolved = $cur['success'] + $cur['failed'] + $cur['cancelled'] + $cur['timeout'];
+        $resolved = $cur['total'];
 
         return [
             'cur' => $cur,
@@ -92,11 +100,11 @@ class MpesaAnalytics extends Component
         $total = max($c['total'], 1);
 
         $items = [
-            ['label' => 'Successful', 'count' => $c['success'],   'color' => '#10b981'],
-            ['label' => 'Failed',     'count' => $c['failed'],    'color' => '#ef4444'],
-            ['label' => 'Cancelled',  'count' => $c['cancelled'], 'color' => '#f97316'],
-            ['label' => 'Timed Out',  'count' => $c['timeout'],   'color' => '#facc15'],
-            ['label' => 'Pending',    'count' => $c['pending'],   'color' => '#94a3b8'],
+            ['label' => 'Successful', 'count' => $c['success'],    'color' => '#10b981'],
+            ['label' => 'Failed',     'count' => $c['failed_raw'], 'color' => '#ef4444'],
+            ['label' => 'Cancelled',  'count' => $c['cancelled'],  'color' => '#f97316'],
+            ['label' => 'Timed Out',  'count' => $c['timeout'],    'color' => '#facc15'],
+            ['label' => 'Pending',    'count' => $c['pending'],    'color' => '#94a3b8'],
         ];
 
         $offset = 0;
