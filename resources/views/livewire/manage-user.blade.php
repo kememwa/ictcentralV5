@@ -233,6 +233,7 @@ resetAddForm() {
                     </div>
                 </div>
 
+                @hasanyrole('SuperAdmin')
                 <!-- Roles Section -->
                 <div class="mb-6">
                     <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Roles</label>
@@ -254,6 +255,7 @@ resetAddForm() {
                     <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                     @enderror
                 </div>
+                @endhasanyrole
                 
 
                 <!-- Submit Button -->
@@ -471,6 +473,7 @@ resetAddForm() {
                     </div> 
                 </div>
                 
+                @hasanyrole('SuperAdmin')
                 <!-- Roles Section -->
                 <div class="mb-6">
                     <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Roles</label>
@@ -492,6 +495,7 @@ resetAddForm() {
                     <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                     @enderror
                 </div>
+                @endhasanyrole
                 
                 <!-- Action Buttons -->
                 <div class="flex justify-end space-x-3">
