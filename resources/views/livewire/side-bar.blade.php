@@ -204,7 +204,18 @@
                 </svg>
             </button>
             <ul x-show="paymentOpen" x-collapse class="mt-1 space-y-0.5 pl-9">
-                <li><a wire:navigate href="{{ route('dtc-payment') }}" class="flex items-center gap-2 rounded-md px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-100 hover:text-slate-900"><span>👥</span>DTC</a></li>
+                <li>
+                    <a wire:navigate href="{{ route('dtc-payment') }}" class="flex items-center gap-2 rounded-md px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-100 hover:text-slate-900">
+                        <span>👥</span>DTC</a>
+                </li>
+
+                <li>
+                    <a wire:navigate href="#"
+                        class="flex items-center gap-2 rounded-md px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-100 hover:text-slate-900">
+                            <span>📈</span>Mpesa Analytics
+                    </a>
+                </li>
+                
             </ul>
         </div>
 
