@@ -56,7 +56,7 @@ class ManageUser extends Component
 
     public function prepareAddUser()
     {
-        $this->reset(['name', 'email', 'selectedRoles']);
+        $this->reset(['name', 'email', 'selectedRoles', 'selectedDesignation', 'editSelectedRoles', 'editingUserId', 'searchHead', 'showSelectedDesignation']);
     }
 
     public $selectedDesignation = null; // Selected designation ID
