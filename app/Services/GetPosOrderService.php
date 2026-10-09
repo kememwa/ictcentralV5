@@ -81,7 +81,7 @@ class GetPosOrderService
                     'Payment/PaymentRef',
                     'Payment/PaymentMethod',
                     'Payment/MpesaNumber',
-                    'Payment/ResultCode',
+                    'Payment/TransactionCode',
                     'Payment/ResultDesc',
                 ]),
             ]
