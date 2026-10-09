@@ -134,7 +134,7 @@ class ManageUser extends Component
             'name' => $this->name,
             'email' => $this->email,
             'designation_id' => $this->selectedDesignation,
-            'password' => Hash::make('123456'),
+            'password' => Hash::make('P@ssw0rd123'), // Default password
         ]);
         
         $user->syncRoles($this->selectedRoles);
