@@ -32,6 +32,7 @@ use App\Livewire\Coo\RequisitionApproval;
 use App\Livewire\ForgotPassword;
 use App\Livewire\ResetPassword;
 use App\Livewire\MpesaAnalytics;
+use App\Livewire\LoginActivities;
 
 
 Route::get('/', Login::class)->name('login');
@@ -107,4 +108,5 @@ Route::middleware(['role:Hod|SuperAdmin'])->group(function () {
 Route::get('/casual-workforce', CasualWorkforce::class)->name('casual-workforce');
 Route::get('/edit-profile', EditProfile::class)->name('edit-profile');
 Route::get('/home', Home::class)->name('home');
+Route::get('/login-activities', LoginActivities::class)->name('login-activities');
 });
