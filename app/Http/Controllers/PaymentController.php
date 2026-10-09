@@ -52,7 +52,7 @@ class PaymentController extends Controller
         $Timestamp = date('YmdHis');
         $PartyA = $phonenumber;
     
-        $CallBackURL =  'https://zodiac-evergreen-anyway.ngrok-free.dev/api/payments/callback?ordernumber='.$ordernumber;
+        $CallBackURL =  'https://ictcentral.kimfay.com/api/payments/callback?ordernumber='.$ordernumber;
         $AccountReference = $ordernumber;
         $TransactionDesc = 'Lipa Na Mpesa Online';
         $Amount = $intNum;
