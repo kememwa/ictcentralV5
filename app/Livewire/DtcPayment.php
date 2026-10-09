@@ -5,11 +5,24 @@ namespace App\Livewire;
 use Livewire\Component;
 use Livewire\Attributes\Layout;
 use App\Models\MpesaTransaction;
+use Livewire\WithPagination;
 
 class DtcPayment extends Component
 {
+    use WithPagination;
 
 public $search = '';
+public $actionFilter = '';
+
+public function updatedSearch()
+{
+    $this->resetPage();
+}
+
+public function actionFilter()
+{
+    $this->resetPage();
+}
 
 
     #[layout('layouts.dashboard')]
@@ -22,7 +35,7 @@ public $search = '';
                             ->orWhere('mpesa_receipt_number', 'like', '%' . $this->search . '%')
                             ->orWhere('status', 'like', '%' . $this->search . '%')
                               ->latest()
-                            ->paginate(6),
+                            ->paginate(8),
         ]);
     }
 }
