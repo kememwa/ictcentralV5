@@ -220,11 +220,13 @@
             @endforelse
         </div>
 
+        
         @if($mpesa_transactions->hasPages())
             <div class="px-4 sm:px-6 py-4 border-t border-gray-100">
-                {{ $mpesa_transactions->links() }}
+                {{ $mpesa_transactions->onEachSide(0)->links() }}
             </div>
         @endif
+
         
 </x-data-card>
 </div>
