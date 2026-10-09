@@ -28,6 +28,7 @@
         </x-slot>
     
 
+        {{--Desktop View--}}
         <div class="hidden lg:block overflow-x-auto">
             <table class="w-full text-xs">
                 <thead class="bg-gray-50 text-left uppercase tracking-wider text-[11px] text-gray-500">
@@ -39,6 +40,7 @@
                         <th class="px-3 py-2 hidden xl:table-cell">Mpesa Receipt Number</th>
                         <th class="px-3 py-2 hidden xl:table-cell">Result Description</th>
                         <th class="px-3 py-2">Paid At</th>
+                        <th class="px-3 py-2">Date & Time</th>
                     </tr>
                 </thead>
 
@@ -107,6 +109,15 @@
                             <td class="px-3 py-2 text-gray-500">
                                 {{ $transaction->paid_at ?? 'null' }}
                             </td>
+
+
+                            {{-- Transaction Date & Time --}}
+                            <td class="px-3 py-2 text-gray-500 whitespace-nowrap">
+                                {{ $transaction->created_at
+                                    ? $transaction->created_at->format('d M Y, h:i A')
+                                    : 'N/A' }}
+                            </td>
+
                         </tr>
                     @empty
                         <tr>
