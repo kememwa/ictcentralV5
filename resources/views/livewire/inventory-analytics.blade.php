@@ -93,7 +93,7 @@
     @endif
 
     @if(in_array($activeCategory, ['active devices with issues', 'inactive devices with issues']))
-    <x-data-card 
+        <x-data-card 
             title="{{ $this->getCategoryTitle()['title'] }}" 
             subtitle="{{ $this->getCategoryTitle()['subtitle'] }}">
             <x-slot name="actions">
@@ -110,210 +110,228 @@
                 </div>
             </x-slot>
             <div class="hidden lg:block overflow-x-auto">
-            <table class="w-full text-xs">
-                <thead class="bg-gray-50 text-left uppercase tracking-wider text-[11px] text-gray-500">
-                    <tr>
-                        <th class="px-3 py-2 w-[15%] min-w-[140px]">Device Name</th>
-                        <th class="px-3 py-2 w-[10%] min-w-[80px]">Type</th>
-                        <th class="px-3 py-2 w-[12%] min-w-[100px]">Current User</th>
-                        <th class="px-3 py-2 w-[10%] min-w-[90px]">Tag Number</th>
-                        <th class="px-3 py-2 w-[43%] min-w-[250px]">IT Comments</th>
-                        <th class="px-3 py-2 w-[10%] min-w-[80px] text-center">Action</th>
-                    </tr>
-                </thead>
+                <div class="relative">
+                    <div
+                        wire:loading.flex
+                        wire:target="changeCategory"
+                        class="absolute inset-0 bg-white/60 backdrop-blur-sm items-center justify-center z-10">
+                
+                        <div class="flex items-center gap-3">
+                
+                            <svg class="w-6 h-6 animate-spin">
+                                ...
+                            </svg>
+                
+                            <span>Loading devices...</span>
+                
+                        </div>
+                
+                    </div>
+                    <table class="w-full text-xs">
+                        <thead class="bg-gray-50 text-left uppercase tracking-wider text-[11px] text-gray-500">
+                            <tr>
+                                <th class="px-3 py-2 w-[15%] min-w-[140px]">Device Name</th>
+                                <th class="px-3 py-2 w-[10%] min-w-[80px]">Type</th>
+                                <th class="px-3 py-2 w-[12%] min-w-[100px]">Current User</th>
+                                <th class="px-3 py-2 w-[10%] min-w-[90px]">Tag Number</th>
+                                <th class="px-3 py-2 w-[43%] min-w-[250px]">IT Comments</th>
+                                <th class="px-3 py-2 w-[10%] min-w-[80px] text-center">Action</th>
+                            </tr>
+                        </thead>
 
-                <tbody class="divide-y divide-gray-100">
-                    @forelse ($devices as $device)
-                        <tr class="hover:bg-gray-50 transition">
-                            {{-- Device Name --}}
-                            <td class="px-3 py-2">
-                                <div class="flex items-center gap-2">
-                                    <div class="w-7 h-7 rounded-md bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center text-[10px] font-semibold shrink-0">
-                                        {{ strtoupper(substr($device->name, 0, 1)) }}
-                                    </div>
-                                    <div class="min-w-0">
-                                        <p class="font-medium text-gray-900 truncate max-w-[120px]" title="{{ $device->name }}">
-                                            {{ $device->name }}
-                                        </p>
-                                        <p class="text-[10px] text-gray-400 truncate max-w-[120px]">
-                                            {{ $device->model }}
-                                        </p>
-                                    </div>
-                                </div>
-                            </td>
-
-                            {{-- Type --}}
-                            <td class="px-3 py-2">
-                                <span class="inline-flex items-center gap-1">
-                                    <span class="w-1.5 h-1.5 rounded-full 
-                                        {{ $device->type === 'laptop' ? 'bg-blue-500' : 
-                                        ($device->type === 'desktop' ? 'bg-purple-500' : 
-                                        ($device->type === 'printer' ? 'bg-amber-500' : 'bg-gray-500')) }}">
-                                    </span>
-                                    <span class="capitalize text-gray-700">
-                                        {{ $device->type }}
-                                    </span>
-                                </span>
-                            </td>
-
-                            {{-- Current User --}}
-                            <td class="px-3 py-2">
-                                <div class="flex items-center gap-1.5">
-                                    <svg class="w-3 h-3 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                    </svg>
-                                    <span class="text-gray-700 truncate max-w-[100px]" title="{{ $device->user->name ?? 'Unassigned' }}">
-                                        {{ $device->user->name ?? 'Unassigned' }}
-                                    </span>
-                                </div>
-                            </td>
-
-                            {{-- Tag Number --}}
-                            <td class="px-3 py-2">
-                                <code class="text-[11px] font-mono bg-gray-100 px-1.5 py-0.5 rounded text-gray-700">
-                                    {{ $device->tag_number ?? 'N/A' }}
-                                </code>
-                            </td>
-
-                            {{-- IT Comments --}}
-                            <td class="px-3 py-2">
-                                <div class="max-w-[300px]">
-                                    @php
-                                        $issue = $device->issues->first();
-                                    @endphp
-                                    
-                                    @if($issue && $issue->comment)
-                                        <div class="group relative">
-                                            <div class="flex items-start gap-1.5">
-                                                <svg class="w-3 h-3 text-blue-400 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-                                                </svg>
-                                                <p class="text-gray-600 text-[11px] leading-relaxed break-words line-clamp-2 hover:line-clamp-none transition-all duration-200">
-                                                    {{ $issue->comment }}
+                        <tbody class="divide-y divide-gray-100">
+                            @forelse ($devices as $device)
+                                <tr class="hover:bg-gray-50 transition">
+                                    {{-- Device Name --}}
+                                    <td class="px-3 py-2">
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-7 h-7 rounded-md bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center text-[10px] font-semibold shrink-0">
+                                                {{ strtoupper(substr($device->name, 0, 1)) }}
+                                            </div>
+                                            <div class="min-w-0">
+                                                <p class="font-medium text-gray-900 truncate max-w-[120px]" title="{{ $device->name }}">
+                                                    {{ $device->name }}
+                                                </p>
+                                                <p class="text-[10px] text-gray-400 truncate max-w-[120px]">
+                                                    {{ $device->model }}
                                                 </p>
                                             </div>
-                                            @if(strlen($issue->comment) > 80)
-                                                <div class="absolute bottom-full left-0 mb-2 hidden group-hover:block z-10">
-                                                    <div class="bg-gray-900 text-white text-xs rounded-lg p-2 max-w-xs shadow-lg">
-                                                        {{ $issue->comment }}
-                                                        <div class="absolute left-4 top-full w-2 h-2 bg-gray-900 transform rotate-45 -mt-1"></div>
+                                        </div>
+                                    </td>
+
+                                    {{-- Type --}}
+                                    <td class="px-3 py-2">
+                                        <span class="inline-flex items-center gap-1">
+                                            <span class="w-1.5 h-1.5 rounded-full 
+                                                {{ $device->type === 'laptop' ? 'bg-blue-500' : 
+                                                ($device->type === 'desktop' ? 'bg-purple-500' : 
+                                                ($device->type === 'printer' ? 'bg-amber-500' : 'bg-gray-500')) }}">
+                                            </span>
+                                            <span class="capitalize text-gray-700">
+                                                {{ $device->type }}
+                                            </span>
+                                        </span>
+                                    </td>
+
+                                    {{-- Current User --}}
+                                    <td class="px-3 py-2">
+                                        <div class="flex items-center gap-1.5">
+                                            <svg class="w-3 h-3 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                            </svg>
+                                            <span class="text-gray-700 truncate max-w-[100px]" title="{{ $device->user->name ?? 'Unassigned' }}">
+                                                {{ $device->user->name ?? 'Unassigned' }}
+                                            </span>
+                                        </div>
+                                    </td>
+
+                                    {{-- Tag Number --}}
+                                    <td class="px-3 py-2">
+                                        <code class="text-[11px] font-mono bg-gray-100 px-1.5 py-0.5 rounded text-gray-700">
+                                            {{ $device->tag_number ?? 'N/A' }}
+                                        </code>
+                                    </td>
+
+                                    {{-- IT Comments --}}
+                                    <td class="px-3 py-2">
+                                        <div class="max-w-[300px]">
+                                            @php
+                                                $issue = $device->issues->first();
+                                            @endphp
+                                            
+                                            @if($issue && $issue->comment)
+                                                <div class="group relative">
+                                                    <div class="flex items-start gap-1.5">
+                                                        <svg class="w-3 h-3 text-blue-400 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                                                        </svg>
+                                                        <p class="text-gray-600 text-[11px] leading-relaxed break-words line-clamp-2 hover:line-clamp-none transition-all duration-200">
+                                                            {{ $issue->comment }}
+                                                        </p>
                                                     </div>
+                                                    @if(strlen($issue->comment) > 80)
+                                                        <div class="absolute bottom-full left-0 mb-2 hidden group-hover:block z-10">
+                                                            <div class="bg-gray-900 text-white text-xs rounded-lg p-2 max-w-xs shadow-lg">
+                                                                {{ $issue->comment }}
+                                                                <div class="absolute left-4 top-full w-2 h-2 bg-gray-900 transform rotate-45 -mt-1"></div>
+                                                            </div>
+                                                        </div>
+                                                    @endif
+                                                </div>
+                                            @else
+                                                <div class="flex items-center gap-1.5">
+                                                    <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                                                    </svg>
+                                                    <span class="text-gray-400 italic text-[11px]">No comments</span>
                                                 </div>
                                             @endif
                                         </div>
-                                    @else
-                                        <div class="flex items-center gap-1.5">
-                                            <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                                            </svg>
-                                            <span class="text-gray-400 italic text-[11px]">No comments</span>
-                                        </div>
-                                    @endif
-                                </div>
-                            </td>
+                                    </td>
 
-                            {{-- Actions --}}
-                            <td class="px-3 py-2">
-                                <div class="flex items-center justify-center gap-1">
-                                    {{-- Mark as Resolved Button --}}
-                                    @if(isset($device) && isset($issue) && $issue->status !== 'resolved')
-                                        <div x-data="{ open: false }">
-                                            <button @click="open = true"
-                                                    class="p-1.5 rounded-md text-green-600 hover:bg-green-50 transition"
-                                                    title="Mark as resolved">
-                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                </svg>
-                                            </button>
+                                    {{-- Actions --}}
+                                    <td class="px-3 py-2">
+                                        <div class="flex items-center justify-center gap-1">
+                                            {{-- Mark as Resolved Button --}}
+                                            @if(isset($device) && isset($issue) && $issue->status !== 'resolved')
+                                                <div x-data="{ open: false }">
+                                                    <button @click="open = true"
+                                                            class="p-1.5 rounded-md text-green-600 hover:bg-green-50 transition"
+                                                            title="Mark as resolved">
+                                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                        </svg>
+                                                    </button>
 
-                                            {{-- Modal --}}
-                                            <template x-teleport="body">
-                                                <div x-show="open" x-cloak class="fixed inset-0 z-[100] flex items-center justify-center p-4">
-                                                    {{-- Backdrop --}}
-                                                    <div x-show="open" x-transition.opacity @click="open = false"
-                                                        class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"></div>
-                                                    
-                                                    {{-- Modal Content --}}
-                                                    <div x-show="open" x-transition
-                                                        class="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
-                                                        
-                                                        {{-- Icon --}}
-                                                        <div class="flex h-12 w-12 items-center justify-center rounded-full bg-green-100 text-green-600">
-                                                            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                            </svg>
+                                                    {{-- Modal --}}
+                                                    <template x-teleport="body">
+                                                        <div x-show="open" x-cloak class="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                                                            {{-- Backdrop --}}
+                                                            <div x-show="open" x-transition.opacity @click="open = false"
+                                                                class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"></div>
+                                                            
+                                                            {{-- Modal Content --}}
+                                                            <div x-show="open" x-transition
+                                                                class="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
+                                                                
+                                                                {{-- Icon --}}
+                                                                <div class="flex h-12 w-12 items-center justify-center rounded-full bg-green-100 text-green-600">
+                                                                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                                    </svg>
+                                                                </div>
+                                                                
+                                                                {{-- Title --}}
+                                                                <h3 class="mt-4 text-lg font-semibold text-slate-900">
+                                                                    Confirm Resolution
+                                                                </h3>
+                                                                
+                                                                {{-- Description --}}
+                                                                <p class="mt-1.5 text-sm text-slate-600">
+                                                                    Resolve issue for <span class="font-medium text-slate-900">{{ $device->name ?? 'this device' }}</span>? 
+                                                                    This will mark the issue as completed.
+                                                                </p>
+                                                                
+                                                                {{-- Actions --}}
+                                                                <div class="mt-6 flex justify-end gap-2">
+                                                                    <button @click="open = false"
+                                                                            class="rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">
+                                                                        Cancel
+                                                                    </button>
+                                                                    <button @click="open = false; $nextTick(() => { $wire.markAsResolved({{ $device->id }}, {{ $issue->id }}) })"
+                                                                            class="rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700">
+                                                                        Yes, resolve
+                                                                    </button>
+                                                                </div>
+                                                            </div>
                                                         </div>
-                                                        
-                                                        {{-- Title --}}
-                                                        <h3 class="mt-4 text-lg font-semibold text-slate-900">
-                                                            Confirm Resolution
-                                                        </h3>
-                                                        
-                                                        {{-- Description --}}
-                                                        <p class="mt-1.5 text-sm text-slate-600">
-                                                            Resolve issue for <span class="font-medium text-slate-900">{{ $device->name ?? 'this device' }}</span>? 
-                                                            This will mark the issue as completed.
-                                                        </p>
-                                                        
-                                                        {{-- Actions --}}
-                                                        <div class="mt-6 flex justify-end gap-2">
-                                                            <button @click="open = false"
-                                                                    class="rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">
-                                                                Cancel
-                                                            </button>
-                                                            <button @click="open = false; $nextTick(() => { $wire.markAsResolved({{ $device->id }}, {{ $issue->id }}) })"
-                                                                    class="rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700">
-                                                                Yes, resolve
-                                                            </button>
-                                                        </div>
-                                                    </div>
+                                                    </template>
                                                 </div>
-                                            </template>
+                                            @endif
+                                            
+                                            {{-- View Details Button --}}
+                                            @if(isset($device))
+                                                <button wire:click="viewDeviceDetails({{ $device->id }})" 
+                                                        class="p-1.5 rounded-md text-gray-600 hover:bg-gray-100 transition"
+                                                        title="View details">
+                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                    </svg>
+                                                </button>
+                                            @endif
                                         </div>
-                                    @endif
-                                    
-                                    {{-- View Details Button --}}
-                                    @if(isset($device))
-                                        <button wire:click="viewDeviceDetails({{ $device->id }})" 
-                                                class="p-1.5 rounded-md text-gray-600 hover:bg-gray-100 transition"
-                                                title="View details">
-                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="6" class="py-12 text-center">
+                                        <div class="flex flex-col items-center gap-2 text-gray-500">
+                                            <svg class="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                                    d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0l-2 7H6l-2-7m16 0H4"/>
                                             </svg>
-                                        </button>
-                                    @endif
-                                </div>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="6" class="py-12 text-center">
-                                <div class="flex flex-col items-center gap-2 text-gray-500">
-                                    <svg class="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                            d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0l-2 7H6l-2-7m16 0H4"/>
-                                    </svg>
-                                    <p class="font-medium text-gray-700 text-sm">No devices found</p>
-                                    <p class="text-[11px]">Try adjusting your search or add a new device</p>
-                                </div>
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-        @if($devices->hasPages())
+                                            <p class="font-medium text-gray-700 text-sm">No devices found</p>
+                                            <p class="text-[11px]">Try adjusting your search or add a new device</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            @if($devices->hasPages())
                 <div class="px-4 sm:px-6 py-4 border-t border-gray-100">
                     {{ $devices->links() }}
                 </div>
             @endif
-    </x-data-card>
+        </x-data-card>
     @endif
 
 
     @if($activeCategory=='archived devices')
-     <x-data-card 
+        <x-data-card 
             title="{{ $this->getCategoryTitle()['title'] }}" 
             subtitle="{{ $this->getCategoryTitle()['subtitle'] }}">
             <x-slot name="actions">
@@ -330,148 +348,167 @@
                 </div>
             </x-slot>
             <div class="hidden lg:block overflow-x-auto">
-            <table class="w-full text-xs">
-                <thead class="bg-gray-50 text-left uppercase tracking-wider text-[11px] text-gray-500">
-                    <tr>
-                        <th class="px-3 py-2 w-[15%] min-w-[140px]">Device Name</th>
-                        <th class="px-3 py-2 w-[10%] min-w-[80px]">Type</th>
-                        <th class="px-3 py-2 w-[12%] min-w-[100px]">Previous User</th>
-                        <th class="px-3 py-2 w-[10%] min-w-[90px]">Tag Number</th>
-                        <th class="px-3 py-2 w-[43%] min-w-[250px]">IT Comments</th>
-                        <th class="px-3 py-2 w-[10%] min-w-[80px] text-center">Action</th>
-                    </tr>
-                </thead>
+                <div class="relative">
+                    <div
+                        wire:loading.flex
+                        wire:target="changeCategory"
+                        class="absolute inset-0 bg-white/60 backdrop-blur-sm items-center justify-center z-10">
+                
+                        <div class="flex items-center gap-3">
+                
+                            <svg class="w-6 h-6 animate-spin">
+                                ...
+                            </svg>
+                
+                            <span>Loading devices...</span>
+                
+                        </div>
+                
+                    </div>
+                
+                    <table class="w-full text-xs">
+                        <thead class="bg-gray-50 text-left uppercase tracking-wider text-[11px] text-gray-500">
+                            <tr>
+                                <th class="px-3 py-2 w-[15%] min-w-[140px]">Device Name</th>
+                                <th class="px-3 py-2 w-[10%] min-w-[80px]">Type</th>
+                                <th class="px-3 py-2 w-[12%] min-w-[100px]">Previous User</th>
+                                <th class="px-3 py-2 w-[10%] min-w-[90px]">Tag Number</th>
+                                <th class="px-3 py-2 w-[43%] min-w-[250px]">IT Comments</th>
+                                <th class="px-3 py-2 w-[10%] min-w-[80px] text-center">Action</th>
+                            </tr>
+                        </thead>
 
-                <tbody class="divide-y divide-gray-100">
-                    @forelse ($devices as $device)
-                        <tr class="hover:bg-gray-50 transition">
-                            {{-- Device Name --}}
-                            <td class="px-3 py-2">
-                                <div class="flex items-center gap-2">
-                                    <div class="w-7 h-7 rounded-md bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center text-[10px] font-semibold shrink-0">
-                                        {{ strtoupper(substr($device->name, 0, 1)) }}
-                                    </div>
-                                    <div class="min-w-0">
-                                        <p class="font-medium text-gray-900 truncate max-w-[120px]" title="{{ $device->name }}">
-                                            {{ $device->name }}
-                                        </p>
-                                        <p class="text-[10px] text-gray-400 truncate max-w-[120px]">
-                                            {{ $device->model }}
-                                        </p>
-                                    </div>
-                                </div>
-                            </td>
-
-                            {{-- Type --}}
-                            <td class="px-3 py-2">
-                                <span class="inline-flex items-center gap-1">
-                                    <span class="w-1.5 h-1.5 rounded-full 
-                                        {{ $device->type === 'laptop' ? 'bg-blue-500' : 
-                                        ($device->type === 'desktop' ? 'bg-purple-500' : 
-                                        ($device->type === 'printer' ? 'bg-amber-500' : 'bg-gray-500')) }}">
-                                    </span>
-                                    <span class="capitalize text-gray-700">
-                                        {{ $device->type }}
-                                    </span>
-                                </span>
-                            </td>
-
-                            {{-- Current User --}}
-                            <td class="px-3 py-2">
-                                <div class="flex items-center gap-1.5">
-                                    <svg class="w-3 h-3 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                    </svg>
-                                    <span class="text-gray-700 truncate max-w-[100px]" title="{{ $device->user->name ?? 'Unassigned' }}">
-                                        {{ $device->latestAssignmentLog?->previousUser?->name ?? 'not set' }}
-                                    </span>
-                                </div>
-                            </td>
-
-                            {{-- Tag Number --}}
-                            <td class="px-3 py-2">
-                                <code class="text-[11px] font-mono bg-gray-100 px-1.5 py-0.5 rounded text-gray-700">
-                                    {{ $device->tag_number ?? 'N/A' }}
-                                </code>
-                            </td>
-
-                            {{-- IT Comments --}}
-                            <td class="px-3 py-2">
-                                <div class="max-w-[300px]">
-                                    @php
-                                        $issue = $device->issues->first();
-                                    @endphp
-                                    
-                                    @if($issue && $issue->comment)
-                                        <div class="group relative">
-                                            <div class="flex items-start gap-1.5">
-                                                <svg class="w-3 h-3 text-blue-400 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-                                                </svg>
-                                                <p class="text-gray-600 text-[11px] leading-relaxed break-words line-clamp-2 hover:line-clamp-none transition-all duration-200">
-                                                    {{ $issue->comment }}
+                        <tbody class="divide-y divide-gray-100">
+                            @forelse ($devices as $device)
+                                <tr class="hover:bg-gray-50 transition">
+                                    {{-- Device Name --}}
+                                    <td class="px-3 py-2">
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-7 h-7 rounded-md bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center text-[10px] font-semibold shrink-0">
+                                                {{ strtoupper(substr($device->name, 0, 1)) }}
+                                            </div>
+                                            <div class="min-w-0">
+                                                <p class="font-medium text-gray-900 truncate max-w-[120px]" title="{{ $device->name }}">
+                                                    {{ $device->name }}
+                                                </p>
+                                                <p class="text-[10px] text-gray-400 truncate max-w-[120px]">
+                                                    {{ $device->model }}
                                                 </p>
                                             </div>
-                                            @if(strlen($issue->comment) > 80)
-                                                <div class="absolute bottom-full left-0 mb-2 hidden group-hover:block z-10">
-                                                    <div class="bg-gray-900 text-white text-xs rounded-lg p-2 max-w-xs shadow-lg">
-                                                        {{ $issue->comment }}
-                                                        <div class="absolute left-4 top-full w-2 h-2 bg-gray-900 transform rotate-45 -mt-1"></div>
+                                        </div>
+                                    </td>
+
+                                    {{-- Type --}}
+                                    <td class="px-3 py-2">
+                                        <span class="inline-flex items-center gap-1">
+                                            <span class="w-1.5 h-1.5 rounded-full 
+                                                {{ $device->type === 'laptop' ? 'bg-blue-500' : 
+                                                ($device->type === 'desktop' ? 'bg-purple-500' : 
+                                                ($device->type === 'printer' ? 'bg-amber-500' : 'bg-gray-500')) }}">
+                                            </span>
+                                            <span class="capitalize text-gray-700">
+                                                {{ $device->type }}
+                                            </span>
+                                        </span>
+                                    </td>
+
+                                    {{-- Current User --}}
+                                    <td class="px-3 py-2">
+                                        <div class="flex items-center gap-1.5">
+                                            <svg class="w-3 h-3 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                            </svg>
+                                            <span class="text-gray-700 truncate max-w-[100px]" title="{{ $device->user->name ?? 'Unassigned' }}">
+                                                {{ $device->latestAssignmentLog?->previousUser?->name ?? 'not set' }}
+                                            </span>
+                                        </div>
+                                    </td>
+
+                                    {{-- Tag Number --}}
+                                    <td class="px-3 py-2">
+                                        <code class="text-[11px] font-mono bg-gray-100 px-1.5 py-0.5 rounded text-gray-700">
+                                            {{ $device->tag_number ?? 'N/A' }}
+                                        </code>
+                                    </td>
+
+                                    {{-- IT Comments --}}
+                                    <td class="px-3 py-2">
+                                        <div class="max-w-[300px]">
+                                            @php
+                                                $issue = $device->issues->first();
+                                            @endphp
+                                            
+                                            @if($issue && $issue->comment)
+                                                <div class="group relative">
+                                                    <div class="flex items-start gap-1.5">
+                                                        <svg class="w-3 h-3 text-blue-400 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                                                        </svg>
+                                                        <p class="text-gray-600 text-[11px] leading-relaxed break-words line-clamp-2 hover:line-clamp-none transition-all duration-200">
+                                                            {{ $issue->comment }}
+                                                        </p>
                                                     </div>
+                                                    @if(strlen($issue->comment) > 80)
+                                                        <div class="absolute bottom-full left-0 mb-2 hidden group-hover:block z-10">
+                                                            <div class="bg-gray-900 text-white text-xs rounded-lg p-2 max-w-xs shadow-lg">
+                                                                {{ $issue->comment }}
+                                                                <div class="absolute left-4 top-full w-2 h-2 bg-gray-900 transform rotate-45 -mt-1"></div>
+                                                            </div>
+                                                        </div>
+                                                    @endif
+                                                </div>
+                                            @else
+                                                <div class="flex items-center gap-1.5">
+                                                    <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                                                    </svg>
+                                                    <span class="text-gray-400 italic text-[11px]">No comments</span>
                                                 </div>
                                             @endif
                                         </div>
-                                    @else
-                                        <div class="flex items-center gap-1.5">
-                                            <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                                    </td>
+
+                                    {{-- Actions --}}
+                                    <td class="px-3 py-2">
+                                        <button
+                                            wire:click="restoreDevice({{ $device->id }})"
+                                            class="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition">
+
+                                            Restore
+
+                                        </button>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="6" class="py-12 text-center">
+                                        <div class="flex flex-col items-center gap-2 text-gray-500">
+                                            <svg class="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                                    d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0l-2 7H6l-2-7m16 0H4"/>
                                             </svg>
-                                            <span class="text-gray-400 italic text-[11px]">No comments</span>
+                                            <p class="font-medium text-gray-700 text-sm">No devices found</p>
+                                            <p class="text-[11px]">Try adjusting your search or add a new device</p>
                                         </div>
-                                    @endif
-                                </div>
-                            </td>
-
-                            {{-- Actions --}}
-                            <td class="px-3 py-2">
-                                 <button
-                                    wire:click="restoreDevice({{ $device->id }})"
-                                    class="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition">
-
-                                    Restore
-
-                                </button>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="6" class="py-12 text-center">
-                                <div class="flex flex-col items-center gap-2 text-gray-500">
-                                    <svg class="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                            d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0l-2 7H6l-2-7m16 0H4"/>
-                                    </svg>
-                                    <p class="font-medium text-gray-700 text-sm">No devices found</p>
-                                    <p class="text-[11px]">Try adjusting your search or add a new device</p>
-                                </div>
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-        @if($devices->hasPages())
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>   
+            </div>
+            @if($devices->hasPages())
                 <div class="px-4 sm:px-6 py-4 border-t border-gray-100">
                     {{ $devices->links() }}
                 </div>
             @endif
-    </x-data-card>
+        </x-data-card>
         
     @endif
 
 
     @if($activeCategory =='unassigned devices in good condition')
-    <x-data-card 
+        <x-data-card 
             title="{{ $this->getCategoryTitle()['title'] }}" 
             subtitle="{{ $this->getCategoryTitle()['subtitle'] }}">
             <x-slot name="actions">
@@ -488,94 +525,113 @@
                 </div>
             </x-slot>
             <div class="hidden lg:block overflow-x-auto">
-            <table class="w-full text-xs">
-                <thead class="bg-gray-50 text-left uppercase tracking-wider text-[11px] text-gray-500">
-                    <tr>
-                        <th class="px-3 py-2 w-[15%] min-w-[140px]">Device Name</th>
-                        <th class="px-3 py-2 w-[10%] min-w-[80px]">Type</th>
-                        <th class="px-3 py-2 w-[12%] min-w-[100px]">Previous User</th>
-                        <th class="px-3 py-2 w-[10%] min-w-[90px]">Tag Number</th>
-                    </tr>
-                </thead>
+                <div class="relative">
+                    <div
+                        wire:loading.flex
+                        wire:target="changeCategory"
+                        class="absolute inset-0 bg-white/60 backdrop-blur-sm items-center justify-center z-10">
+                
+                        <div class="flex items-center gap-3">
+                
+                            <svg class="w-6 h-6 animate-spin">
+                                ...
+                            </svg>
+                
+                            <span>Loading devices...</span>
+                
+                        </div>
+                
+                    </div>
+            
+                    <table class="w-full text-xs">
+                        <thead class="bg-gray-50 text-left uppercase tracking-wider text-[11px] text-gray-500">
+                            <tr>
+                                <th class="px-3 py-2 w-[15%] min-w-[140px]">Device Name</th>
+                                <th class="px-3 py-2 w-[10%] min-w-[80px]">Type</th>
+                                <th class="px-3 py-2 w-[12%] min-w-[100px]">Previous User</th>
+                                <th class="px-3 py-2 w-[10%] min-w-[90px]">Tag Number</th>
+                            </tr>
+                        </thead>
 
-                <tbody class="divide-y divide-gray-100">
-                    @forelse ($devices as $device)
-                        <tr class="hover:bg-gray-50 transition">
-                            {{-- Device Name --}}
-                            <td class="px-3 py-2">
-                                <div class="flex items-center gap-2">
-                                    <div class="w-7 h-7 rounded-md bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center text-[10px] font-semibold shrink-0">
-                                        {{ strtoupper(substr($device->name, 0, 1)) }}
-                                    </div>
-                                    <div class="min-w-0">
-                                        <p class="font-medium text-gray-900 truncate max-w-[120px]" title="{{ $device->name }}">
-                                            {{ $device->name }}
-                                        </p>
-                                        <p class="text-[10px] text-gray-400 truncate max-w-[120px]">
-                                            {{ $device->model }}
-                                        </p>
-                                    </div>
-                                </div>
-                            </td>
+                        <tbody class="divide-y divide-gray-100">
+                            @forelse ($devices as $device)
+                                <tr class="hover:bg-gray-50 transition">
+                                    {{-- Device Name --}}
+                                    <td class="px-3 py-2">
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-7 h-7 rounded-md bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center text-[10px] font-semibold shrink-0">
+                                                {{ strtoupper(substr($device->name, 0, 1)) }}
+                                            </div>
+                                            <div class="min-w-0">
+                                                <p class="font-medium text-gray-900 truncate max-w-[120px]" title="{{ $device->name }}">
+                                                    {{ $device->name }}
+                                                </p>
+                                                <p class="text-[10px] text-gray-400 truncate max-w-[120px]">
+                                                    {{ $device->model }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </td>
 
-                            {{-- Type --}}
-                            <td class="px-3 py-2">
-                                <span class="inline-flex items-center gap-1">
-                                    <span class="w-1.5 h-1.5 rounded-full 
-                                        {{ $device->type === 'laptop' ? 'bg-blue-500' : 
-                                        ($device->type === 'desktop' ? 'bg-purple-500' : 
-                                        ($device->type === 'printer' ? 'bg-amber-500' : 'bg-gray-500')) }}">
-                                    </span>
-                                    <span class="capitalize text-gray-700">
-                                        {{ $device->type }}
-                                    </span>
-                                </span>
-                            </td>
+                                    {{-- Type --}}
+                                    <td class="px-3 py-2">
+                                        <span class="inline-flex items-center gap-1">
+                                            <span class="w-1.5 h-1.5 rounded-full 
+                                                {{ $device->type === 'laptop' ? 'bg-blue-500' : 
+                                                ($device->type === 'desktop' ? 'bg-purple-500' : 
+                                                ($device->type === 'printer' ? 'bg-amber-500' : 'bg-gray-500')) }}">
+                                            </span>
+                                            <span class="capitalize text-gray-700">
+                                                {{ $device->type }}
+                                            </span>
+                                        </span>
+                                    </td>
 
-                            {{-- Previous User --}}
-                            <td class="px-3 py-2">
-                                <div class="flex items-center gap-1.5">
-                                    <svg class="w-3 h-3 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                    </svg>
-                                    <span class="text-gray-700 truncate max-w-[100px]" title="{{ $device->user->name ?? 'Unassigned' }}">
-                                        {{ $device->latestAssignmentLog?->previousUser?->name ?? 'not set' }}
-                                    </span>
-                                </div>
-                            </td>
+                                    {{-- Previous User --}}
+                                    <td class="px-3 py-2">
+                                        <div class="flex items-center gap-1.5">
+                                            <svg class="w-3 h-3 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                            </svg>
+                                            <span class="text-gray-700 truncate max-w-[100px]" title="{{ $device->user->name ?? 'Unassigned' }}">
+                                                {{ $device->latestAssignmentLog?->previousUser?->name ?? 'not set' }}
+                                            </span>
+                                        </div>
+                                    </td>
 
-                            {{-- Tag Number --}}
-                            <td class="px-3 py-2">
-                                <code class="text-[11px] font-mono bg-gray-100 px-1.5 py-0.5 rounded text-gray-700">
-                                    {{ $device->tag_number ?? 'N/A' }}
-                                </code>
-                            </td>
+                                    {{-- Tag Number --}}
+                                    <td class="px-3 py-2">
+                                        <code class="text-[11px] font-mono bg-gray-100 px-1.5 py-0.5 rounded text-gray-700">
+                                            {{ $device->tag_number ?? 'N/A' }}
+                                        </code>
+                                    </td>
 
-                            
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="6" class="py-12 text-center">
-                                <div class="flex flex-col items-center gap-2 text-gray-500">
-                                    <svg class="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                            d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0l-2 7H6l-2-7m16 0H4"/>
-                                    </svg>
-                                    <p class="font-medium text-gray-700 text-sm">No devices found</p>
-                                    <p class="text-[11px]">Try adjusting your search or add a new device</p>
-                                </div>
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-        @if($devices->hasPages())
+                                    
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="6" class="py-12 text-center">
+                                        <div class="flex flex-col items-center gap-2 text-gray-500">
+                                            <svg class="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                                    d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0l-2 7H6l-2-7m16 0H4"/>
+                                            </svg>
+                                            <p class="font-medium text-gray-700 text-sm">No devices found</p>
+                                            <p class="text-[11px]">Try adjusting your search or add a new device</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            @if($devices->hasPages())
                 <div class="px-4 sm:px-6 py-4 border-t border-gray-100">
                     {{ $devices->links() }}
                 </div>
             @endif
-    </x-data-card>
+        </x-data-card>
     @endif
 
 
