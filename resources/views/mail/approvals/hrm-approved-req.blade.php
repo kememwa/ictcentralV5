@@ -43,6 +43,15 @@
 
                                 <tr>
                                     <td style="font-weight: bold; border-bottom: 1px solid #e5e7eb;">
+                                        Requisition Number
+                                    </td>
+                                    <td style="border-bottom: 1px solid #e5e7eb;">
+                                        {{ $requisition->ref_number }}
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="font-weight: bold; border-bottom: 1px solid #e5e7eb;">
                                         Requested By
                                     </td>
                                     <td style="border-bottom: 1px solid #e5e7eb;">

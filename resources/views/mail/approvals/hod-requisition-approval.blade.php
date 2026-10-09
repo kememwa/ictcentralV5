@@ -42,6 +42,15 @@
                             <table width="100%" cellpadding="8" cellspacing="0"
                                    style="margin-top: 20px; border-collapse: collapse;">
 
+                                 <tr>
+                                    <td style="font-weight: bold; border-bottom: 1px solid #e5e7eb;">
+                                        Requisition Number
+                                    </td>
+                                    <td style="border-bottom: 1px solid #e5e7eb;">
+                                        {{ $requisition->ref_number }}
+                                    </td>
+                                </tr>
+
                                 <tr>
                                     <td style="font-weight: bold; border-bottom: 1px solid #e5e7eb;">
                                         Requested By
