@@ -16,7 +16,7 @@
     <div x-data="{ sidebarOpen: window.matchMedia('(min-width: 640px)').matches }" x-cloak>
 
         {{-- Sidebar (fixed, left) --}}
-        @livewire('sideBar')
+        @livewire('SideBar')
 
         {{-- Mobile backdrop --}}
         <div

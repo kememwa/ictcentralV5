@@ -269,9 +269,8 @@
                 </li>
                 @endhasanyrole
             </ul>
-            @endhasanyrole
+            
 
-            @hasanyrole('SuperAdmin|It|Hr')
             {{-- Organization Setup --}}
             <button @click="orgSetupOpen = !orgSetupOpen"
                     :aria-expanded="orgSetupOpen"
@@ -327,7 +326,7 @@
                     </a>
                 </li>
             </ul>
-            @endhasanyrole
+            
 
             @hasanyrole('SuperAdmin|It')
             {{-- Onboarding --}}
@@ -339,6 +338,7 @@
             </a>
             @endhasanyrole
         </div>
+        @endhasanyrole
 
         {{-- ===== Section: Account ===== --}}
         <div>

@@ -67,7 +67,7 @@ Route::middleware(['role:Hrm|SuperAdmin|Hrm_delegate'])->group(function () {
    Route::get('/hrm/casual/dashboard', HrmCasualManagement::class)->name('hrm.casual.manage');
 });
 
-Route::middleware(['role:Hr|It'])->group(function () {
+Route::middleware(['role:Hr|It|SuperAdmin'])->group(function () {
    Route::get('/designations', Designations::class)->name('designations');
    Route::get('/departments', Departments::class)->name('departments');
    Route::get('/divisions', Divisions::class)->name('divisions');
@@ -93,7 +93,7 @@ Route::middleware(['role:It|SuperAdmin'])->group(function () {
 
 
 // Finance and SuperAdmin only
-Route::middleware(['role:Finance|SuperAdmin'])->group(function () {
+Route::middleware(['role:Finance|SuperAdmin|Coo'])->group(function () {
     Route::get('/dtc-payment', DtcPayment::class)->name('dtc-payment');
     Route::get('/mpesa-analytics', MpesaAnalytics::class)->name('mpesa-analytics');
 });

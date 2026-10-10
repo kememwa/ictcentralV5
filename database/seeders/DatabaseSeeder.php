@@ -37,7 +37,7 @@ $this->call(QuestionSeeder::class);
             'designation_id' => '3', // Assuming the designation ID is 1
             'password' => '12345',
         
-        ])->assignRole('HR');
+        ])->assignRole('Hrm');
 
         $User=User::factory()->create([
             'name' => 'Antony Kiema',
@@ -53,7 +53,7 @@ $this->call(QuestionSeeder::class);
             'designation_id' => '8', // Assuming the designation ID is 1
             'password' => '12345',
         
-        ])->assignRole('It'); 
+        ])->assignRole('SuperAdmin'); 
 
         $User=User::factory()->create([
             'name' => 'Althea Marie',
@@ -61,7 +61,7 @@ $this->call(QuestionSeeder::class);
             'designation_id' => '6', // Assuming the designation ID is 1
             'password' => '12345',
         
-        ])->assignRole('It');
+        ])->assignRole('Hr');
 
         $User=User::factory()->create([
             'name' => 'Jackline Kasinga',
@@ -69,7 +69,7 @@ $this->call(QuestionSeeder::class);
             'designation_id' => '7', // Assuming the designation ID is 1
             'password' => '12345',
         
-        ])->assignRole('It');
+        ])->assignRole('Hr');
        
 
     $this->call(DeviceSeeder::class);
