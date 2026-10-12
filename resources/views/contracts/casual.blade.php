@@ -55,38 +55,7 @@
 
 
 
-    $c = array_merge([
 
-  
-
-        // Casuals  (name, id_no, sha_no, nssf_no, tel)
-        'casuals' => [
-            [
-                'name'    => 'Moses Okoth Odhiambo',
-                'id_no'   => '36384941',
-                'sha_no'  => 'CR3044103386906-1',
-                'nssf_no' => '2032510376',
-                'tel'     => '0712 345 678',
-            ],
-        ],
-
-        // Approvals  (signature = path relative to /public, or null)
-        'hod_name'       => 'Susan Ngina',
-        'hod_signature'  => null,
-        'hod_date'       => null,
-
-        'hr_name'        => 'Althea Marie',
-        'hr_signature'   => null,
-        'hr_date'        => null,
-
-        'hopc_name'      => 'Alice Mworia',
-        'hopc_signature' => 'dist/signatures/hr_manager_sign.png',
-        'hopc_date'      => '3rd September 2026',
-
-        // Contract
-        'contract_date'  => '5th September 2026',
-
-    ], $c ?? []);
 
     /* ------------------------------------------------------------------
      | 2. ASSETS
@@ -96,24 +65,7 @@
     $logo     = public_path('images/kimfay.png');
     $stamp    = public_path('images/budgeted_circle.png');
 
-    // returns an absolute path only when the file really exists
-    $sig = function ($path) {
-        return ($path && file_exists(public_path($path))) ? public_path($path) : null;
-    };
-    $hodSig  = $sig($c['hod_signature']);
-    $hrSig   = $sig($c['hr_signature']);
-    $hopcSig = $sig($c['hopc_signature']);
 
-    /* ------------------------------------------------------------------
-     | 3. LAYOUT FLAGS & MONEY
-     ------------------------------------------------------------------ */
-    $count       = max(count($c['casuals']), 1);
-
-    // The casual list normally sits at the bottom of contract page 2.
-    // With more than 2 casuals it moves to its own page 3 so nothing overflows.
-    $listOnPage2 = count($c['casuals']) <= 2;
-    $listOnPage3 = ! $listOnPage2;
-    $listPage    = $listOnPage2 ? 2 : 3;
 
     $showStamp   = $requisition->hrm_approval_status == 'approved';
 
@@ -133,7 +85,7 @@
         ============================================================= */
         @page {
             size: A4 portrait;
-            margin: 12.7mm 12.7mm 10mm 12.7mm;
+            margin: 12.7mm 12.7mm 18mm 12.7mm;
         }
 
         html, body {
@@ -435,11 +387,18 @@
          * .c-page is a fixed-height box so that the footer sits at the
          * bottom of each of the two contract pages.
          */
-        .c-page {
-            height: 254mm;
-            font-size: 8.5pt;
-            line-height: 1.3;
-        }
+
+        .contract { font-size: 8.5pt; line-height: 1.3; }
+
+/* keep a heading together with its paragraph/list */
+.c-sec { page-break-inside: avoid; }
+
+/* casual table: repeat header on every page, never split a row */
+.c-ct thead { display: table-header-group; }
+.c-ct tr    { page-break-inside: avoid; }
+
+/* signature + paying officer stay together */
+.keep-together { page-break-inside: avoid; }
 
         .c-hdr {
             width: 100%;
@@ -502,27 +461,7 @@
             width: 9mm;
         }
 
-        .c-foot {
-            width: 100%;
-            height: 8mm;
-        }
-
-        .c-foot td {
-            vertical-align: bottom;
-        }
-
-        .c-foot .f-left {
-            font-size: 9pt;
-            font-style: italic;
-        }
-
-        .c-foot .f-right {
-            width: 15mm;
-            text-align: right;
-            font-family: "Times New Roman", Times, serif;
-            font-size: 11pt;
-        }
-
+        
         /* annexture block */
         .c-sig {
             margin-top: 1mm;
@@ -730,7 +669,7 @@
         <table class="sign-row">
             <tr>
                 <td class="sl">
-                    @if($requisition->coo?->hasRole('coo'))
+                    @if($requisition->coo?->hasRole('Coo'))
                         Chief Operations Officer: {{ $coo_name }}
                     @else
                         (For) Chief Operations Officer: {{ $coo_name }}
@@ -904,11 +843,10 @@
 </div>
 
 
-
 {{-- =====================================================================
-     DOCUMENT 3 : CASUAL EMPLOYMENT CONTRACT  –  PAGE 1 OF 2
+     DOCUMENT 3 : CASUAL EMPLOYMENT CONTRACT (flows across as many pages as needed)
 ====================================================================== --}}
-<div class="c-page new-page">
+<div class="contract new-page">
 
     <table class="c-hdr">
         <tr>
@@ -930,253 +868,143 @@
 
     <div class="c-title">CASUAL EMPLOYMENT CONTRACT</div>
 
+    <div class="c-sec">
+        <div class="c-h" style="margin-top: 4mm;">PARTIES</div>
+        <p class="c-p">
+            <span class="b">THIS AGREEMENT</span> is made on the <span class="b">{{ $contractDate }}</span>
+            <span class="b">BETWEEN; Kim-Fay (E.A) Ltd</span> (hereinafter called &ldquo;the Company&rdquo;)
+            <span class="b">AND the employees listed in the Casual Details schedule at the end of this Agreement</span>
+            (hereinafter called &ldquo;the employee&rdquo;)
+        </p>
+        <p class="c-p" style="margin-top: 4mm;">
+            <span class="b">WHEREAS</span> the company has offered the employee a contract of employment on a temporary
+            basis the employee hereby confirms his/her acceptance of the offer of the employment contract under the
+            following terms and conditions:
+        </p>
+    </div>
 
-    <div class="c-h" style="margin-top: 4mm;">PARTIES</div>
+    <div class="c-sec">
+        <div class="c-h">NATURE OF EMPLOYMENT</div>
+        <ul class="c-list">
+            <li>The employee hereby represents and warrants as material warranty to the Company that:</li>
+            <li>He/ She has full power to enter into and perform in terms of this Agreement, has taken and shall take all necessary statutory and other actions to authorize the fulfillment of his/her obligations under this Agreement;</li>
+            <li>That he/she has obtained a Certificate of Good Conduct as evidence of his non involvement of criminal activities whether in the past or currently;</li>
+            <li>That he/she has provided all the educational certificates as requested by the Company;</li>
+            <li>That he/she is of good health and able to take up his training and assignment.</li>
+            <li>That he/she fully understands the nature of her assignment and risks involved and the Company has explained this to him and undertakes his employment knowingly, willingly and voluntarily.</li>
+        </ul>
+    </div>
 
-    <p class="c-p">
-        <span class="b">THIS AGREEMENT</span> is made on the
-        <span class="b">{{ $contractDate }}</span>
-        <span class="b">BETWEEN; Kim-Fay (E.A) Ltd</span>
-        (hereinafter called &ldquo;the Company&rdquo;)
-        <span class="b">AND (See listed Employees on Page {{ $listPage }})</span>
-        (hereinafter called &ldquo;the employee&rdquo;)
-    </p>
+    <div class="c-sec">
+        <div class="c-h">PERIOD OF EMPLOYMENT</div>
+        <p class="c-p">
+            The employee shall be engaged for a period of <span class="b">{{ $duration }}</span> as from
+            <span class="b">{{ $startDate }}</span> to <span class="b">{{ $endDate }}.</span>
+        </p>
+        <p class="c-p">
+            Terminating thereof without notice BUT SUBJECT always to the provisions as to earlier termination as set out
+            hereinafter. The Company shall not be obliged to employ the employee after the lapse of the period contracted
+            as per this agreement. Should the employee be offered a further period of employment by the company at the
+            expiry of the signed contract, then it shall be on the condition that such other period of employment shall
+            be subject to the terms and conditions of a fresh and separate agreement and shall not in any way be regarded
+            as relating to or as an extension of the old contract. The decision whether or not to sign a new agreement as
+            mentioned hereinabove shall be entirely upon the discretion of the management.
+        </p>
+    </div>
 
-    <p class="c-p" style="margin-top: 4mm;">
-        <span class="b">WHEREAS</span> the company has offered the employee a contract of employment on a temporary
-        basis the employee hereby confirms his/her acceptance of the offer of the employment contract under the
-        following terms and conditions:
-    </p>
+    <div class="c-sec">
+        <div class="c-h">NATURE OF DUTIES</div>
+        <p class="c-p" style="margin-bottom: 1.5mm;">The employee shall: -</p>
+        <ul class="c-list">
+            <li>Undertake to perform such duties and exercise such powers as the company assigns to the employee.</li>
+            <li>Undertake his/her duties in any station or branch of the company within the Republic of Kenya, depending on work availability, as may be required of him/her from time to time.</li>
+            <li>Work for a maximum period of twelve hours daily depending on shift allocations and as required by the company either;
+                <table class="c-sub">
+                    <tr><td class="sn">i.</td><td>Reporting at 8:30a.m and handing over at 5:00 p.m. or</td></tr>
+                    <tr><td class="sn">ii.</td><td>Reporting at ____________ p.m. and handing over at ____________ a.m.</td></tr>
+                    <tr><td class="sn">iii.</td><td>The hours of reporting and handing over may be altered by the company without notice to the employee.</td></tr>
+                </table>
+            </li>
+            <li>Be entitled to one day of rest in every seven (7) consecutive days of duty.</li>
+        </ul>
+    </div>
 
+    <div class="c-sec">
+        <div class="c-h">REMUNERATION</div>
+        <p class="c-p">The company shall pay to the employee a sum of <span class="b">Kshs. {{ $grossPay }}</span></p>
+        <p class="c-p">
+            This payment will be paid at the end of the period of contract, being the accumulated daily wages of the
+            aggregate days worked only. A further deduction of <span class="b">Kshs. {{ $nssfRate }}</span> and
+            <span class="b">Kshs. {{ $shaRate }}</span> shall be made from your aggregate accumulated wages at the end of
+            this contract and shall be remitted to <span class="b">NSSF</span> and <span class="b">SHA</span>
+            respectively as is our statutory obligation. Therefore, total deductions shall amount to
+            <span class="b">Kshs. {{ $totalDed }}</span>
+        </p>
+        <p class="c-p">
+            Payment of the employee wages as hereinabove shall be deemed as settlement of all his/her claims from the
+            company for the period payable to her/him then and/or in the future.
+        </p>
+    </div>
 
-    <div class="c-h">NATURE OF EMPLOYMENT</div>
+    <div class="c-sec">
+        <div class="c-h">UNIFORMS AND PROTECTIVE GEAR:</div>
+        <p class="c-p">The Company shall provide the employee with the uniform and equipment required by the employee for the performance of his duties.</p>
+        <p class="c-p">The employee shall be deducted Kshs. 500/= from his/her wages for any damage to or loss of the equipment or uniform as a result by the neglect of the employee.</p>
+    </div>
 
-    <ul class="c-list">
-        <li>The employee hereby represents and warrants as material warranty to the Company that:</li>
-        <li>He/ She has full power to enter into and perform in terms of this Agreement, has taken and shall take all
-            necessary statutory and other actions to authorize the fulfillment of his/her obligations under this
-            Agreement;</li>
-        <li>That he/she has obtained a Certificate of Good Conduct as evidence of his non involvement of criminal
-            activities whether in the past or currently;</li>
-        <li>That he/she has provided all the educational certificates as requested by the Company;</li>
-        <li>That he/she is of good health and able to take up his training and assignment.</li>
-        <li>That he/she fully understands the nature of her assignment and risks involved and the Company has
-            explained this to him and undertakes his employment knowingly, willingly and voluntarily.</li>
-    </ul>
+    <div class="c-sec">
+        <div class="c-h">CODE OF CONDUCT:</div>
+        <p class="c-p">The employee shall observe and comply with all regulations and conditions of the company and other standing orders and procedures given in the course of employment for the purpose of the efficient and competent discharge of his or her duties.</p>
+        <p class="c-p">Non-compliance with the instructions and regulations thereby may lead to the immediate termination of this contract. The employee shall devote the whole of his time and attention during duties to the performance of his duties and shall not engage in any business or occupation directly or indirectly which may in the opinion of the management hinder or otherwise in any way detract from the satisfactory performance of his/her duties under this agreement.</p>
+        <p class="c-p">The Work Injury Benefits Act, 2007 and/or any other relevant statute shall apply strictly in relation to injuries sustained by the employee in the course of duty.</p>
+        <p class="c-p">The company shall be entitled to claim from the employee indemnity incase of losses and/or damages suffered by the company owing to the employee&rsquo;s negligence either wholly or partly, in the discharge of his duties or otherwise.</p>
+        <p class="c-p">The employee shall while in the employment of the company and reasonably thereafter treat with utmost confidentiality all the company&rsquo;s matter not authorized to be disclosed to the public or any other persons.</p>
+    </div>
 
+    <div class="c-sec">
+        <div class="c-h">TERMINATION:</div>
+        <p class="c-p" style="margin-bottom: 1.5mm;">The contract shall terminate at the expiry of the period hereinabove specified. However, and in addition;</p>
+        <ul class="c-list">
+            <li>The employee is entitled to terminate the contract by giving to the Company one days written notice or one day&rsquo;s wages in lieu of notice.</li>
+            <li>The company has authority to summarily terminate the contract without any notice or compensation whatsoever to the employee in the event of gross negligence, absenteeism, drunkenness part and/or suspicion of or commission of a criminal offence of any kind on the part of the employee.</li>
+            <li>The employee&rsquo;s contract with the company is tied to the company&rsquo;s contracts with third parties; the employee&rsquo;s contract may thereof terminate automatically without notice on termination of the company&rsquo;s contract with third parties.</li>
+        </ul>
+    </div>
 
-    <div class="c-h">PERIOD OF EMPLOYMENT</div>
+    <div class="c-sec">
+        <div class="c-h">RESTRICTIONS AFTER TERMINATION:</div>
+        <p class="c-p">After termination of this contract, you shall not seek to entice away from the company any of its customers nor use for your own benefit or to the possible detriment of the company any information concerning the company&rsquo;s business affairs, customers&rsquo; secrets which you may have acquired in the course of your employment under this contract or as incidental thereto.</p>
+    </div>
 
-    <p class="c-p">
-        The employee shall be engaged for a period of
-        <span class="b">{{ $duration }}</span> as from
-        <span class="b">{{ $startDate }}</span> to
-        <span class="b">{{ $endDate }}.</span>
-    </p>
+    <div class="c-sec keep-together">
+        <div class="c-h">ANNEXTURES</div>
+        <table class="c-sig">
+            <tr>
+                <td class="s-label">For:</td>
+                <td class="s-value" colspan="3">Kim-Fay (E.A) Ltd</td>
+            </tr>
+            <tr>
+                <td class="s-label">Signed:</td>
+                <td class="s-value">{{ $hr_name }}</td>
+                <td class="s-sign">Sign:</td>
+                <td>
+                    @if($hrm_sig && $hrm_sig !== 'NULL')
+                        <img class="sig" src="{{ public_path('storage/' . $hrm_sig) }}" alt="Signature">
+                    @endif
+                </td>
+            </tr>
+            <tr>
+                <td class="s-label">Name:</td>
+                <td class="s-value" colspan="3">{{ 'Alice Mworia' }}</td>
+            </tr>
+            <tr>
+                <td class="s-label">Designation:</td>
+                <td class="s-value" colspan="3">Head of People &amp; Culture</td>
+            </tr>
+        </table>
+    </div>
 
-    <p class="c-p">
-        Terminating thereof without notice BUT SUBJECT always to the provisions as to earlier termination as set out
-        hereinafter. The Company shall not be obliged to employ the employee after the lapse of the period contracted
-        as per this agreement. Should the employee be offered a further period of employment by the company at the
-        expiry of the signed contract, then it shall be on the condition that such other period of employment shall
-        be subject to the terms and conditions of a fresh and separate agreement and shall not in any way be regarded
-        as relating to or as an extension of the old contract. The decision whether or not to sign a new agreement as
-        mentioned in (4.3) hereinabove shall be entirely upon the discretion of the management.
-    </p>
-
-
-    <div class="c-h">NATURE OF DUTIES</div>
-
-    <p class="c-p" style="margin-bottom: 1.5mm;">The employee shall: -</p>
-
-    <ul class="c-list">
-        <li>Undertake to perform such duties and exercise such powers as the company assigns to the employee.</li>
-        <li>Undertake his/her duties in any station or branch of the company within the Republic of Kenya, depending
-            on work availability, as may be required of him/her from time to time.</li>
-        <li>Work for a maximum period of twelve hours daily depending on shift allocations and as required by the
-            company either;
-
-            <table class="c-sub">
-                <tr>
-                    <td class="sn">i.</td>
-                    <td>Reporting at 8:30a.m and handing over at 5:00 p.m. or</td>
-                </tr>
-                <tr>
-                    <td class="sn">ii.</td>
-                    <td>Reporting at ____________ p.m. and handing over at ____________ a.m.</td>
-                </tr>
-                <tr>
-                    <td class="sn">iii.</td>
-                    <td>The hours of reporting and handing over may be altered by the company without notice to the
-                        employee.</td>
-                </tr>
-            </table>
-        </li>
-        <li>Be entitled to one day of rest in every seven (7) consecutive days of duty.</li>
-    </ul>
-
-
-    <div class="c-h">REMUNERATION</div>
-
-    <p class="c-p">
-        The company shall pay to the employee a sum of <span class="b">Kshs. {{ $grossPay }}</span>
-    </p>
-
-    <p class="c-p">
-        This payment will be paid at the end of the period of contract, being the accumulated daily wages of the
-        aggregate days worked only.
-        A further deduction of <span class="b">Kshs. {{ $nssfRate }}</span> and
-        <span class="b">Kshs. {{ $shaRate }}</span> shall be made from your aggregate accumulated wages at the end of
-        this contract and shall be remitted to <span class="b">NSSF</span> and <span class="b">SHA</span>
-        respectively as is our statutory obligation. Therefore, total deductions shall amount to
-        <span class="b">Kshs. {{ $totalDed }}</span>
-    </p>
-
-    <p class="c-p">
-        Payment of the employee wages as hereinabove shall be deemed as settlement of all his/her claims from the
-        company for the period payable to her/him then and/or in the future.
-    </p>
-
-</div>
-
-<table class="c-foot">
-    <tr>
-        <td class="f-left">HR Record - Version 2</td>
-        <td class="f-right">1</td>
-    </tr>
-</table>
-
-
-
-{{-- =====================================================================
-     DOCUMENT 3 : CASUAL EMPLOYMENT CONTRACT  –  PAGE 2 OF 2
-====================================================================== --}}
-<div class="c-page new-page">
-
-    <table class="c-hdr">
-        <tr>
-            <td class="h-logo"><img src="{{ $logo }}" alt="Kim-Fay"></td>
-            <td class="h-addr">
-                Kim-Fay E.A Ltd<br>
-                Maasai Road, Off Mombasa Road<br>
-                Behind Libra House<br>
-                Box 31437-00600, Nairobi
-            </td>
-            <td class="h-cont">
-                T/+254 20351824/19/24<br>
-                F/ +254 20 6531458, 6533518<br>
-                E/ <u>customercare&#64;kimfay.com</u><br>
-                www.kimfay.com
-            </td>
-        </tr>
-    </table>
-
-    <div class="c-title">CASUAL EMPLOYMENT CONTRACT</div>
-
-
-    <div class="c-h" style="margin-top: 4mm;">UNIFORMS AND PROTECTIVE GEAR:</div>
-
-    <p class="c-p">
-        The Company shall provide the employee with the uniform and equipment required by the employee for the
-        performance of his duties.
-    </p>
-
-    <p class="c-p">
-        The employee shall be deducted Kshs. 500/= from his/her wages for any damage to or loss of the equipment or
-        uniform as a result by the neglect of the employee.
-    </p>
-
-
-    <div class="c-h">CODE OF CONDUCT:</div>
-
-    <p class="c-p">
-        The employee shall observe and comply with all regulations and conditions of the company and other standing
-        orders and procedures given in the course of employment for the purpose of the efficient and competent
-        discharge of his or her duties.
-    </p>
-
-    <p class="c-p">
-        Non-compliance with the instructions and regulations thereby may lead to the immediate termination of this
-        contract. The employee shall devote the whole of his time and attention during duties to the performance of
-        his duties and shall not engage in any business or occupation directly or indirectly which may in the opinion
-        of the management hinder or otherwise in any way detract from the satisfactory performance of his/her duties
-        under this agreement.
-    </p>
-
-    <p class="c-p">
-        The Work Injury Benefits Act, 2007 and/or any other relevant statute shall apply strictly in relation to
-        injuries sustained by the employee in the course of duty.
-    </p>
-
-    <p class="c-p">
-        The company shall be entitled to claim from the employee indemnity incase of losses and/or damages suffered
-        by the company owing to the employee&rsquo;s negligence either wholly or partly, in the discharge of his
-        duties or otherwise.
-    </p>
-
-    <p class="c-p">
-        The employee shall while in the employment of the company and reasonably thereafter treat with utmost
-        confidentiality all the company&rsquo;s matter not authorized to be disclosed to the public or any other
-        persons.
-    </p>
-
-
-    <div class="c-h">TERMINATION:</div>
-
-    <p class="c-p" style="margin-bottom: 1.5mm;">
-        The contract shall terminate at the expiry of the period hereinabove specified. However, and in addition;
-    </p>
-
-    <ul class="c-list">
-        <li>The employee is entitled to terminate the contract by giving to the Company one days written notice or
-            one day&rsquo;s wages in lieu of notice.</li>
-        <li>The company has authority to summarily terminate the contract without any notice or compensation
-            whatsoever to the employee in the event of gross negligence, absenteeism, drunkenness part and/or
-            suspicion of or commission of a criminal offence of any kind on the part of the employee.</li>
-        <li>The employee&rsquo;s contract with the company is tied to the company&rsquo;s contracts with third
-            parties; the employee&rsquo;s contract may thereof terminate automatically without notice on termination
-            of the company&rsquo;s contract with third parties.</li>
-    </ul>
-
-
-    <div class="c-h">RESTRICTIONS AFTER TERMINATION:</div>
-
-    <p class="c-p">
-        After termination of this contract, you shall not seek to entice away from the company any of its customers
-        nor use for your own benefit or to the possible detriment of the company any information concerning the
-        company&rsquo;s business affairs, customers&rsquo; secrets which you may have acquired in the course of your
-        employment under this contract or as incidental thereto.
-    </p>
-
-
-    <div class="c-h">ANNEXTURES</div>
-
-    <table class="c-sig">
-        <tr>
-            <td class="s-label">For:</td>
-            <td class="s-value" colspan="3">Kim-Fay (E.A) Ltd</td>
-        </tr>
-        <tr>
-            <td class="s-label">Signed:</td>
-            <td class="s-value">{{ $hr_name }}</td>
-            <td class="s-sign">Sign:</td>
-            <td>
-                @if($hrSig)<img class="sig" src="{{ $hrSig }}" alt="Signature">@endif
-            </td>
-        </tr>
-        <tr>
-            <td class="s-label">Name:</td>
-            <td class="s-value" colspan="3">{{ $hrm_name }}</td>
-        </tr>
-        <tr>
-            <td class="s-label">Designation:</td>
-            <td class="s-value" colspan="3">Head of People &amp; Culture</td>
-        </tr>
-    </table>
-
-
-    @if($listOnPage2)
-
+    {{-- CASUAL DETAILS: any number of casuals, flows and repeats header row --}}
     <div class="c-h" style="margin-bottom: 0;">CASUAL DETAILS</div>
 
     <table class="c-ct">
@@ -1206,89 +1034,7 @@
         </tbody>
     </table>
 
-    <table class="pay">
-        <tr>
-            <td class="p-label">Paying Officer Name:</td>
-            <td class="p-line" colspan="4">&nbsp;</td>
-        </tr>
-        <tr>
-            <td class="p-label">Sign:</td>
-            <td class="p-line">&nbsp;</td>
-            <td class="p-date">Date:</td>
-            <td class="p-dline" colspan="2">&nbsp;</td>
-        </tr>
-    </table>
-
-    @endif
-
-</div>
-
-<table class="c-foot">
-    <tr>
-        <td class="f-left">HR Record - Version 2</td>
-        <td class="f-right">2</td>
-    </tr>
-</table>
-
-
-
-{{-- =====================================================================
-     DOCUMENT 3 : CASUAL EMPLOYMENT CONTRACT  -  PAGE 3 OF 3
-     (only printed when there are more than 2 casuals)
-====================================================================== --}}
-@if($listOnPage3)
-<div class="c-page new-page">
-
-    <table class="c-hdr">
-        <tr>
-            <td class="h-logo"><img src="{{ $logo }}" alt="Kim-Fay"></td>
-            <td class="h-addr">
-                Kim-Fay E.A Ltd<br>
-                Maasai Road, Off Mombasa Road<br>
-                Behind Libra House<br>
-                Box 31437-00600, Nairobi
-            </td>
-            <td class="h-cont">
-                T/+254 20351824/19/24<br>
-                F/ +254 20 6531458, 6533518<br>
-                E/ <u>customercare&#64;kimfay.com</u><br>
-                www.kimfay.com
-            </td>
-        </tr>
-    </table>
-
-    <div class="c-title">CASUAL EMPLOYMENT CONTRACT</div>
-
-    <div class="c-h" style="margin-top: 6mm; margin-bottom: 0;">CASUAL DETAILS</div>
-
-    <table class="c-ct">
-        <thead>
-            <tr>
-                <th class="k-no">NO.</th>
-                <th class="k-name">Casual Name</th>
-                <th class="k-id">ID No.</th>
-                <th class="k-sha">SHA No.</th>
-                <th class="k-nssf">NSSF No.</th>
-                <th class="k-tel">Tel No.</th>
-                <th class="k-sign">Casual Sign</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($c['casuals'] as $row)
-                <tr>
-                    <td>{{ $loop->iteration }}</td>
-                    <td>{{ $row['name'] }}</td>
-                    <td>{{ $row['id_no'] }}</td>
-                    <td>{{ $row['sha_no'] }}</td>
-                    <td>{{ $row['nssf_no'] }}</td>
-                    <td>{{ $row['tel'] }}</td>
-                    <td>&nbsp;</td>
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
-
-    <table class="pay">
+    <table class="pay keep-together">
         <tr>
             <td class="p-label">Paying Officer Name:</td>
             <td class="p-line" colspan="4">&nbsp;</td>
@@ -1303,13 +1049,22 @@
 
 </div>
 
-<table class="c-foot">
-    <tr>
-        <td class="f-left">HR Record - Version 2</td>
-        <td class="f-right">3</td>
-    </tr>
-</table>
-@endif
+{{-- DYNAMIC FOOTER: drawn by DomPDF on contract pages only (PDF page 3 onward).
+     Change the "2" below if documents 1 and 2 ever span more or fewer pages. --}}
+<script type="text/php">
+    if (isset($pdf)) {
+        $pdf->page_script('
+            if ($PAGE_NUM > 2) {
+                $font = $fontMetrics->getFont("Helvetica", "normal");
+                $y = $pdf->get_height() - 32;
+                $pdf->text(36, $y, "HR Record - Version 2", $font, 8);
+                $label = "Page " . ($PAGE_NUM - 2) . " of " . ($PAGE_COUNT - 2);
+                $w = $fontMetrics->getTextWidth($label, $font, 8);
+                $pdf->text($pdf->get_width() - 36 - $w, $y, $label, $font, 8);
+            }
+        ');
+    }
+</script>
 
 </body>
 </html>
