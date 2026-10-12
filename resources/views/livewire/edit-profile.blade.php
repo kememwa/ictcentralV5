@@ -149,7 +149,7 @@
 
                     <input
                         type="text"
-                        value="{{ auth()->user()->department->name ?? '' }}"
+                        value="{{ auth()->user()->designation->division->department->name ?? '' }}"
                         disabled
                         class="w-full rounded-lg border-gray-300 bg-gray-100
                                text-gray-500 cursor-not-allowed
