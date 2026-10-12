@@ -75,7 +75,9 @@
             </button>
             <ul x-show="inventoryOpen" x-collapse class="mt-1 space-y-0.5 pl-9">
                 <li><a wire:navigate href="{{ route('inventory') }}" class="flex items-center gap-2 rounded-md px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-100 hover:text-slate-900"><span>🗂️</span>Overview</a></li>
+
                 <li><a wire:navigate href="{{ route('pendingapproval') }}" class="flex items-center gap-2 rounded-md px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-100 hover:text-slate-900"><span>⏳</span>Pending Approval</a></li>
+                
                 <li><a wire:navigate href="{{ route('devicehistory') }}" class="flex items-center gap-2 rounded-md px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-100 hover:text-slate-900"><span>📜</span>Device History</a></li>
                 <li><a wire:navigate href="{{ route('inventory-analytics') }}" class="flex items-center gap-2 rounded-md px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-100 hover:text-slate-900"><span>📊</span>Inventory Analytics</a></li>
                 <li>

@@ -124,7 +124,7 @@ class ManageUser extends Component
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'selectedDesignation' => 'nullable|exists:designations,id',
-            'selectedRoles' => 'required|array',
+            'selectedRoles' => 'array',
             'selectedRoles.*' => 'exists:roles,name',
         ]);
 
