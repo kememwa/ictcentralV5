@@ -37,7 +37,8 @@
             </button>
         </div>
 
-        {{-- Logout Modal — TELEPORTED TO BODY so it centers on the WHOLE page --}}
+
+        {{-- Logout Modal — TELEPORTED TO BODY --}}
         <template x-teleport="body">
             <div
                 x-show="showLogoutModal"
@@ -57,34 +58,134 @@
                 <div
                     x-show="showLogoutModal"
                     x-transition
+                    @click.stop
                     class="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl"
                 >
-                    <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
-                        <svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                    {{-- Icon --}}
+                    <div
+                        wire:loading.remove
+                        wire:target="logout"
+                        class="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-100"
+                    >
+                        <svg
+                            class="h-6 w-6 text-red-600"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                            />
                         </svg>
                     </div>
-                    <h2 class="text-lg font-semibold text-slate-900">Confirm Logout</h2>
+
+                    {{-- Loading icon --}}
+                    <div
+                        wire:loading.flex
+                        wire:target="logout"
+                        class="mb-4 h-12 w-12 items-center justify-center rounded-full bg-red-100"
+                    >
+                        <svg
+                            class="h-6 w-6 animate-spin text-red-600"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                        >
+                            <circle
+                                class="opacity-25"
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                stroke="currentColor"
+                                stroke-width="4"
+                            />
+                            <path
+                                class="opacity-75"
+                                fill="currentColor"
+                                d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                            />
+                        </svg>
+                    </div>
+
+                    {{-- Heading --}}
+                    <h2 class="text-lg font-semibold text-slate-900">
+                        <span wire:loading.remove wire:target="logout">
+                            Confirm Logout
+                        </span>
+
+                        <span wire:loading wire:target="logout">
+                            Signing you out...
+                        </span>
+                    </h2>
+
+                    {{-- Description --}}
                     <p class="mt-1.5 text-sm text-slate-600">
-                        Are you sure you want to log out? You'll need to sign in again to access the application.
+                        <span wire:loading.remove wire:target="logout">
+                            Are you sure you want to log out? You'll need to sign in again to access the application.
+                        </span>
+
+                        <span wire:loading wire:target="logout">
+                            Please wait while we securely end your session.
+                        </span>
                     </p>
 
+                    {{-- Actions --}}
                     <div class="mt-6 flex justify-end gap-2">
                         <button
+                            type="button"
                             @click="showLogoutModal = false"
-                            class="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+                            wire:loading.attr="disabled"
+                            wire:target="logout"
+                            class="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
                         >
                             Cancel
                         </button>
+
                         <button
+                            type="button"
                             wire:click="logout"
-                            class="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-red-700"
+                            wire:loading.attr="disabled"
+                            wire:target="logout"
+                            class="inline-flex items-center justify-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-70"
                         >
-                            Yes, log out
+                            {{-- Spinner inside button --}}
+                            <svg
+                                wire:loading
+                                wire:target="logout"
+                                class="h-4 w-4 animate-spin"
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                            >
+                                <circle
+                                    class="opacity-25"
+                                    cx="12"
+                                    cy="12"
+                                    r="10"
+                                    stroke="currentColor"
+                                    stroke-width="4"
+                                />
+                                <path
+                                    class="opacity-75"
+                                    fill="currentColor"
+                                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                                />
+                            </svg>
+
+                            <span wire:loading.remove wire:target="logout">
+                                Yes, log out
+                            </span>
+
+                            <span wire:loading wire:target="logout">
+                                Logging out...
+                            </span>
                         </button>
                     </div>
                 </div>
             </div>
         </template>
-    </nav>
+   </nav>
 </div>
