@@ -80,14 +80,24 @@
 
                     <td class="p-2 text-right">
                         <div class="flex items-center justify-end gap-2">
-                            <button
-                                type="button"
-                                wire:click="$parent.editUser({{ $user->id }})"
-                                @click="showEditUserModal = true"
-                                class="px-2 py-1 text-[11px] font-medium text-blue-600 border border-blue-200 rounded hover:bg-blue-50 hover:border-blue-300 cursor-pointer transition"
+                            <div
+                                x-data="{ loading: false }"
+                                @open-edit-user-modal.window="loading = false"
                             >
-                                Edit
-                            </button>
+                                <button
+                                    type="button"
+                                    @click="loading = true"
+                                    wire:click="$parent.editUser({{ $user->id }})"
+                                    wire:loading.attr="disabled"
+                                    class="px-2 py-1 text-[11px] font-medium text-blue-600 border border-blue-200 rounded hover:bg-blue-50 hover:border-blue-300 cursor-pointer transition disabled:opacity-50 disabled:cursor-wait"
+                                >
+                                    <span x-show="!loading">Edit</span>
+
+                                    <span x-show="loading" x-cloak>
+                                        Loading...
+                                    </span>
+                                </button>
+                            </div>
 
                             <button
                                 type="button"

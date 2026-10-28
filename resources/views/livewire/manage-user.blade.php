@@ -1,15 +1,22 @@
 <div x-data="{
     showAddUserModal: false,
     showEditUserModal: false,
+    editLoading: false,
 
 resetAddForm() {
         // Reset Livewire properties when opening add modal
        @this.call('prepareAddUser');
     }
 }" 
-@close-add-user-modal.window="showAddUserModal = false"
-@open-edit-user-modal.window="showEditUserModal = true"
-@close-edit-user-modal.window="showEditUserModal = false">
+    @close-add-user-modal.window="showAddUserModal = false"
+
+    @open-edit-user-modal.window="
+        editLoading = false;
+        showEditUserModal = true;
+    "
+    @close-edit-user-modal.window="showEditUserModal = false">
+
+
     <!-- ▸ User-Management Breadcrumb + Toolbar -->
 
     <x-page-header title="User Management" subtitle="Create and manage users">
@@ -276,10 +283,10 @@ resetAddForm() {
 
     <!-- Edit User Modal - Simplified version using wire:model -->
     <div x-show="showEditUserModal"
-         class="fixed inset-0 flex items-center justify-center bg-black/50 z-50"
-         
-          x-cloak>
+         class="fixed inset-0 flex items-center justify-center bg-black/50 z-50" 
+         x-cloak>
         <div class="bg-white dark:bg-gray-700 rounded-lg shadow-lg w-11/12 max-w-2xl max-h-[calc(100vh-2rem)] overflow-y-auto">
+
             <!-- Header -->
             <div class="flex items-start justify-between p-5 border-b rounded-t dark:border-gray-600">
                 <h3 class="text-xl font-semibold text-gray-900 dark:text-white">

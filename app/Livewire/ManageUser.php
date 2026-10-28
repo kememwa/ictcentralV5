@@ -160,17 +160,29 @@ class ManageUser extends Component
 
     public function editUser($userId)
     {
+        // Reset the form before populating it with the selected user's data
         $this->prepareAddUser();
-        $user = User::with(['roles', 'designation'])->find($userId);
-        
-        $this->editingUserId = $userId;
-        $this->selectedDesignation = $user->designation->id;
+
+        // Fetch the user and required relationships
+        $user = User::with(['roles', 'designation'])->findOrFail($userId);
+
+        // Populate the form properties
+        $this->editingUserId = $user->id;
         $this->name = $user->name;
         $this->email = $user->email;
+
+        $this->selectedDesignation = $user->designation?->id;
         $this->department_id = $user->dep_id;
         $this->division_id = $user->division_id;
-        $this->searchHead = $user->designation->name;
-        $this->editSelectedRoles = $user->roles->pluck('name')->toArray();
+
+        $this->searchHead = $user->designation?->name ?? '';
+
+        $this->editSelectedRoles = $user->roles
+            ->pluck('name')
+            ->toArray();
+
+        // Open the modal only after all properties have been populated
+        $this->dispatch('open-edit-user-modal');
     }
     
     public function updateUser()
