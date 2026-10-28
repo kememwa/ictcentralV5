@@ -93,8 +93,11 @@ Route::middleware(['role:It|SuperAdmin'])->group(function () {
 
 
 // Finance and SuperAdmin only
-Route::middleware(['role:Finance|SuperAdmin|Coo'])->group(function () {
+Route::middleware(['role:Finance|SuperAdmin|Coo|Dtc'])->group(function () {
     Route::get('/dtc-payment', DtcPayment::class)->name('dtc-payment');
+});
+
+Route::middleware(['role:Finance|SuperAdmin|Coo'])->group(function () {
     Route::get('/mpesa-analytics', MpesaAnalytics::class)->name('mpesa-analytics');
 });
 

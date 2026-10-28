@@ -185,7 +185,7 @@
         </div>
 
 
-        @hasanyrole('SuperAdmin|It|Finance|Coo')
+        @hasanyrole('SuperAdmin|It|Finance|Coo|Dtc')
         {{-- ===== Section: Payments ===== --}}
         <div>
             <p class="px-3 pb-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Payments</p>
@@ -225,12 +225,14 @@
                         <span>👥</span>DTC</a>
                 </li>
 
+                @hasanyrole('SuperAdmin|It|Finance|Coo')
                 <li>
                     <a wire:navigate href="{{ route('mpesa-analytics') }}"
                         class="flex items-center gap-2 rounded-md px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-100 hover:text-slate-900">
                             <span>📈</span>Mpesa Analytics
                     </a>
                 </li>
+                @endhasanyrole
                 
             </ul>
         </div>
