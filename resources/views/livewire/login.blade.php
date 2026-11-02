@@ -2,23 +2,23 @@
     // Put your images in public/images/login/ (JPG/WebP, about 1600px wide, under 300 KB each)
     $slides = [
         [
-            'src'     => asset('images/login/data-center.jpg'),
+            'src'     => asset('images/login/data-center.png'),
             'caption' => 'Reliable systems behind every department',
             'pos'     => '50% 50%',
         ],
         [
-            'src'     => asset('images/login/warehouse.jpg'),
-            'caption' => 'From the factory floor to the shelf',
-            'pos'     => '30% 50%',
+            'src'     => asset('images/login/nairobi.jpg'),
+            'caption' => 'All branches centralized in one system',
+            'pos'     => '50% 50%',
         ],
         [
             'src'     => asset('images/login/team.jpg'),
             'caption' => 'Requests and approvals, handled faster',
-            'pos'     => '50% 25%',
+            'pos'     => '50% 50%',
         ],
         [
-            'src'     => asset('images/login/nairobi.jpg'),
-            'caption' => 'Kim-Fay, powered by ICT',
+            'src'     => asset('images/login/warehouse.png'),
+            'caption' => 'ICT Central, powered by Kim-Fay ICT Team',
             'pos'     => '50% 50%',
         ],
     ];
