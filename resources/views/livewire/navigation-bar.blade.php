@@ -18,11 +18,6 @@
                     </svg>
                 </button>
 
-                <div class="hidden sm:block">
-                    <p class="text-xs text-slate-500">Hello?</p>
-                    <p class="text-sm font-semibold text-slate-900 leading-tight">{{ auth()->user()->name }}</p>
-                </div>
-                <p class="text-sm font-semibold text-slate-900 sm:hidden">Hi, {{ auth()->user()->name }}</p>
             </div>
 
             {{-- RIGHT: Logout --}}

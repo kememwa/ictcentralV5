@@ -5,13 +5,9 @@
         <div class="flex justify-center items-center mb-4">
             <img
                 src="{{ asset('images/kimfay.png') }}"
-                class="h-12 mr-3"
+                class="h-20 mr-3"
                 alt="Kim-Fay Logo"
             />
-
-            <span class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                ICT Central
-            </span>
         </div>
 
         <h2 class="text-2xl font-bold text-gray-900">
