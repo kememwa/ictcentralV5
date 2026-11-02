@@ -84,111 +84,250 @@
         </div>
     </div>
 
-    <!-- Right: form -->
-    <div class="flex items-center px-6 py-10 sm:px-12 lg:px-16">
+    <!-- Right: Dynamic authentication panel -->
+    <div
+        class="flex items-center px-6 py-10 sm:px-12 lg:px-16"
+        x-data="{ authView: 'login' }"
+    >
         <div class="w-full max-w-md mx-auto">
 
-            <!-- Logo (mobile only, the image panel shows it on large screens) -->
-            <img src="{{ asset('images/kimfay.png') }}" class="h-12 mb-8 lg:hidden" alt="Kim-Fay logo" />
+            <!-- Logo (mobile only) -->
+            <img
+                src="{{ asset('images/kimfay.png') }}"
+                class="h-12 mb-8 lg:hidden"
+                alt="Kim-Fay logo"
+            />
 
-            <h1 class="text-2xl font-bold text-gray-900">Welcome back</h1>
-            <p class="mt-1 mb-8 text-sm text-gray-500">ICT Central</p>
+            <!-- LOGIN FORM -->
+            <div
+                x-show="authView === 'login'"
+                x-transition:enter="transition ease-out duration-300"
+                x-transition:enter-start="opacity-0 translate-y-2"
+                x-transition:enter-end="opacity-100 translate-y-0"
+            >
+                <h1 class="text-2xl font-bold text-gray-900">
+                    Welcome back
+                </h1>
 
-            <form class="space-y-6" wire:submit.prevent="login">
+                <p class="mt-1 mb-8 text-sm text-gray-500">
+                    ICT Central
+                </p>
 
-                <!-- Email -->
-                <div>
-                    <label for="email" class="block mb-2 text-sm font-medium text-gray-900">Email</label>
-                    <input
-                        type="email"
-                        wire:model="email"
-                        id="email"
-                        autocomplete="email"
-                        placeholder="Enter your email"
-                        class="block w-full p-3 text-sm text-gray-900 bg-gray-50 border border-gray-300 rounded-lg placeholder-gray-400 focus:ring-blue-600 focus:border-blue-600"
-                        required
-                    />
-                    @error('email')
-                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
-                </div>
+                            <form class="space-y-6" wire:submit.prevent="login">
 
-                <!-- Password -->
-                <div x-data="{ showPassword: false }">
-                    <label for="password" class="block mb-2 text-sm font-medium text-gray-900">Password</label>
-                    <div class="relative">
+                    <!-- Email -->
+                    <div>
+                        <label for="email" class="block mb-2 text-sm font-medium text-gray-900">Email</label>
                         <input
-                            :type="showPassword ? 'text' : 'password'"
-                            name="password"
-                            wire:model="password"
-                            id="password"
-                            autocomplete="current-password"
-                            placeholder="••••••••"
-                            class="block w-full p-3 pr-12 text-sm text-gray-900 bg-gray-50 border border-gray-300 rounded-lg placeholder-gray-400 focus:ring-blue-600 focus:border-blue-600"
+                            type="email"
+                            wire:model="email"
+                            id="email"
+                            autocomplete="email"
+                            placeholder="Enter your email"
+                            class="block w-full p-3 text-sm text-gray-900 bg-gray-50 border border-gray-300 rounded-lg placeholder-gray-400 focus:ring-blue-600 focus:border-blue-600"
                             required
                         />
+                        @error('email')
+                            <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Password -->
+                    <div x-data="{ showPassword: false }">
+                        <label for="password" class="block mb-2 text-sm font-medium text-gray-900">Password</label>
+                        <div class="relative">
+                            <input
+                                :type="showPassword ? 'text' : 'password'"
+                                name="password"
+                                wire:model="password"
+                                id="password"
+                                autocomplete="current-password"
+                                placeholder="••••••••"
+                                class="block w-full p-3 pr-12 text-sm text-gray-900 bg-gray-50 border border-gray-300 rounded-lg placeholder-gray-400 focus:ring-blue-600 focus:border-blue-600"
+                                required
+                            />
+
+                            <button
+                                type="button"
+                                @click="showPassword = !showPassword"
+                                class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600 focus:outline-none"
+                                :aria-label="showPassword ? 'Hide password' : 'Show password'"
+                            >
+                                {{-- Eye open --}}
+                                <svg x-show="!showPassword" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
+                                    fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+
+                                {{-- Eye closed --}}
+                                <svg x-show="showPassword" x-cloak xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
+                                    fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M13.875 18.825A10.05 10.05 0 0112 19c-4.477 0-8.268-2.943-9.542-7a9.97 9.97 0 011.563-2.917M6.228 6.228A9.956 9.956 0 0112 5c4.477 0 8.268 2.943 9.542 7a9.958 9.958 0 01-4.132 5.411M6.228 6.228L3 3m3.228 3.228l3.65 3.65m5.244 5.244L21 21M9.879 9.879a3 3 0 104.242 4.242" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Remember me & Forgot password -->
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <input
+                                id="remember"
+                                type="checkbox"
+                                wire:model="remember"
+                                class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-600"
+                            />
+
+                            <label for="remember"
+                                class="ms-2 text-sm text-gray-600">
+                                Remember me
+                            </label>
+                        </div>
 
                         <button
                             type="button"
-                            @click="showPassword = !showPassword"
-                            class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600 focus:outline-none"
-                            :aria-label="showPassword ? 'Hide password' : 'Show password'"
+                            @click="authView = 'forgot'"
+                            class="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
                         >
-                            {{-- Eye open --}}
-                            <svg x-show="!showPassword" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
-                                 fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                            </svg>
-
-                            {{-- Eye closed --}}
-                            <svg x-show="showPassword" x-cloak xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
-                                 fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                      d="M13.875 18.825A10.05 10.05 0 0112 19c-4.477 0-8.268-2.943-9.542-7a9.97 9.97 0 011.563-2.917M6.228 6.228A9.956 9.956 0 0112 5c4.477 0 8.268 2.943 9.542 7a9.958 9.958 0 01-4.132 5.411M6.228 6.228L3 3m3.228 3.228l3.65 3.65m5.244 5.244L21 21M9.879 9.879a3 3 0 104.242 4.242" />
-                            </svg>
+                            Forgot password?
                         </button>
                     </div>
-                </div>
 
-                <!-- Remember me & Forgot password -->
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center">
-                        <input
-                            id="remember"
-                            type="checkbox"
-                            wire:model="remember"
-                            class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-600"
+                    <!-- Submit -->
+                    <button
+                        type="submit"
+                        wire:loading.attr="disabled"
+                        wire:target="login"
+                        class="w-full flex items-center justify-center text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-200 rounded-lg px-5 py-3 transition-colors disabled:opacity-70 disabled:cursor-not-allowed">
+
+                        <span wire:loading.remove wire:target="login">Sign in to your account</span>
+
+                        <span wire:loading wire:target="login" class="flex items-center">
+                            <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Signing in...
+                        </span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- FORGOT PASSWORD FORM -->
+            <div
+                x-cloak
+                x-show="authView === 'forgot'"
+                x-transition:enter="transition ease-out duration-300"
+                x-transition:enter-start="opacity-0 translate-y-2"
+                x-transition:enter-end="opacity-100 translate-y-0"
+            >
+
+                <!-- Icon -->
+                <div class="flex items-center justify-center w-14 h-14 mb-6 rounded-2xl bg-blue-50">
+                    <svg
+                        class="w-7 h-7 text-blue-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="1.8"
+                            d="M3 8l9 6 9-6M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
                         />
-                        <label for="remember" class="ms-2 text-sm text-gray-600">Remember me</label>
-                    </div>
-                    <a wire:navigate href="{{ route('forgot-password') }}"
-                       class="text-sm font-medium text-blue-600 hover:text-blue-700">
-                        Forgot password?
-                    </a>
+                    </svg>
                 </div>
 
-                <!-- Submit -->
+                <h1 class="text-2xl font-bold text-gray-900">
+                    Forgot your password?
+                </h1>
+
+                <p class="mt-2 mb-8 text-sm text-gray-500 leading-relaxed">
+                    No worries. Enter your registered email address
+                    and we'll send you a link to reset your password.
+                </p>
+
+                <form
+                    class="space-y-6"
+                    wire:submit.prevent="sendResetLink"
+                >
+
+                    <div>
+                        <label
+                            for="reset_email"
+                            class="block mb-2 text-sm font-medium text-gray-900"
+                        >
+                            Email address
+                        </label>
+
+                        <input
+                            type="email"
+                            wire:model="resetEmail"
+                            id="reset_email"
+                            autocomplete="email"
+                            placeholder="Enter your email"
+                            class="block w-full p-3 text-sm text-gray-900 bg-gray-50 border border-gray-300 rounded-lg placeholder-gray-400 focus:ring-blue-600 focus:border-blue-600"
+                            required
+                        />
+
+                        @error('resetEmail')
+                            <p class="mt-2 text-sm text-red-600">
+                                {{ $message }}
+                            </p>
+                        @enderror
+                    </div>
+
+                    <button
+                        type="submit"
+                        wire:loading.attr="disabled"
+                        wire:target="sendResetLink"
+                        class="w-full flex items-center justify-center text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg px-5 py-3 transition-colors disabled:opacity-70"
+                    >
+                        <span wire:loading.remove wire:target="sendResetLink">
+                            Send reset link
+                        </span>
+
+                        <span wire:loading wire:target="sendResetLink"
+                            class="flex items-center">
+                            <svg class="animate-spin mr-2 h-4 w-4"
+                                fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25"
+                                    cx="12" cy="12" r="10"
+                                    stroke="currentColor" stroke-width="4"/>
+                                <path class="opacity-75"
+                                    fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                            </svg>
+                            Sending...
+                        </span>
+                    </button>
+                </form>
+
+                <!-- Back to login -->
                 <button
-                    type="submit"
-                    wire:loading.attr="disabled"
-                    wire:target="login"
-                    class="w-full flex items-center justify-center text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-200 rounded-lg px-5 py-3 transition-colors disabled:opacity-70 disabled:cursor-not-allowed">
+                    type="button"
+                    @click="authView = 'login'"
+                    class="flex items-center justify-center gap-2 w-full mt-8 text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors"
+                >
+                    <svg class="w-4 h-4" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M15 19l-7-7 7-7"/>
+                    </svg>
 
-                    <span wire:loading.remove wire:target="login">Sign in to your account</span>
-
-                    <span wire:loading wire:target="login" class="flex items-center">
-                        <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        Signing in...
-                    </span>
+                    Back to login
                 </button>
-            </form>
+
+            </div>
         </div>
     </div>
+
 
 </div>
