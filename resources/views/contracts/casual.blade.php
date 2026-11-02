@@ -46,7 +46,7 @@
     $nssfRate = number_format($requisition->nssf_rate, 2);
     $shaRate = number_format($requisition->sha_rate, 2);
     $totalDed = number_format($nssfRate + $shaRate, 2);
-    $totalPay = number_format($dailyRate - $totalDed, 2);
+    $totalPay = number_format($dailyRate * $duration - $totalDed, 2);
     $grossPay = number_format($dailyRate * $duration, 2);
     $contractDate = \Carbon\Carbon::parse($requisition->casual_assignment_date)->format('jS F Y');
     
@@ -931,7 +931,7 @@
 
     <div class="c-sec">
         <div class="c-h">REMUNERATION</div>
-        <p class="c-p">The company shall pay to the employee a sum of <span class="b">Kshs. {{ $grossPay }}</span></p>
+        <p class="c-p">The company shall pay to the employee a sum of <span class="b">Kshs. {{ $totalPay }}</span></p>
         <p class="c-p">
             This payment will be paid at the end of the period of contract, being the accumulated daily wages of the
             aggregate days worked only. A further deduction of <span class="b">Kshs. {{ $nssfRate }}</span> and
