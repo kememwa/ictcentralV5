@@ -8,7 +8,7 @@ use App\Models\User;
 use Livewire\Attributes\Layout;
 use App\Models\Onboarding;
 use App\Models\LoginActivity;
-
+use Illuminate\Support\Facades\Password;
 
 class Login extends Component
 {
@@ -74,6 +74,36 @@ class Login extends Component
             $this->addError('email', 'Invalid email or password.');
         }
     }
+
+    public $resetEmail = '';
+
+    public function sendResetLink()
+    {
+        $this->validate([
+            'resetEmail' => ['required', 'email'],
+        ]);
+
+        $status = Password::sendResetLink([
+            'email' => $this->resetEmail,
+        ]);
+
+        if ($status === Password::RESET_LINK_SENT) {
+            $this->dispatch('notify',
+                type: 'success',
+                title: 'Success',
+                message: 'Password reset link has been sent to your email.',
+            );
+            
+            $this->reset('resetEmail');
+
+             $this->dispatch('password-reset-link-sent');
+
+            return;
+        }
+
+        $this->addError('resetEmail', __($status));
+    }
+
 
     #[layout('layouts.auth')]
     public function render()

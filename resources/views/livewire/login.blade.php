@@ -88,6 +88,7 @@
     <div
         class="flex items-center px-6 py-10 sm:px-12 lg:px-16"
         x-data="{ authView: 'login' }"
+        x-on:password-reset-link-sent.window="authView = 'login'"
     >
         <div class="w-full max-w-md mx-auto">
 
@@ -154,7 +155,7 @@
                                 :aria-label="showPassword ? 'Hide password' : 'Show password'"
                             >
                                 {{-- Eye open --}}
-                                <svg x-show="!showPassword" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
+                                <svg x-show="!showPassword" class="h-5 w-5"
                                     fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round"
                                         d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
@@ -163,7 +164,7 @@
                                 </svg>
 
                                 {{-- Eye closed --}}
-                                <svg x-show="showPassword" x-cloak xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
+                                <svg x-show="showPassword" x-cloak class="h-5 w-5"
                                     fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round"
                                         d="M13.875 18.825A10.05 10.05 0 0112 19c-4.477 0-8.268-2.943-9.542-7a9.97 9.97 0 011.563-2.917M6.228 6.228A9.956 9.956 0 0112 5c4.477 0 8.268 2.943 9.542 7a9.958 9.958 0 01-4.132 5.411M6.228 6.228L3 3m3.228 3.228l3.65 3.65m5.244 5.244L21 21M9.879 9.879a3 3 0 104.242 4.242" />
