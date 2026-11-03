@@ -91,7 +91,7 @@
 
                 <img
                     src="{{ asset('images/kimfay.png') }}"
-                    class="h-20 w-auto object-contain mb-4"
+                    class="h-20 w-auto object-contain"
                     alt="Kim-Fay logo"
                 />
 
