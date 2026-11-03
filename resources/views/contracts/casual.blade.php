@@ -45,9 +45,11 @@
     $hrmApprovalDate = \Carbon\Carbon::parse($requisition->hrm_approval_date)->format('jS F Y, h:i A');
     $nssfRate = number_format($requisition->nssf_rate, 2);
     $shaRate = number_format($requisition->sha_rate, 2);
-    $totalDed = number_format($nssfRate + $shaRate, 2);
-    $totalPay = number_format($dailyRate * $duration - $totalDed, 2);
+    $totalCasualDed = number_format(($nssfRate + $shaRate), 2);
+    $totalDed = number_format(($nssfRate + $shaRate) * $no_casuals, 2);
+    $totalPay = number_format(($dailyRate * $duration) * $no_casuals - ($totalDed), 2);
     $grossPay = number_format($dailyRate * $duration, 2);
+    $totalCasualPay = number_format(($dailyRate * $duration) - $totalCasualDed, 2);
     $contractDate = \Carbon\Carbon::parse($requisition->casual_assignment_date)->format('jS F Y');
     
     
@@ -931,14 +933,14 @@
 
     <div class="c-sec">
         <div class="c-h">REMUNERATION</div>
-        <p class="c-p">The company shall pay to the employee a sum of <span class="b">Kshs. {{ $totalPay }}</span></p>
+        <p class="c-p">The company shall pay to the employee a sum of <span class="b">Kshs. {{ $totalCasualPay }}</span></p>
         <p class="c-p">
             This payment will be paid at the end of the period of contract, being the accumulated daily wages of the
             aggregate days worked only. A further deduction of <span class="b">Kshs. {{ $nssfRate }}</span> and
             <span class="b">Kshs. {{ $shaRate }}</span> shall be made from your aggregate accumulated wages at the end of
             this contract and shall be remitted to <span class="b">NSSF</span> and <span class="b">SHA</span>
             respectively as is our statutory obligation. Therefore, total deductions shall amount to
-            <span class="b">Kshs. {{ $totalDed }}</span>
+            <span class="b">Kshs. {{ $totalCasualDed }}</span>
         </p>
         <p class="c-p">
             Payment of the employee wages as hereinabove shall be deemed as settlement of all his/her claims from the

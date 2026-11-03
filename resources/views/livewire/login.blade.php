@@ -59,12 +59,6 @@
         <!-- Dark overlay so text stays readable -->
         <div class="absolute inset-0 bg-gradient-to-t from-blue-950/80 via-blue-900/30 to-blue-900/40"></div>
 
-        <!-- Logo -->
-        <div class="absolute top-10 left-12 xl:left-16">
-            <div class="inline-flex p-2 bg-white rounded-lg">
-                <img src="{{ asset('images/kimfay.png') }}" class="h-9" alt="Kim-Fay logo" />
-            </div>
-        </div>
 
         <!-- Caption + dots -->
         <div class="absolute bottom-12 left-12 right-12 xl:left-16 xl:right-16 text-white">
@@ -92,12 +86,20 @@
     >
         <div class="w-full max-w-md mx-auto">
 
-            <!-- Logo (mobile only) -->
-            <img
-                src="{{ asset('images/kimfay.png') }}"
-                class="h-12 mb-8 lg:hidden"
-                alt="Kim-Fay logo"
-            />
+            <!-- Centered Logo and Application Name (Login only) -->
+            <div class="flex flex-col items-center justify-center text-center mb-10">
+
+                <img
+                    src="{{ asset('images/kimfay.png') }}"
+                    class="h-20 w-auto object-contain mb-4"
+                    alt="Kim-Fay logo"
+                />
+
+                <h1 class="text-2xl font-bold tracking-tight text-gray-900">
+                    ICT Central
+                </h1>
+
+            </div>
 
             <!-- LOGIN FORM -->
             <div
@@ -106,15 +108,12 @@
                 x-transition:enter-start="opacity-0 translate-y-2"
                 x-transition:enter-end="opacity-100 translate-y-0"
             >
-                <h1 class="text-2xl font-bold text-gray-900">
-                    Welcome back
-                </h1>
-
-                <p class="mt-1 mb-8 text-sm text-gray-500">
-                    ICT Central
+    
+                <p class="mt-1 mb-8 text-sm font-bold text-gray-500">
+                    Login
                 </p>
 
-                            <form class="space-y-6" wire:submit.prevent="login">
+                <form class="space-y-6" wire:submit.prevent="login">
 
                     <!-- Email -->
                     <div>
@@ -227,22 +226,6 @@
                 x-transition:enter-end="opacity-100 translate-y-0"
             >
 
-                <!-- Icon -->
-                <div class="flex items-center justify-center w-14 h-14 mb-6 rounded-2xl bg-blue-50">
-                    <svg
-                        class="w-7 h-7 text-blue-600"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="1.8"
-                            d="M3 8l9 6 9-6M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                        />
-                    </svg>
-                </div>
 
                 <h1 class="text-2xl font-bold text-gray-900">
                     Forgot your password?
