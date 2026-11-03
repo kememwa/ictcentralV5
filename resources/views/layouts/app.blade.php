@@ -5,7 +5,10 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
         <title>{{ config('app.name') }}</title>
-        <link rel="icon" href="{{ asset('images/kimfay.png') }}" type="image/png">
+       
+        <link rel="icon" type="image/png"
+          href="{{ asset('images/kimfay.png') }}?v=2"
+          sizes="32x32">
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
 
