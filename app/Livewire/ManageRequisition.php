@@ -205,7 +205,7 @@ class ManageRequisition extends Component
                     'returned_at' => now(),
                     'return_reason' => $this->returnReason,
                     'returned_from_stage' => 'hod',
-                    'return_to_stage' => 'hod',
+                    'return_to_stage' => 'requester',
                 ]);
             });
 

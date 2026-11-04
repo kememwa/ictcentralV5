@@ -126,24 +126,21 @@
                 {{-- Filter + Count --}}
                 <div class="flex w-full items-center gap-2 sm:w-auto">
 
-                    <select
+                   <select
                         wire:model.live="statusFilter"
-                        class="min-w-0 flex-1 rounded-lg border border-slate-200 bg-white
-                            px-3 py-2 text-xs text-slate-700
-                            focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100
-                            sm:flex-none"
+                        class="min-w-0 flex-1 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700"
                     >
-                        <option value="">All status</option>
+                        <option value="">All Status</option>
+                        <option value="pending">Pending</option>
+                        <option value="returned">Returned</option>
                         <option value="approved">Approved</option>
-                        <option value="in-progress">In Progress</option>
-                        <option value="rejected">Rejected</option>
                     </select>
 
                     <span
                         class="inline-flex shrink-0 items-center rounded-lg bg-slate-100
                             px-2.5 py-2 text-xs font-medium text-slate-600"
                     >
-                        {{ count($MyRequisitions) }} total
+                        {{ $MyRequisitions->total() }} total
                     </span>
 
                 </div>
@@ -192,6 +189,14 @@
 
                         <th class="px-4 py-3 whitespace-nowrap">
                             Status
+                        </th>
+
+                        <th class="px-4 py-3 min-w-[220px]">
+                            Return Reason
+                        </th>
+
+                        <th class="px-4 py-3 text-center whitespace-nowrap">
+                            Actions
                         </th>
 
                     </tr>
@@ -331,25 +336,92 @@
                             ================================================== --}}
                             <td class="px-4 py-3 whitespace-nowrap">
 
-                                @if($req->casual_assignment_status == 1)
+                                @if($req->status === 'returned' && $req->return_to_stage === 'requester')
+
+                                    <span class="inline-flex items-center gap-1.5 text-[11px] font-medium text-rose-600">
+                                        <span class="h-1.5 w-1.5 rounded-full bg-rose-500"></span>
+                                        Returned to you
+                                    </span>
+
+                                @elseif($req->status === 'returned')
+
+                                    <span class="inline-flex items-center gap-1.5 text-[11px] font-medium text-amber-600">
+                                        <span class="h-1.5 w-1.5 rounded-full bg-amber-500"></span>
+                                        Returned for review
+                                    </span>
+
+                                @elseif($req->status === 'approved')
 
                                     <span class="inline-flex items-center gap-1.5 text-[11px] font-medium text-emerald-600">
-
-                                        <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500"></span>
-
+                                        <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
                                         Approved
-
                                     </span>
 
                                 @else
 
                                     <span class="inline-flex items-center gap-1.5 text-[11px] font-medium text-amber-600">
-
-                                        <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-amber-500"></span>
-
-                                        Pending
-
+                                        <span class="h-1.5 w-1.5 rounded-full bg-amber-500"></span>
+                                        In Progress
                                     </span>
+
+                                @endif
+
+                            </td>
+
+                            <td class="px-4 py-3 min-w-[220px]">
+
+                                @if($req->status === 'returned' && $req->return_to_stage === 'requester')
+
+                                    <p class="text-[11px] leading-relaxed text-rose-700 whitespace-normal">
+                                        {{ $req->return_reason }}
+                                    </p>
+
+                                    <p class="mt-1 text-[10px] text-slate-400">
+                                        Returned by {{ $req->returnedBy?->name ?? 'Approver' }}
+                                        @if($req->returned_at)
+                                            · {{ $req->returned_at->format('d M Y') }}
+                                        @endif
+                                    </p>
+
+                                @else
+
+                                    <span class="text-[11px] text-slate-400">—</span>
+
+                                @endif
+
+                            </td>
+
+                            <td class="px-4 py-3 text-center whitespace-nowrap">
+
+                                @if(
+                                    $req->status === 'returned' &&
+                                    $req->return_to_stage === 'requester'
+                                )
+
+                                    <button
+                                        type="button"
+                                        wire:click="editReturnedRequisition({{ $req->id }})"
+                                        class="inline-flex items-center gap-1.5 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-[11px] font-medium text-amber-700 transition hover:bg-amber-100"
+                                    >
+                                        <svg
+                                            class="h-3.5 w-3.5"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"
+                                            />
+                                        </svg>
+                                        Edit & Resubmit
+                                    </button>
+
+                                @else
+
+                                    <span class="text-[10px] text-slate-400">No action</span>
 
                                 @endif
 
@@ -648,108 +720,180 @@
     </x-data-card>
 
     {{-- Casual Requisition Modal --}}
-    <div 
-        x-show="activeModal === 'casualReq'" 
-        x-cloak 
+    <div
+        x-show="activeModal === 'casualReq'"
+        x-cloak
         x-transition
+        @open-casual-modal.window="activeModal = 'casualReq'"
         class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
         @keydown.escape.window="activeModal = null"
     >
-        <div 
+        <div
             @click.away="activeModal = null"
             class="relative w-full max-w-md max-h-[90vh] overflow-y-auto p-4"
         >
             <div class="bg-white rounded-lg shadow-sm">
-                <!-- Header -->
+
+                {{-- Header --}}
                 <div class="flex items-center justify-between p-4 border-b">
                     <h3 class="text-lg font-semibold">
-                        Create Casual Requisition
+                        {{ $editingRequisitionId
+                            ? 'Edit Returned Requisition'
+                            : 'Create Casual Requisition' }}
                     </h3>
-                    <button 
+
+                    <button
+                        type="button"
                         @click="activeModal = null"
                         class="text-gray-400 hover:bg-gray-200 rounded-lg w-8 h-8 flex items-center justify-center"
                     >
                         ✕
                     </button>
                 </div>
-                
-                <!-- Modal body - Livewire Form -->
-                <form wire:submit.prevent="requisition" class="p-4 md:p-5 space-y-4">
-                    <!-- Row 1: Start Date | End Date -->
+
+                {{-- Livewire Form --}}
+                <form wire:submit.prevent="saveRequisition" class="p-4 md:p-5 space-y-4">
+
+                    {{-- Row 1: Start Date | End Date --}}
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <!-- Start Date -->
+
                         <div>
-                            <label class="block text-sm font-medium text-gray-900">Start Date</label>
-                            <input type="date" wire:model.live="start_date"
-                                class="w-full mt-1 p-2.5 text-sm border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500">
-                            @error('start_date') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
+                            <label class="block text-sm font-medium text-gray-900">
+                                Start Date
+                            </label>
+
+                            <input
+                                type="date"
+                                wire:model.live="start_date"
+                                class="w-full mt-1 p-2.5 text-sm border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
+                            >
+
+                            @error('start_date')
+                                <span class="text-red-600 text-sm">{{ $message }}</span>
+                            @enderror
                         </div>
 
-                        <!-- End Date -->
                         <div>
-                            <label class="block text-sm font-medium text-gray-900">End Date</label>
-                            <input type="date" wire:model.live="end_date"
-                                class="w-full mt-1 p-2.5 text-sm border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500">
-                            @error('end_date') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
+                            <label class="block text-sm font-medium text-gray-900">
+                                End Date
+                            </label>
+
+                            <input
+                                type="date"
+                                wire:model.live="end_date"
+                                class="w-full mt-1 p-2.5 text-sm border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
+                            >
+
+                            @error('end_date')
+                                <span class="text-red-600 text-sm">{{ $message }}</span>
+                            @enderror
                         </div>
+
                     </div>
 
-                    <!-- Row 2: No. of Casuals | Duration -->
+                    {{-- Row 2: No. of Casuals | Duration --}}
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <!-- No. of Casuals -->
+
                         <div>
-                            <label class="block text-sm font-medium text-gray-900">No. of Casuals</label>
-                            <input type="number" wire:model.defer="no_of_casuals" min="1"
+                            <label class="block text-sm font-medium text-gray-900">
+                                No. of Casuals
+                            </label>
+
+                            <input
+                                type="number"
+                                wire:model.defer="no_of_casuals"
+                                min="1"
                                 class="w-full mt-1 p-2.5 text-sm border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
-                                placeholder="Enter number">
-                            @error('no_of_casuals') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
+                                placeholder="Enter number"
+                            >
+
+                            @error('no_of_casuals')
+                                <span class="text-red-600 text-sm">{{ $message }}</span>
+                            @enderror
                         </div>
 
-                        <!-- Duration (Calculated) -->
                         <div>
-                            <label class="block text-sm font-medium text-gray-900">Duration (Days)</label>
+                            <label class="block text-sm font-medium text-gray-900">
+                                Duration (Days)
+                            </label>
+
                             <div class="mt-1 p-2.5 text-sm bg-gray-100 rounded-lg font-semibold text-blue-700">
                                 {{ $duration }} days
                             </div>
                         </div>
+
                     </div>
 
-                    <!-- Weekend Exclusion Checkboxes -->
+                    {{-- Weekend Exclusion --}}
                     <div>
-                        <label class="block text-sm font-medium text-gray-900 mb-1">Exclude Weekend Days</label>
+                        <label class="block text-sm font-medium text-gray-900 mb-1">
+                            Exclude Weekend Days
+                        </label>
+
                         <p class="text-xs text-gray-500 mb-2">
                             *To include weekends as working days, leave both boxes unchecked.*
                         </p>
+
                         <div class="flex items-center gap-4">
+
                             <label class="flex items-center gap-2">
-                                <input type="checkbox" wire:model.live="exclude_weekends.saturday"
-                                    class="w-4 h-4 text-blue-600 border-gray-300 rounded">
+                                <input
+                                    type="checkbox"
+                                    wire:model.live="exclude_weekends.saturday"
+                                    class="w-4 h-4 text-blue-600 border-gray-300 rounded"
+                                >
                                 <span class="text-gray-800 text-sm">Saturday</span>
                             </label>
+
                             <label class="flex items-center gap-2">
-                                <input type="checkbox" wire:model.live="exclude_weekends.sunday"
-                                    class="w-4 h-4 text-blue-600 border-gray-300 rounded">
+                                <input
+                                    type="checkbox"
+                                    wire:model.live="exclude_weekends.sunday"
+                                    class="w-4 h-4 text-blue-600 border-gray-300 rounded"
+                                >
                                 <span class="text-gray-800 text-sm">Sunday</span>
                             </label>
+
                         </div>
                     </div>
 
-                    <!-- Reasons -->
+                    {{-- Reason --}}
                     <div>
                         <label for="reason" class="block text-sm font-medium text-gray-900">
                             Reason(s) for Engagement
                         </label>
-                        <textarea wire:model.defer="reason" id="reason" rows="3"
+
+                        <textarea
+                            wire:model.defer="reason"
+                            id="reason"
+                            rows="3"
                             class="w-full mt-1 p-2.5 text-sm border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
-                            placeholder="Provide detailed justification"></textarea>
-                        @error('reason') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
+                            placeholder="Provide detailed justification"
+                        ></textarea>
+
+                        @error('reason')
+                            <span class="text-red-600 text-sm">{{ $message }}</span>
+                        @enderror
                     </div>
 
-                    <button type="submit"
-                        
-                        class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
-                        Submit Request
+                    {{-- Submit --}}
+                    <button
+                        type="submit"
+                        wire:loading.attr="disabled"
+                        wire:target="saveRequisition"
+                        class="w-full text-white bg-blue-700 hover:bg-blue-800 disabled:opacity-50 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+                    >
+                        <span wire:loading.remove wire:target="saveRequisition">
+                            {{ $editingRequisitionId
+                                ? 'Update & Resubmit'
+                                : 'Submit Request' }}
+                        </span>
+
+                        <span wire:loading wire:target="saveRequisition">
+                            Processing...
+                        </span>
                     </button>
+
                 </form>
             </div>
         </div>
