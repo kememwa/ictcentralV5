@@ -161,7 +161,7 @@ class ManageRequisition extends Component
         $this->dispatch('close-return-modal');
     }
 
-    
+
 
     public function returnRequisition($id)
     {
@@ -240,20 +240,33 @@ class ManageRequisition extends Component
 
 
     #[Layout('layouts.dashboard')]
+
+    
     public function render()
     {
-        $departmentId = auth()->user()->designation->division->department->id;
+        $user = auth()->user();
 
-        $designationId = auth()->user()->designation->id;
+        $departmentId = $user->designation->division->department->id;
+        $designationId = $user->designation->id;
 
         return view('livewire.manage-requisition', [
             'requisitions' => Requisition::query()
+
+                // Only requisitions belonging to this department
                 ->where('department_id', $departmentId)
-                ->where('hod_approval_status', '0')
+
+                // Only requisitions awaiting approval
+                ->where('status', 'pending')
+
+                // Only requisitions currently at HOD stage
+                ->where('current_approval_stage', 'hod')
+
+                // Only requesters reporting to this HOD designation
                 ->whereHas('requester.designation', function ($query) use ($designationId) {
                     $query->where('reports_to', $designationId);
                 })
 
+                // Search functionality
                 ->when($this->search, function ($query) {
                     $search = '%' . $this->search . '%';
 
