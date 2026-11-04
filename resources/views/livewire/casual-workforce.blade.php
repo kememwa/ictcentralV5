@@ -158,49 +158,29 @@
         {{-- =========================================================
             DESKTOP TABLE (lg and up)
         ========================================================= --}}
-        <div class="hidden lg:block overflow-x-auto">
-
-            <table class="w-full text-xs">
+        <div class="hidden lg:block w-full overflow-x-auto">
+            <table class="w-full table-fixed text-xs">
 
                 <thead class="border-b border-slate-200 bg-slate-50/80">
-
                     <tr class="text-left uppercase tracking-wider text-[10px] font-semibold text-slate-500">
 
-                        <th class="px-4 py-3 whitespace-nowrap">
-                            Requisition Number
-                        </th>
+                        <th class="w-[9%] px-3 py-3">Requisition Number</th>
 
-                        <th class="px-4 py-3 whitespace-nowrap text-center">
-                            Casuals
-                        </th>
+                        <th class="w-[7%] px-3 py-3 text-center">Casuals</th>
 
-                        <th class="px-4 py-3 min-w-[280px]">
-                            Reason
-                        </th>
+                        <th class="w-[22%] px-3 py-3">Reason</th>
 
-                        <th class="px-4 py-3 whitespace-nowrap text-center">
-                            Days
-                        </th>
+                        <th class="w-[7%] px-3 py-3 text-center">Days</th>
 
-                        <th class="px-4 py-3 whitespace-nowrap">
-                            Period
-                        </th>
+                        <th class="w-[15%] px-3 py-3">Period</th>
 
+                        <th class="w-[11%] px-3 py-3">Status</th>
 
-                        <th class="px-4 py-3 whitespace-nowrap">
-                            Status
-                        </th>
+                        <th class="w-[15%] px-3 py-3">Return Reason</th>
 
-                        <th class="px-4 py-3 min-w-[220px]">
-                            Return Reason
-                        </th>
-
-                        <th class="px-4 py-3 text-center whitespace-nowrap">
-                            Actions
-                        </th>
+                        <th class="w-[14%] px-3 py-3 text-center">Actions</th>
 
                     </tr>
-
                 </thead>
 
 
@@ -248,32 +228,29 @@
                             {{-- =================================================
                                 REASON
                             ================================================== --}}
-                            <td class="px-4 py-3">
+                            <td class="px-3 py-3 align-top">
 
                                 @if($req->reason)
 
                                     <div
                                         x-data="{ open: false }"
-                                        class="max-w-xl"
+                                        class="min-w-0"
                                     >
 
                                         <p
-                                            class="text-[11px] leading-relaxed text-slate-600
-                                                break-words whitespace-normal"
+                                            class="text-[11px] leading-relaxed text-slate-600 break-words [overflow-wrap:anywhere]"
                                             :class="open ? '' : 'line-clamp-2'"
                                         >
                                             {{ $req->reason }}
                                         </p>
-
 
                                         @if(mb_strlen($req->reason) > 110)
 
                                             <button
                                                 type="button"
                                                 @click="open = !open"
-                                                class="mt-1 text-[10px] font-medium text-blue-600
-                                                    hover:text-blue-700 hover:underline"
-                                                x-text="open ? 'Show less' : 'Read more'"
+                                                class="mt-1 inline-block text-[10px] font-semibold text-blue-600 hover:text-blue-700 hover:underline"
+                                                x-text="open ? 'Read less' : 'Read more'"
                                             ></button>
 
                                         @endif
@@ -312,18 +289,16 @@
                             ================================================== --}}
                             <td class="px-4 py-3 whitespace-nowrap">
 
-                                <div class="text-slate-700">
+                                <div class="text-slate-700 text-[11px] whitespace-nowrap">
 
                                     <span class="font-medium">
-                                        {{ \Carbon\Carbon::parse($req->start_date)->format('d M Y') }}
+                                        {{ \Carbon\Carbon::parse($req->start_date)->format('d M y') }}
                                     </span>
 
-                                    <span class="mx-1 text-slate-300">
-                                        –
-                                    </span>
+                                    <span class="mx-1 text-slate-300">–</span>
 
                                     <span class="font-medium">
-                                        {{ \Carbon\Carbon::parse($req->end_date)->format('d M Y') }}
+                                        {{ \Carbon\Carbon::parse($req->end_date)->format('d M y') }}
                                     </span>
 
                                 </div>
@@ -368,20 +343,42 @@
 
                             </td>
 
-                            <td class="px-4 py-3 min-w-[220px]">
+                            <td class="px-3 py-3 align-top">
 
                                 @if($req->status === 'returned' && $req->return_to_stage === 'requester')
 
-                                    <p class="text-[11px] leading-relaxed text-rose-700 whitespace-normal">
-                                        {{ $req->return_reason }}
-                                    </p>
+                                    <div
+                                        x-data="{ open: false }"
+                                        class="min-w-0"
+                                    >
 
-                                    <p class="mt-1 text-[10px] text-slate-400">
-                                        Returned by {{ $req->returnedBy?->name ?? 'Approver' }}
-                                        @if($req->returned_at)
-                                            · {{ $req->returned_at->format('d M Y') }}
+                                        <p
+                                            class="text-[11px] leading-relaxed text-rose-700 break-words [overflow-wrap:anywhere]"
+                                            :class="open ? '' : 'line-clamp-2'"
+                                        >
+                                            {{ $req->return_reason }}
+                                        </p>
+
+                                        @if(mb_strlen($req->return_reason ?? '') > 110)
+
+                                            <button
+                                                type="button"
+                                                @click="open = !open"
+                                                class="mt-1 inline-block text-[10px] font-semibold text-rose-600 hover:text-rose-700 hover:underline"
+                                                x-text="open ? 'Read less' : 'Read more'"
+                                            ></button>
+
                                         @endif
-                                    </p>
+
+                                        <p class="mt-1 text-[10px] text-slate-400">
+                                            Returned by {{ $req->returnedBy?->name ?? 'Approver' }}
+
+                                            @if($req->returned_at)
+                                                · {{ $req->returned_at->format('d M Y') }}
+                                            @endif
+                                        </p>
+
+                                    </div>
 
                                 @else
 
