@@ -34,6 +34,7 @@ public function up(): void
             $table->text('reason');
             $table->unsignedInteger('duration');
             $table->uuid('uuid')->unique()->nullable();
+            $table->string('status')->default('pending');
 
             /*
             |--------------------------------------------------------------------------
@@ -97,6 +98,29 @@ public function up(): void
             $table->decimal('sha_rate', 10, 2)->nullable();
 
             $table->decimal('total_amount', 15, 2)->nullable();
+
+            // Workflow tracking
+
+
+            $table->string('current_approval_stage')
+                ->default('hod')
+                ->after('status');
+
+            $table->string('return_to_stage')->nullable();
+            $table->string('returned_from_stage')->nullable();
+
+            $table->foreignId('returned_by')
+                ->nullable()
+                ->constrained('users')
+                ->nullOnDelete();
+
+            $table->timestamp('returned_at')->nullable();
+            $table->text('return_reason')->nullable();
+            $table->timestamp('resubmitted_at')->nullable();
+
+            $table->unsignedInteger('approval_cycle')->default(1);
+
+            $table->timestamp('completed_at')->nullable();
             
 
             $table->timestamps();

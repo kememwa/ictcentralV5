@@ -42,8 +42,40 @@ class Requisition extends Model
         'coo_approval_date',
         'coo_id',
         'hr_id',
-        'uuid'
+        'uuid',
+
+        // Workflow tracking
+        'status',
+        'current_approval_stage',
+        'return_to_stage',
+        'returned_from_stage',
+        'returned_by',
+        'returned_at',
+        'return_reason',
+        'resubmitted_at',
+        'approval_cycle',
+        'completed_at',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'requested_date' => 'date',
+            'start_date' => 'date',
+            'end_date' => 'date',
+
+            'hod_approval_date' => 'datetime',
+            'coo_approval_date' => 'datetime',
+            'hr_rep_approval_date' => 'datetime',
+            'hrm_approval_date' => 'datetime',
+
+            'returned_at' => 'datetime',
+            'resubmitted_at' => 'datetime',
+            'completed_at' => 'datetime',
+
+            'approval_cycle' => 'integer',
+        ];
+    }
 
     // Automatically generate a UUID when creating a new onboarding record
     protected static function booted()
@@ -81,6 +113,18 @@ class Requisition extends Model
     public function casualAssignments()
     {
         return $this->hasMany(Assignment::class, 'requisition_id');
+    }
+
+    // New workflow relationships
+
+    public function approvals(): HasMany
+    {
+        return $this->hasMany(RequisitionApproval::class);
+    }
+
+    public function returnedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'returned_by');
     }
 
 }
