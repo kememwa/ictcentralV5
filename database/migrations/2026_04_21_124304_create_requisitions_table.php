@@ -35,6 +35,7 @@ public function up(): void
             $table->unsignedInteger('duration');
             $table->uuid('uuid')->unique()->nullable();
             $table->string('status')->default('pending');
+            $table->string('current_approval_stage')->default('hod');
 
             /*
             |--------------------------------------------------------------------------
@@ -101,10 +102,6 @@ public function up(): void
 
             // Workflow tracking
 
-
-            $table->string('current_approval_stage')
-                ->default('hod')
-                ->after('status');
 
             $table->string('return_to_stage')->nullable();
             $table->string('returned_from_stage')->nullable();
