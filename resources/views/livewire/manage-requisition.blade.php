@@ -192,11 +192,11 @@
 
                                     <button
                                         type="button"
-                                        wire:click="reject({{ $requisition->id }})"
-                                        wire:confirm="Reject this requisition?"
+                                        wire:click="openReturnModal({{ $requisition->id }})"
+                                        
                                         class="inline-flex items-center gap-1.5 rounded-lg border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-medium text-rose-700 transition hover:bg-rose-100"
                                     >
-                                        Reject
+                                        Return
                                     </button>
 
                                 </div>
@@ -398,6 +398,160 @@
                 {{ $requisitions->links() }}
             </div>
         @endif
+
+
+
+        {{-- HOD Return Requisition Modal --}}
+        @if($returnRequisitionId)
+            <div
+                class="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 p-4"
+                wire:key="return-requisition-modal"
+                wire:keydown.escape="closeReturnModal"
+            >
+                <div
+                    class="w-full max-w-lg overflow-hidden rounded-xl bg-white shadow-xl"
+                    wire:click.stop
+                >
+
+                    {{-- Modal Header --}}
+                    <div class="flex items-center justify-between border-b border-gray-100 px-6 py-4">
+
+                        <div class="flex items-center gap-3">
+
+                            <div class="flex h-10 w-10 items-center justify-center rounded-full bg-amber-100">
+                                <svg
+                                    class="h-5 w-5 text-amber-600"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M3 10h11a5 5 0 0 1 0 10h-1M3 10l4-4M3 10l4 4"
+                                    />
+                                </svg>
+                            </div>
+
+                            <div>
+                                <h3 class="text-base font-semibold text-gray-900">
+                                    Return Requisition
+                                </h3>
+
+                                <p class="text-xs text-gray-500">
+                                    Provide a reason for returning this requisition.
+                                </p>
+                            </div>
+
+                        </div>
+
+                        <button
+                            type="button"
+                            wire:click="closeReturnModal"
+                            class="rounded-lg p-2 text-gray-400 transition hover:bg-gray-100 hover:text-gray-700"
+                        >
+                            <svg
+                                class="h-5 w-5"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12"
+                                />
+                            </svg>
+                        </button>
+
+                    </div>
+
+                    {{-- Modal Body --}}
+                    <form wire:submit.prevent="returnRequisition({{ $returnRequisitionId }})">
+
+                        <div class="space-y-4 px-6 py-5">
+
+                            <div class="rounded-lg border border-amber-200 bg-amber-50 p-3">
+                                <p class="text-sm text-amber-800">
+                                    This requisition will be returned to the requester
+                                    for correction. After resubmission, it will be
+                                    submitted for HOD approval again.
+                                </p>
+                            </div>
+
+                            <div>
+                                <label
+                                    for="returnReason"
+                                    class="mb-2 block text-sm font-medium text-gray-700"
+                                >
+                                    Reason for Return
+                                    <span class="text-rose-500">*</span>
+                                </label>
+
+                                <textarea
+                                    id="returnReason"
+                                    wire:model="returnReason"
+                                    rows="4"
+                                    placeholder="Explain why this requisition is being returned..."
+                                    class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm text-gray-700 placeholder-gray-400 outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-100"
+                                ></textarea>
+
+                                @error('returnReason')
+                                    <p class="mt-1 text-xs text-rose-600">
+                                        {{ $message }}
+                                    </p>
+                                @enderror
+
+                                <p class="mt-1 text-xs text-gray-400">
+                                    Minimum 5 characters, maximum 2,000 characters.
+                                </p>
+                            </div>
+
+                        </div>
+
+                        {{-- Modal Footer --}}
+                        <div class="flex justify-end gap-3 border-t border-gray-100 bg-gray-50 px-6 py-4">
+
+                            <button
+                                type="button"
+                                wire:click="closeReturnModal"
+                                wire:loading.attr="disabled"
+                                class="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100 disabled:opacity-50"
+                            >
+                                Cancel
+                            </button>
+
+                            <button
+                                type="submit"
+                                wire:loading.attr="disabled"
+                                wire:target="returnRequisition"
+                                class="inline-flex items-center gap-2 rounded-lg bg-amber-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-amber-700 disabled:cursor-not-allowed disabled:opacity-50"
+                            >
+                                <span
+                                    wire:loading.remove
+                                    wire:target="returnRequisition"
+                                >
+                                    Return Requisition
+                                </span>
+
+                                <span
+                                    wire:loading
+                                    wire:target="returnRequisition"
+                                >
+                                    Returning...
+                                </span>
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+        @endif
+
 
 
     </x-data-card>

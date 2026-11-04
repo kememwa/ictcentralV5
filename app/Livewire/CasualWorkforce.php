@@ -14,6 +14,8 @@ use App\Mail\HodApproveRequisition;
 use Illuminate\Support\Facades\Log;
 use App\Models\DocumentSequence;
 use Illuminate\Support\Facades\DB;
+use App\Models\RequisitionApproval;
+
 
 class CasualWorkforce extends Component
 {
@@ -97,9 +99,15 @@ class CasualWorkforce extends Component
         $this->resetValidation();
     }
 
+    
     public function requisition()
     {
-        $departmentId = auth()->user()->designation->division->department->id;
+        $requester = auth()->user();
+
+        $departmentId = $requester->designation
+            ->division
+            ->department
+            ->id;
 
         $this->calculateDuration();
         $this->validate();
@@ -117,51 +125,59 @@ class CasualWorkforce extends Component
 
         try {
 
-            $requester = auth()->user();
-
+            // Identify HOD using the requester's reporting designation.
             $reportingDesignation = $requester->designation?->reportsTo;
+
+            if (!$reportingDesignation) {
+                throw new \RuntimeException(
+                    'No reporting designation found for the requester.'
+                );
+            }
 
             $lineManagers = User::where(
                 'designation_id',
-                $reportingDesignation?->id
+                $reportingDesignation->id
             )
             ->whereNotNull('email')
             ->get();
 
+            if ($lineManagers->isEmpty()) {
+                throw new \RuntimeException(
+                    'No HOD users with email addresses were found.'
+                );
+            }
+
             /*
             |--------------------------------------------------------------------------
-            | Create Requisition + Generate Requisition Number
+            | Create Requisition and Initial Approval Record
             |--------------------------------------------------------------------------
             */
 
-            $requisition = DB::transaction(function () use ($departmentId) {
+            $requisition = DB::transaction(function () use ($departmentId, $lineManagers) {
 
-                // Get and lock the requisition sequence
+                // Lock the requisition sequence.
                 $sequence = DocumentSequence::where('name', 'requisition')
                     ->lockForUpdate()
                     ->first();
 
-                // Create the sequence if it does not exist
                 if (!$sequence) {
                     $sequence = DocumentSequence::create([
                         'name' => 'requisition',
                         'current_number' => 0,
                     ]);
 
-                    // Lock the newly-created sequence row
                     $sequence = DocumentSequence::where('id', $sequence->id)
                         ->lockForUpdate()
                         ->first();
                 }
 
-                // Increment the sequence
+                // Increment sequence.
                 $sequence->increment('current_number');
 
-                // Get the new number
                 $number = $sequence->current_number;
 
-                // Create the requisition
-                return Requisition::create([
+                // Create requisition.
+                $requisition = Requisition::create([
                     'requested_by' => auth()->id(),
                     'department_id' => $departmentId,
                     'requested_date' => Carbon::now()->toDateString(),
@@ -171,33 +187,49 @@ class CasualWorkforce extends Component
                     'reason' => $this->reason,
                     'duration' => $this->duration,
 
-                    // REQ-000001, REQ-000002, REQ-000003...
                     'ref_number' => 'REQ-' . str_pad(
                         $number,
                         6,
                         '0',
                         STR_PAD_LEFT
                     ),
+
+                    // Workflow initialization.
+                    'status' => 'pending',
+                    'current_approval_stage' => 'hod',
+                    'approval_cycle' => 1,
+
+                    // Existing HOD approval fields.
+                    'hod_approval_status' => false,
                 ]);
+
+                // Create initial HOD approval-history record.
+                RequisitionApproval::create([
+                    'requisition_id' => $requisition->id,
+                    'approver_id' => null,
+                    'approval_stage' => 'hod',
+                    'status' => 'pending',
+                    'approval_cycle' => 1,
+                ]);
+
+                return $requisition;
             });
 
             /*
             |--------------------------------------------------------------------------
-            | Send notification to all reporting managers
+            | Notify HOD
             |--------------------------------------------------------------------------
             */
 
             $emails = $lineManagers->pluck('email')->toArray();
 
-            if (!empty($emails)) {
-                Mail::to($emails[0])
-                    ->cc(array_slice($emails, 1))
-                    ->send(new HodApproveRequisition($requisition));
-            }
+            Mail::to($emails[0])
+                ->cc(array_slice($emails, 1))
+                ->send(new HodApproveRequisition($requisition));
 
             /*
             |--------------------------------------------------------------------------
-            | Success notification
+            | Success Notification
             |--------------------------------------------------------------------------
             */
 
@@ -205,13 +237,12 @@ class CasualWorkforce extends Component
                 'notify',
                 type: 'success',
                 title: 'Requisition Submitted',
-                message: 'Requisition ' . $requisition->ref_number . ' has been submitted for approval'
+                message: 'Requisition ' . $requisition->ref_number .
+                    ' has been submitted for approval'
             );
 
-            // Close modal
             $this->dispatch('close-casual-modal');
 
-            // Reset form
             $this->reset([
                 'start_date',
                 'end_date',
@@ -225,9 +256,11 @@ class CasualWorkforce extends Component
 
         } catch (\Throwable $e) {
 
-            \Log::error('Failed to create requisition', [
+            Log::error('Failed to create requisition', [
                 'user_id' => auth()->id(),
                 'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
             ]);
 
             $this->dispatch(
@@ -236,7 +269,7 @@ class CasualWorkforce extends Component
                 title: 'Submission Failed',
                 message: 'Unable to submit the requisition. Please try again.'
             );
-        } 
+        }
     }
 
     public function pettyCash()

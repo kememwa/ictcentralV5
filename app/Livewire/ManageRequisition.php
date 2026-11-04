@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\CooApproveRequisition;
 use Illuminate\Support\Facades\Log;
 use Livewire\WithPagination;
+use Illuminate\Support\Facades\DB;
 
 
 
@@ -20,6 +21,9 @@ class ManageRequisition extends Component
 
     public $search = '';
     public $actionFilter = '';
+
+    public $returnRequisitionId;
+    public $returnReason;
 
     public function updatedSearch()
     {
@@ -32,27 +36,63 @@ class ManageRequisition extends Component
     }
 
 
+    
     public function approveRequest($id)
     {
         try {
+            $requisition = DB::transaction(function () use ($id) {
 
-            $requisition = Requisition::findOrFail($id);
+                $req = Requisition::whereKey($id)
+                    ->lockForUpdate()
+                    ->firstOrFail();
 
-            // Approve requisition as HOD
-            $requisition->update([
-                'hod_approval_status' => '1',
-                'hod_id' => auth()->user()->id,
-                'hod_approval_date' => now(),
-            ]);
+                // Ensure this requisition is awaiting HOD approval.
+                if (
+                    $req->status !== 'pending' ||
+                    $req->current_approval_stage !== 'hod'
+                ) {
+                    throw new \RuntimeException(
+                        'This requisition is not awaiting HOD approval.'
+                    );
+                }
 
-            // Find COO and COO Delegate
+                $approval = $req->approvals()
+                    ->where('approval_stage', 'hod')
+                    ->where('approval_cycle', $req->approval_cycle)
+                    ->where('status', 'pending')
+                    ->lockForUpdate()
+                    ->firstOrFail();
+
+                $approval->update([
+                    'approver_id' => auth()->id(),
+                    'status' => 'approved',
+                    'acted_at' => now(),
+                ]);
+
+                $req->update([
+                    'hod_approval_status' => true,
+                    'hod_id' => auth()->id(),
+                    'hod_approval_date' => now(),
+                    'current_approval_stage' => 'coo',
+                ]);
+
+                // Create COO approval record.
+                $req->approvals()->create([
+                    'approval_stage' => 'coo',
+                    'status' => 'pending',
+                    'approval_cycle' => $req->approval_cycle,
+                ]);
+
+                return $req;
+            });
+
+            // Notify COO approvers.
             $cooApprovers = User::whereHas('roles', function ($query) {
                 $query->whereIn('name', ['coo', 'coo delegate']);
             })
             ->whereNotNull('email')
             ->get();
 
-            // Send email to COO / COO Delegate
             $emails = $cooApprovers->pluck('email')->toArray();
 
             if (!empty($emails)) {
@@ -61,7 +101,6 @@ class ManageRequisition extends Component
                     ->send(new CooApproveRequisition($requisition));
             }
 
-            // Success notification
             $this->dispatch(
                 'notify',
                 type: 'success',
@@ -83,7 +122,9 @@ class ManageRequisition extends Component
                 'notify',
                 type: 'error',
                 title: 'Approval Failed',
-                message: 'The requisition could not be approved. Please contact Admin.'
+                message: $e instanceof \RuntimeException
+                    ? $e->getMessage()
+                    : 'The requisition could not be approved. Please contact Admin.'
             );
         }
     }
@@ -97,6 +138,105 @@ class ManageRequisition extends Component
                 message: "Requisition rejected successfully."
     );
     }
+
+    public function openReturnModal($id)
+    {
+        $this->resetValidation();
+
+        $this->returnRequisitionId = $id;
+        $this->returnReason = '';
+
+        $this->dispatch('open-return-modal');
+    }
+
+    public function closeReturnModal()
+    {
+        $this->reset([
+            'returnRequisitionId',
+            'returnReason',
+        ]);
+
+        $this->resetValidation();
+
+        $this->dispatch('close-return-modal');
+    }
+
+    
+
+    public function returnRequisition($id)
+    {
+        $this->validate([
+            'returnReason' => 'required|string|min:5|max:2000',
+        ]);
+
+        try {
+            DB::transaction(function () use ($id) {
+
+                $req = Requisition::whereKey($id)
+                    ->lockForUpdate()
+                    ->firstOrFail();
+
+                if (
+                    $req->status !== 'pending' ||
+                    $req->current_approval_stage !== 'hod'
+                ) {
+                    throw new \RuntimeException(
+                        'This requisition is not awaiting HOD review.'
+                    );
+                }
+
+                $approval = $req->approvals()
+                    ->where('approval_stage', 'hod')
+                    ->where('approval_cycle', $req->approval_cycle)
+                    ->where('status', 'pending')
+                    ->lockForUpdate()
+                    ->firstOrFail();
+
+                $approval->update([
+                    'approver_id' => auth()->id(),
+                    'status' => 'returned',
+                    'comments' => $this->returnReason,
+                    'acted_at' => now(),
+                ]);
+
+                $req->update([
+                    'status' => 'returned',
+                    'returned_by' => auth()->id(),
+                    'returned_at' => now(),
+                    'return_reason' => $this->returnReason,
+                    'returned_from_stage' => 'hod',
+                    'return_to_stage' => 'hod',
+                ]);
+            });
+
+            $this->dispatch(
+                'notify',
+                type: 'success',
+                title: 'Requisition Returned',
+                message: 'The requisition has been returned to the requester.'
+            );
+
+            $this->reset(['returnRequisitionId', 'returnReason']);
+
+        } catch (\Throwable $e) {
+
+            Log::error('HOD requisition return failed', [
+                'requisition_id' => $id,
+                'user_id' => auth()->id(),
+                'error' => $e->getMessage(),
+            ]);
+
+            $this->dispatch(
+                'notify',
+                type: 'error',
+                title: 'Return Failed',
+                message: $e instanceof \RuntimeException
+                    ? $e->getMessage()
+                    : 'Unable to return the requisition. Please try again.'
+            );
+        }
+    }
+
 
 
     #[Layout('layouts.dashboard')]
