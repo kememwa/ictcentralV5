@@ -17,6 +17,7 @@ use App\Models\RequisitionApproval;
 use Illuminate\Support\Facades\DB;
 
 
+
 class HrCasualManagement extends Component
 {
     use WithPagination;
@@ -36,6 +37,151 @@ class HrCasualManagement extends Component
     public $searchCasual = '';
     public $actionFilter = '';
     // For assignment modal
+
+    public $hrReturnRequisitionId = null;
+    public $hrReturnReason = '';
+
+    public function openHrReturnModal($id)
+    {
+        abort_unless(auth()->user()->hasRole('Hr'), 403);
+
+        $requisition = Requisition::findOrFail($id);
+
+        if (
+            $requisition->status !== 'pending' ||
+            $requisition->current_approval_stage !== 'hr_rep'
+        ) {
+            $this->dispatch(
+                'notify',
+                type: 'error',
+                title: 'Action unavailable',
+                message: 'This requisition is no longer awaiting HR action.'
+            );
+
+            return;
+        }
+
+        $this->hrReturnRequisitionId = $requisition->id;
+        $this->hrReturnReason = '';
+
+        $this->resetValidation('hrReturnReason');
+
+        $this->dispatch('open-hr-return-modal');
+    }
+
+    public function returnHrRequisition()
+    {
+        $this->validate([
+            'hrReturnReason' => ['required', 'string', 'min:5', 'max:2000'],
+        ], [
+            'hrReturnReason.required' => 'Please provide a reason for returning this requisition.',
+            'hrReturnReason.min' => 'The return reason must be at least 5 characters.',
+        ]);
+
+        abort_unless(auth()->user()->hasRole('Hr'), 403);
+
+        try {
+            $user = auth()->user();
+
+            DB::transaction(function () use ($user) {
+
+                $requisition = Requisition::whereKey(
+                    $this->hrReturnRequisitionId
+                )
+                    ->lockForUpdate()
+                    ->firstOrFail();
+
+                // Confirm that HR is the current approval stage.
+                if (
+                    $requisition->status !== 'pending' ||
+                    $requisition->current_approval_stage !== 'hr_rep'
+                ) {
+                    throw new \RuntimeException(
+                        'This requisition is no longer awaiting HR action.'
+                    );
+                }
+
+                // Find the pending HR Representative approval record.
+                $approval = RequisitionApproval::where(
+                    'requisition_id',
+                    $requisition->id
+                )
+                    ->where('approval_stage', 'hr_rep')
+                    ->where('approval_cycle', $requisition->approval_cycle)
+                    ->where('status', 'pending')
+                    ->lockForUpdate()
+                    ->first();
+
+                /*
+                * If HRM previously returned the requisition, the earlier
+                * HR Representative approval may already be marked approved.
+                * Create a fresh history record for this new HR action.
+                */
+                if (!$approval) {
+                    $approval = RequisitionApproval::create([
+                        'requisition_id' => $requisition->id,
+                        'approver_id' => null,
+                        'approval_stage' => 'hr_rep',
+                        'status' => 'pending',
+                        'approval_cycle' => $requisition->approval_cycle,
+                    ]);
+                }
+
+                // Record the HR Representative's return action.
+                $approval->update([
+                    'status' => 'returned',
+                    'approver_id' => $user->id,
+                    'comments' => $this->hrReturnReason,
+                    'acted_at' => now(),
+                ]);
+
+                // Return the requisition to its requester.
+                $requisition->update([
+                    'status' => 'returned',
+
+                    'current_approval_stage' => 'requester',
+
+                    'return_to_stage' => 'requester',
+                    'returned_from_stage' => 'hr_rep',
+
+                    'returned_by' => $user->id,
+                    'returned_at' => now(),
+                    'return_reason' => $this->hrReturnReason,
+                ]);
+            });
+
+            $this->reset([
+                'hrReturnRequisitionId',
+                'hrReturnReason',
+            ]);
+
+            $this->dispatch('close-hr-return-modal');
+
+            $this->dispatch(
+                'notify',
+                type: 'success',
+                title: 'Requisition Returned',
+                message: 'The requisition has been returned to the requester successfully.'
+            );
+
+        } catch (\Throwable $e) {
+
+            Log::error('HR Representative requisition return failed', [
+                'requisition_id' => $this->hrReturnRequisitionId,
+                'user_id' => auth()->id(),
+                'error' => $e->getMessage(),
+            ]);
+
+            $this->dispatch(
+                'notify',
+                type: 'error',
+                title: 'Return Failed',
+                message: $e instanceof \RuntimeException
+                    ? $e->getMessage()
+                    : 'An error occurred while returning the requisition.'
+            );
+        }
+    }
 
     public function updatedhrSearch()
     {
