@@ -1,8 +1,8 @@
 
-@props(['device', 'req' => null])
+@props(['req'])
 
 @php
-    $requisition = $req ?? $device;
+    $requisition = $req ;
 @endphp
 
 <div
@@ -71,7 +71,7 @@
             {{-- APPROVE --}}
             <button
                 type="button"
-                wire:click="approveHrm({{ $requisition->id }})"
+                wire:click="submitRate({{ $requisition->id }})"
                 wire:confirm="Are you sure you want to approve this requisition?"
                 @click="moreOpen = false"
                 class="flex w-full items-center gap-3 px-3 py-2.5
@@ -83,13 +83,13 @@
                         d="M16.704 4.884a1 1 0 01.012 1.414l-8.25 8.25a1 1 0 01-1.414 0l-3.75-3.75a1 1 0 011.414-1.414l3.043 3.043 7.543-7.543a1 1 0 011.402 0z"
                         clip-rule="evenodd"/>
                 </svg>
-                <span>Approve</span>
+                <span>Submit to HRM</span>
             </button>
 
             {{-- RETURN --}}
             <button
                 type="button"
-                wire:click="openHrmReturnModal({{ $requisition->id }})"
+                wire:click="openHrReturnModal({{ $requisition->id }})"
                 @click="moreOpen = false"
                 class="flex w-full items-center gap-3 px-3 py-2.5
                     text-sm text-amber-700 hover:bg-amber-50 transition"
@@ -124,20 +124,28 @@
             <div class="my-1 border-t border-gray-100"></div>
 
             {{-- EDIT & RESUBMIT --}}
-            <button
-                type="button"
-                wire:click="loadRequisition({{ $requisition->id }})"
-                @click="moreOpen = false"
-                class="flex w-full items-center gap-3 px-3 py-2.5
-                    text-sm text-blue-700 hover:bg-blue-50 transition"
-            >
-                <svg class="w-4 h-4 shrink-0" viewBox="0 0 20 20"
-                    fill="currentColor">
-                    <path d="M13.586 3.586a2 2 0 012.828 2.828l-9.9 9.9-3.536.707.707-3.536 9.9-9.9z"/>
-                    <path d="M12.172 5l2.828 2.828"/>
-                </svg>
-                <span>Edit &amp; Resubmit</span>
-            </button>
+            @if(
+                $requisition->status === 'pending' &&
+                $requisition->current_approval_stage === 'hr_rep' &&
+                $requisition->return_to_stage === 'hr_rep' &&
+                $requisition->returned_from_stage === 'hrm'
+            )
+                {{-- EDIT & RESUBMIT --}}
+                <button
+                    type="button"
+                    wire:click="loadRequisition({{ $requisition->id }})"
+                    @click="moreOpen = false"
+                    class="flex w-full items-center gap-3 px-3 py-2.5
+                        text-sm text-blue-700 hover:bg-blue-50 transition"
+                >
+                    <svg class="w-4 h-4 shrink-0" viewBox="0 0 20 20"
+                        fill="currentColor">
+                        <path d="M13.586 3.586a2 2 0 012.828 2.828l-9.9 9.9-3.536.707.707-3.536 9.9-9.9z"/>
+                        <path d="M12.172 5l2.828 2.828"/>
+                    </svg>
+                    <span>Edit &amp; Resubmit</span>
+                </button>
+            @endif
 
         </div>
     </template>

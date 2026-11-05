@@ -13,6 +13,9 @@ use App\Mail\HrmApproveRequisition;
 use Illuminate\Support\Facades\Log;
 use App\Models\User;
 use App\Mail\CasualApproved;
+use App\Models\RequisitionApproval;
+use Illuminate\Support\Facades\DB;
+
 
 class HrCasualManagement extends Component
 {
@@ -318,89 +321,175 @@ class HrCasualManagement extends Component
             "shaRates.$id" => 'required|numeric|min:0',
         ]);
 
-        try{
+        try {
 
-            $req = Requisition::findOrFail($id);
+            $user = auth()->user();
+
+            // Confirm that the user is an HR Representative
+            $isHr = $user->roles()
+                ->where('name', 'hr')
+                ->exists();
+
+            if (!$isHr) {
+                $this->dispatch(
+                    'notify',
+                    type: 'error',
+                    title: 'Unauthorized',
+                    message: 'You are not authorized to submit requisition rates.'
+                );
+
+                return;
+            }
 
             $dailyRate = (float) $this->rates[$id];
             $nssfRate = (float) $this->nssfRates[$id];
             $shaRate = (float) $this->shaRates[$id];
-            $casuals = (int) $req->no_of_casuals;
-            $duration = (int) $req->duration;
 
-            // Gross amount before deductions
-            $grossAmount = $dailyRate * $duration * $casuals;
+            // Approve the HR Representative stage and move to HRM
+            $req = DB::transaction(function () use (
+                $id,
+                $user,
+                $dailyRate,
+                $nssfRate,
+                $shaRate
+            ) {
 
-            // NSSF + SHA deductions
-            $deductions = ($nssfRate + $shaRate) * $casuals;
+                $req = Requisition::whereKey($id)
+                    ->lockForUpdate()
+                    ->firstOrFail();
 
-            // Final amount
-            $totalAmount = $grossAmount - $deductions;
+                // Confirm the requisition is awaiting HR Representative action
+                if (
+                    $req->status !== 'pending' ||
+                    $req->current_approval_stage !== 'hr_rep'
+                ) {
+                    throw new \Exception(
+                        'This requisition is no longer awaiting HR Representative action.'
+                    );
+                }
 
-            $req->update([
-                'daily_rate' => $dailyRate,
-                'nssf_rate' => $nssfRate,
-                'sha_rate' => $shaRate,
-                'hr_approval_status' => true,
-                'hr_approval_date' => now(),
-                'hr_rep_id' => auth()->user()->id,
-                'total_amount' => $totalAmount,
-            ]);
+                // Get the pending HR Representative approval record
+                $approval = RequisitionApproval::where(
+                    'requisition_id',
+                    $req->id
+                )
+                    ->where('approval_stage', 'hr_rep')
+                    ->where('approval_cycle', $req->approval_cycle)
+                    ->where('status', 'pending')
+                    ->lockForUpdate()
+                    ->firstOrFail();
 
-            unset($this->rates[$id]);
+                $casuals = (int) $req->no_of_casuals;
+                $duration = (int) $req->duration;
 
-            // send notification to HRM for approval
+                // Calculate gross amount
+                $grossAmount = $dailyRate * $duration * $casuals;
+
+                // Calculate deductions
+                $deductions = ($nssfRate + $shaRate) * $casuals;
+
+                // Calculate final amount
+                $totalAmount = $grossAmount - $deductions;
+
+                // Update HR Representative approval history
+                $approval->update([
+                    'approver_id' => $user->id,
+                    'status' => 'approved',
+                    'acted_at' => now(),
+                ]);
+
+                // Update requisition details
+                $req->update([
+                    'daily_rate' => $dailyRate,
+                    'nssf_rate' => $nssfRate,
+                    'sha_rate' => $shaRate,
+                    'total_amount' => $totalAmount,
+
+                    'hr_approval_status' => true,
+                    'hr_approval_date' => now(),
+                    'hr_rep_id' => $user->id,
+
+                    // Move to HRM
+                    'current_approval_stage' => 'hrm',
+                ]);
+
+                // Create pending HRM approval history
+                RequisitionApproval::create([
+                    'requisition_id' => $req->id,
+                    'approver_id' => null,
+                    'approval_stage' => 'hrm',
+                    'status' => 'pending',
+                    'approval_cycle' => $req->approval_cycle,
+                ]);
+
+                return $req->fresh();
+            });
+
+            unset(
+                $this->rates[$id],
+                $this->nssfRates[$id],
+                $this->shaRates[$id]
+            );
+
+            // Find HRM approvers
             $hrmApprovers = User::whereHas('roles', function ($query) {
                 $query->where('name', 'hrm');
             })
-            ->whereNotNull('email')
-            ->get();
+                ->whereNotNull('email')
+                ->get();
 
-            $hrm_delegate = User::whereHas('roles', function ($query) {
+            // Find HRM delegates
+            $hrmDelegates = User::whereHas('roles', function ($query) {
                 $query->where('name', 'hrm delegate');
             })
-            ->whereNotNull('email')
-            ->get();
+                ->whereNotNull('email')
+                ->get();
 
-            // Get HR email addresses
-            $hrm_emails = $hrmApprovers->pluck('email')->toArray();
-            $hrm_delegate_emails = $hrm_delegate->pluck('email')->toArray();
+            $hrmEmails = $hrmApprovers->pluck('email')
+                ->merge($hrmDelegates->pluck('email'))
+                ->unique()
+                ->values()
+                ->all();
 
-            // Send notification to HR
-            if (!empty($hrm_emails)) {
-                Mail::to($hrm_emails)
-                    ->cc($hrm_delegate_emails)
+            // Notify HRM
+            if (!empty($hrmEmails)) {
+
+                Mail::to($hrmEmails[0])
+                    ->cc(array_slice($hrmEmails, 1))
                     ->queue(new HrmApproveRequisition($req));
+
+            } else {
+
+                Log::warning('No HRM approvers found for requisition notification.', [
+                    'requisition_id' => $id,
+                ]);
             }
 
-            // Flash message for Livewire UI
             $this->dispatch(
                 'notify',
                 type: 'success',
-                title: 'Rate Submitted',
-                message: 'Daily rate submitted successfully.'
+                title: 'Rates Submitted',
+                message: 'Rates submitted successfully. The requisition has been forwarded to HRM.'
             );
 
-        }catch(\Throwable $e){
+        } catch (\Throwable $e) {
 
-            Log::error('COO requisition approval failed', [
-            'requisition_id' => $id,
-            'user_id' => auth()->id(),
-            'error' => $e->getMessage(),
-            'file' => $e->getFile(),
-            'line' => $e->getLine(),
+            Log::error('HR Representative rate submission failed', [
+                'requisition_id' => $id,
+                'user_id' => auth()->id(),
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
             ]);
 
             $this->dispatch(
                 'notify',
                 type: 'error',
-                title: 'Approval Failed',
-                message: 'The requisition could not be approved. Please try again.'
+                title: 'Submission Failed',
+                message: 'The requisition could not be submitted. Please try again.'
             );
         }
-        
     }
-
 
     public function setView($view)
     {  
