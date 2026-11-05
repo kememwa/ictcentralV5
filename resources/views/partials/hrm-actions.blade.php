@@ -71,7 +71,7 @@
             {{-- APPROVE --}}
             <button
                 type="button"
-                wire:click="submitRate({{ $requisition->id }})"
+                wire:click="approveHrm({{ $requisition->id }})"
                 wire:confirm="Are you sure you want to approve this requisition?"
                 @click="moreOpen = false"
                 class="flex w-full items-center gap-3 px-3 py-2.5
@@ -89,7 +89,7 @@
             {{-- RETURN --}}
             <button
                 type="button"
-                wire:click="openHrReturnModal({{ $requisition->id }})"
+                wire:click="openHrmReturnModal({{ $requisition->id }})"
                 @click="moreOpen = false"
                 class="flex w-full items-center gap-3 px-3 py-2.5
                     text-sm text-amber-700 hover:bg-amber-50 transition"
@@ -122,30 +122,6 @@
             </button>
 
             <div class="my-1 border-t border-gray-100"></div>
-
-            {{-- EDIT & RESUBMIT --}}
-            @if(
-                $requisition->status === 'pending' &&
-                $requisition->current_approval_stage === 'hr_rep' &&
-                $requisition->return_to_stage === 'hr_rep' &&
-                $requisition->returned_from_stage === 'hrm'
-            )
-                {{-- EDIT & RESUBMIT --}}
-                <button
-                    type="button"
-                    wire:click="loadRequisition({{ $requisition->id }})"
-                    @click="moreOpen = false"
-                    class="flex w-full items-center gap-3 px-3 py-2.5
-                        text-sm text-blue-700 hover:bg-blue-50 transition"
-                >
-                    <svg class="w-4 h-4 shrink-0" viewBox="0 0 20 20"
-                        fill="currentColor">
-                        <path d="M13.586 3.586a2 2 0 012.828 2.828l-9.9 9.9-3.536.707.707-3.536 9.9-9.9z"/>
-                        <path d="M12.172 5l2.828 2.828"/>
-                    </svg>
-                    <span>Edit &amp; Resubmit</span>
-                </button>
-            @endif
 
         </div>
     </template>

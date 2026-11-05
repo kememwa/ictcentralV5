@@ -524,17 +524,22 @@ class HrCasualManagement extends Component
             ->where('hod_approval_status', '1')
             ->where('coo_approval_status', '1')
 
+            // Pending HR Representative action
             ->when($this->view === 'pending', function ($q) {
-                $q->whereNull('hr_approval_status');
+                $q->where('status', 'pending')
+                ->where('current_approval_stage', 'hr_rep');
             })
 
+            // Approved by HRM, awaiting casual assignment
             ->when($this->view === 'hrm_approved', function ($q) {
-                $q->where('hrm_approval_status', 'approved')
+                $q->where('status', 'approved')
+                ->where('hrm_approval_status', 'approved')
                 ->where('casual_assignment_status', false);
             })
 
+            // Rejected requisitions
             ->when($this->view === 'rejected', function ($q) {
-                $q->where('hrm_approval_status', 'rejected');
+                $q->where('status', 'rejected');
             })
 
             // Search

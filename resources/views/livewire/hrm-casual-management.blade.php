@@ -455,6 +455,105 @@
             {{ $hrm_requisitions->onEachSide(0)->links() }}
         </div>
 
+        {{-- HRM RETURN MODAL --}}
+        <div
+            x-data="{ open: false }"
+            @open-hrm-return-modal.window="open = true"
+            @close-hrm-return-modal.window="open = false"
+            @keydown.escape.window="open = false"
+            x-show="open"
+            x-cloak
+            class="fixed inset-0 z-[10000] flex items-center justify-center
+                bg-black/50 px-4 py-6"
+        >
+            <div
+                @click.outside="open = false"
+                x-transition
+                class="w-full max-w-lg rounded-xl bg-white shadow-xl"
+            >
+
+                {{-- HEADER --}}
+                <div class="flex items-center justify-between border-b border-gray-100 px-5 py-4">
+                    <div>
+                        <h3 class="text-base font-semibold text-gray-800">
+                            Return Requisition
+                        </h3>
+                        <p class="mt-1 text-xs text-gray-500">
+                            Return this requisition to the HR Representative for corrections.
+                        </p>
+                    </div>
+
+                    <button
+                        type="button"
+                        @click="open = false"
+                        class="rounded-md p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-700"
+                    >
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+
+                {{-- BODY --}}
+                <form wire:submit.prevent="returnHrm" class="p-5">
+
+                    <div>
+                        <label class="mb-2 block text-sm font-medium text-gray-700">
+                            Reason for returning
+                            <span class="text-red-500">*</span>
+                        </label>
+
+                        <textarea
+                            wire:model.defer="hrmReturnReason"
+                            rows="4"
+                            placeholder="Explain why this requisition is being returned..."
+                            class="w-full rounded-lg border border-gray-300 px-3 py-2.5
+                                text-sm text-gray-700 focus:border-amber-500
+                                focus:ring-amber-500"
+                        ></textarea>
+
+                        @error('hrmReturnReason')
+                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    {{-- FOOTER --}}
+                    <div class="mt-5 flex justify-end gap-2">
+
+                        <button
+                            type="button"
+                            @click="open = false"
+                            class="rounded-lg border border-gray-300 px-4 py-2
+                                text-sm font-medium text-gray-700 hover:bg-gray-50"
+                        >
+                            Cancel
+                        </button>
+
+                        <button
+                            type="submit"
+                            wire:loading.attr="disabled"
+                            wire:target="returnHrm"
+                            class="rounded-lg bg-amber-600 px-4 py-2
+                                text-sm font-medium text-white hover:bg-amber-700
+                                disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                            <span wire:loading.remove wire:target="returnHrm">
+                                Return to HR
+                            </span>
+
+                            <span wire:loading wire:target="returnHrm">
+                                Returning...
+                            </span>
+                        </button>
+
+                    </div>
+                </form>
+            </div>
+        </div>
+
     </x-data-card>
+
 
 </div>

@@ -35,7 +35,7 @@ public function up(): void
             $table->unsignedInteger('duration');
             $table->uuid('uuid')->unique()->nullable();
             $table->string('status')->default('pending');
-            $table->string('current_approval_stage')->default('hod');
+            $table->string('current_approval_stage')->default('hod')->nullable();
 
             /*
             |--------------------------------------------------------------------------
@@ -67,7 +67,7 @@ public function up(): void
             | HRM Approval
             |--------------------------------------------------------------------------
             */
-            $table->enum('hrm_approval_status', ['approved', 'rejected', 'pending'])->default('pending');
+            $table->enum('hrm_approval_status', ['approved', 'rejected', 'pending', 'returned'])->default('pending');
             $table->foreignId('hrm_id')
                 ->nullable()
                 ->constrained('users')
