@@ -225,14 +225,13 @@
                                         </svg>
                                     </button>
 
-                                    {{-- Reject --}}
+                                    {{-- Return to requester --}}
                                     <button
                                         type="button"
-                                        wire:click="rejectCoo({{ $req->id }})"
-                                        wire:confirm="Reject this requisition?"
-                                        title="Reject"
-                                        aria-label="Reject requisition"
-                                        class="p-1.5 rounded-md text-red-600 hover:bg-red-50 hover:text-red-700 transition"
+                                        wire:click="openCooReturnModal({{ $req->id }})"
+                                        title="Return to requester"
+                                        aria-label="Return requisition to requester"
+                                        class="p-1.5 rounded-md text-amber-600 hover:bg-amber-50 hover:text-amber-700 transition"
                                     >
                                         <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                                             <path fill-rule="evenodd"
@@ -520,6 +519,91 @@
             </div>
 
         @endif
+
+        
+        {{-- COO Return Requisition Modal --}}
+        <div
+            x-data="{ open: false }"
+            x-show="open"
+            x-cloak
+            x-transition
+            @open-coo-return-modal.window="open = true"
+            @close-coo-return-modal.window="open = false"
+            @keydown.escape.window="open = false"
+            class="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4"
+        >
+            <div
+                @click.away="open = false"
+                class="w-full max-w-md rounded-lg bg-white shadow-xl"
+            >
+                <div class="flex items-center justify-between border-b p-4">
+                    <h3 class="text-lg font-semibold text-slate-800">
+                        Return Requisition
+                    </h3>
+
+                    <button
+                        type="button"
+                        @click="open = false"
+                        class="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100"
+                    >
+                        ✕
+                    </button>
+                </div>
+
+                <form wire:submit.prevent="returnCoo" class="space-y-4 p-5">
+
+                    <p class="text-sm text-slate-600">
+                        You are returning this requisition to the requester for
+                        corrections. Please provide a reason.
+                    </p>
+
+                    <div>
+                        <label class="mb-1 block text-sm font-medium text-gray-900">
+                            Reason for Return
+                        </label>
+
+                        <textarea
+                            wire:model.defer="cooReturnReason"
+                            rows="4"
+                            maxlength="2000"
+                            placeholder="Explain why this requisition is being returned..."
+                            class="w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm focus:border-blue-500 focus:ring-blue-500"
+                        ></textarea>
+
+                        @error('cooReturnReason')
+                            <span class="text-sm text-red-600">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <div class="flex justify-end gap-2 border-t pt-4">
+                        <button
+                            type="button"
+                            @click="open = false"
+                            class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                        >
+                            Cancel
+                        </button>
+
+                        <button
+                            type="submit"
+                            wire:loading.attr="disabled"
+                            wire:target="returnCoo"
+                            class="rounded-lg bg-amber-600 px-4 py-2 text-sm font-medium text-white hover:bg-amber-700 disabled:opacity-50"
+                        >
+                            <span wire:loading.remove wire:target="returnCoo">
+                                Return to Requester
+                            </span>
+
+                            <span wire:loading wire:target="returnCoo">
+                                Processing...
+                            </span>
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+
 
     </x-data-card>
 
