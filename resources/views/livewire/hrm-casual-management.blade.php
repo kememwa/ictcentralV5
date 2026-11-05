@@ -55,211 +55,206 @@
             </div>
         </x-slot:actions>
 
-        {{-- ===== DESKTOP TABLE (lg and up) ===== --}}
-        <div class="hidden lg:block w-full overflow-x-auto">
-            <table class="w-full table-fixed text-xs">
+        
+{{-- ===== DESKTOP TABLE (lg and up) ===== --}}
+<div class="hidden lg:block w-full overflow-hidden">
 
-                <thead class="bg-gray-50 text-left uppercase tracking-wider text-[10px] text-gray-500">
-                    <tr>
-                        <th class="w-[90px] px-2.5 py-2.5 whitespace-nowrap">
-                            Requisition No.
-                        </th>
+    <table class="w-full table-fixed text-xs">
 
-                        <th class="w-[130px] px-2.5 py-2.5 whitespace-nowrap">
-                            Requested By
-                        </th>
+        <thead class="bg-gray-50 text-left uppercase tracking-wider text-[10px] text-gray-500">
+            <tr>
+                <th class="w-[10%] px-2 py-3">Requisition No.</th>
+                <th class="w-[12%] px-2 py-3">Requested By</th>
+                <th class="w-[6%] px-1 py-3 text-center">Casuals</th>
+                <th class="w-[5%] px-1 py-3 text-center">Days</th>
+                <th class="w-[20%] px-2 py-3">Reason</th>
+                <th class="w-[9%] px-1 py-3 text-right">Daily Rate</th>
+                <th class="w-[8%] px-1 py-3 text-right">NSSF</th>
+                <th class="w-[8%] px-1 py-3 text-right">SHA</th>
+                <th class="w-[11%] px-1 py-3 text-right">Estimated Total</th>
+                <th class="w-[11%] px-1 py-3 text-center">Actions</th>
+            </tr>
+        </thead>
 
-                        <th class="w-[75px] px-2.5 py-2.5 whitespace-nowrap text-center">
-                            Casuals
-                        </th>
+        <tbody class="divide-y divide-gray-100">
 
-                        <th class="w-[55px] px-2.5 py-2.5 whitespace-nowrap">
-                            Days
-                        </th>
+            @forelse($hrm_requisitions as $req)
 
-                        <th class="w-[22%] px-2.5 py-2.5">
-                            Reason
-                        </th>
+                <tr
+                    wire:key="hrm-req-{{ $req->id }}"
+                    class="align-top hover:bg-gray-50 transition"
+                >
 
-                        <th class="w-[85px] px-2.5 py-2.5 whitespace-nowrap text-right">
-                            Daily Rate
-                        </th>
+                    {{-- REQUISITION NUMBER --}}
+                    <td class="px-2 py-3">
+                        <span class="font-semibold text-blue-600 break-words">
+                            {{ $req->ref_number }}
+                        </span>
+                    </td>
 
-                        <th class="w-[80px] px-2.5 py-2.5 whitespace-nowrap text-right">
-                            NSSF
-                        </th>
+                    {{-- REQUESTED BY --}}
+                    <td class="px-2 py-3">
+                        <div class="min-w-0">
+                            <p class="font-medium text-gray-900 truncate"
+                               title="{{ $req->requester->name ?? '' }}">
+                                {{ $req->requester->name ?? 'Unknown User' }}
+                            </p>
+                        </div>
+                    </td>
 
-                        <th class="w-[80px] px-2.5 py-2.5 whitespace-nowrap text-right">
-                            SHA
-                        </th>
+                    {{-- CASUALS --}}
+                    <td class="px-1 py-3 text-center text-gray-700 tabular-nums">
+                        {{ $req->no_of_casuals }}
+                    </td>
 
-                        <th class="w-[100px] px-2.5 py-2.5 whitespace-nowrap text-right">
-                            Estimated Total
-                        </th>
+                    {{-- DURATION --}}
+                    <td class="px-1 py-3 text-center text-gray-500 tabular-nums">
+                        {{ $req->duration }}
+                    </td>
 
-                        <th class="w-[65px] px-2.5 py-2.5 whitespace-nowrap text-right">
-                            Actions
-                        </th>
-                    </tr>
-                </thead>
+                    {{-- REASON --}}
+                    <td class="px-2 py-3 min-w-0">
+                        @if($req->reason)
 
-                <tbody class="divide-y divide-gray-100">
-                    @forelse($hrm_requisitions as $req)
+                            <div x-data="{ open: false }">
 
-                        <tr
-                            wire:key="hrm-req-{{ $req->id }}"
-                            class="align-top hover:bg-gray-50 transition"
-                        >
-
-                            {{-- Requisition Number --}}
-                            <td class="px-2.5 py-3 whitespace-nowrap">
-                                <span class="font-medium text-blue-600">
-                                    {{ $req->ref_number }}
-                                </span>
-                            </td>
-
-                            {{-- Requested By --}}
-                            <td class="px-2.5 py-3">
-                                <p class="font-medium text-gray-900 truncate">
-                                    {{ $req->requester->name }}
+                                <p
+                                    class="text-[11px] leading-relaxed text-slate-600 break-words [overflow-wrap:anywhere]"
+                                    :class="open ? '' : 'line-clamp-3'"
+                                >
+                                    {{ $req->reason }}
                                 </p>
-                            </td>
 
-                            {{-- No of Casuals --}}
-                            <td class="px-2.5 py-3 text-center text-gray-700 tabular-nums">
-                                {{ $req->no_of_casuals }}
-                            </td>
-
-                            {{-- Duration --}}
-                            <td class="px-2.5 py-3 whitespace-nowrap text-gray-500">
-                                {{ $req->duration }}
-                            </td>
-
-                            {{-- Reason --}}
-                            <td class="px-2.5 py-3">
-                                @if($req->reason)
-
-                                    <div x-data="{ open: false }">
-
-                                        <p
-                                            class="text-[11px] leading-relaxed text-slate-600 break-words"
-                                            :class="open ? '' : 'line-clamp-3'"
-                                        >
-                                            {{ $req->reason }}
-                                        </p>
-
-                                        @if(mb_strlen($req->reason) > 140)
-                                            <button
-                                                type="button"
-                                                @click="open = !open"
-                                                class="mt-1 text-[10px] font-medium text-blue-600 hover:text-blue-700 hover:underline"
-                                                x-text="open ? 'Show less' : 'Read more'"
-                                            ></button>
-                                        @endif
-
-                                    </div>
-
-                                @else
-
-                                    <span class="text-slate-400 text-[10px] italic">
-                                        No reason provided
-                                    </span>
-
+                                @if(mb_strlen($req->reason) > 140)
+                                    <button
+                                        type="button"
+                                        @click="open = !open"
+                                        class="mt-1 text-[10px] font-medium text-blue-600 hover:text-blue-700 hover:underline"
+                                        x-text="open ? 'Show less' : 'Read more'"
+                                    ></button>
                                 @endif
-                            </td>
 
-                            {{-- Daily Rate --}}
-                            <td class="px-2.5 py-3 whitespace-nowrap text-right text-gray-700 tabular-nums">
-                                {{ number_format((float) $req->daily_rate, 2) }}
-                            </td>
+                            </div>
 
-                            {{-- NSSF Rate --}}
-                            <td class="px-2.5 py-3 whitespace-nowrap text-right text-gray-700 tabular-nums">
-                                {{ number_format((float) $req->nssf_rate, 2) }}
-                            </td>
+                        @else
 
-                            {{-- SHA Rate --}}
-                            <td class="px-2.5 py-3 whitespace-nowrap text-right text-gray-700 tabular-nums">
-                                {{ number_format((float) $req->sha_rate, 2) }}
-                            </td>
+                            <span class="text-slate-400 text-[10px] italic">
+                                No reason provided
+                            </span>
 
-                            {{-- Estimated Total --}}
-                            <td class="px-2.5 py-3 whitespace-nowrap text-right font-semibold text-gray-900 tabular-nums">
-                                {{ number_format((float) $req->total_amount, 2) }}
-                            </td>
+                        @endif
+                    </td>
 
-                            {{-- Actions --}}
-                            <td class="px-2.5 py-2.5">
-                                <div class="flex items-center justify-end gap-1">
+                    {{-- DAILY RATE --}}
+                    <td class="px-1 py-3 text-right text-gray-700 tabular-nums">
+                        {{ number_format((float) $req->daily_rate, 2) }}
+                    </td>
 
-                                    {{-- Approve --}}
-                                    <button
-                                        type="button"
-                                        wire:click="approveHrm({{ $req->id }})"
-                                        wire:confirm="Approve this requisition?"
-                                        title="Approve"
-                                        aria-label="Approve requisition"
-                                        class="p-1.5 rounded-md text-green-600 hover:bg-green-50 hover:text-green-700 transition"
-                                    >
-                                        <svg
-                                            class="h-4 w-4"
-                                            viewBox="0 0 20 20"
-                                            fill="currentColor"
-                                        >
-                                            <path
-                                                fill-rule="evenodd"
-                                                d="M16.704 4.884a1 1 0 01.012 1.414l-8.25 8.25a1 1 0 01-1.414 0l-3.75-3.75a1 1 0 011.414-1.414l3.043 3.043 7.543-7.543a1 1 0 011.402 0z"
-                                                clip-rule="evenodd"
-                                            />
-                                        </svg>
-                                    </button>
+                    {{-- NSSF --}}
+                    <td class="px-1 py-3 text-right text-gray-700 tabular-nums">
+                        {{ number_format((float) $req->nssf_rate, 2) }}
+                    </td>
 
-                                    {{-- Reject --}}
-                                    <button
-                                        type="button"
-                                        wire:click="reject({{ $req->id }})"
-                                        wire:confirm="Reject this requisition?"
-                                        title="Reject"
-                                        aria-label="Reject requisition"
-                                        class="p-1.5 rounded-md text-red-600 hover:bg-red-50 hover:text-red-700 transition"
-                                    >
-                                        <svg
-                                            class="h-4 w-4"
-                                            viewBox="0 0 20 20"
-                                            fill="currentColor"
-                                        >
-                                            <path
-                                                fill-rule="evenodd"
-                                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                                clip-rule="evenodd"
-                                            />
-                                        </svg>
-                                    </button>
+                    {{-- SHA --}}
+                    <td class="px-1 py-3 text-right text-gray-700 tabular-nums">
+                        {{ number_format((float) $req->sha_rate, 2) }}
+                    </td>
 
-                                </div>
-                            </td>
+                    {{-- ESTIMATED TOTAL --}}
+                    <td class="px-1 py-3 text-right font-semibold text-gray-900 tabular-nums">
+                        {{ number_format((float) $req->total_amount, 2) }}
+                    </td>
 
-                        </tr>
+                    {{-- ACTIONS --}}
+                    <td class="px-1 py-2.5">
 
-                    @empty
+                        <div class="flex flex-col items-center gap-1">
 
-                        <tr>
-                            <td colspan="10" class="py-16 text-center">
-                                <p class="font-medium text-gray-700">
-                                    No requisitions awaiting HRM approval
-                                </p>
+                            {{-- APPROVE --}}
+                            <button
+                                type="button"
+                                wire:click="approveHrm({{ $req->id }})"
+                                wire:confirm="Are you sure you want to approve this requisition? This will complete the approval process."
+                                wire:loading.attr="disabled"
+                                wire:target="approveHrm({{ $req->id }})"
+                                class="inline-flex w-full max-w-[100px] items-center justify-center gap-1
+                                    rounded-md bg-green-50 px-2 py-1.5
+                                    text-[10px] font-semibold text-green-700
+                                    hover:bg-green-100 transition disabled:opacity-50"
+                            >
+                                <svg class="h-3.5 w-3.5 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd"
+                                        d="M16.704 4.884a1 1 0 01.012 1.414l-8.25 8.25a1 1 0 01-1.414 0l-3.75-3.75a1 1 0 011.414-1.414l3.043 3.043 7.543-7.543a1 1 0 011.402 0z"
+                                        clip-rule="evenodd"/>
+                                </svg>
+                                Approve
+                            </button>
 
-                                <p class="text-xs text-gray-500 mt-1">
-                                    All caught up 🎉
-                                </p>
-                            </td>
-                        </tr>
+                            {{-- RETURN --}}
+                            <button
+                                type="button"
+                                wire:click="openHrmReturnModal({{ $req->id }})"
+                                class="inline-flex w-full max-w-[100px] items-center justify-center gap-1
+                                    rounded-md bg-amber-50 px-2 py-1.5
+                                    text-[10px] font-semibold text-amber-700
+                                    hover:bg-amber-100 transition"
+                            >
+                                <svg class="h-3.5 w-3.5 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd"
+                                        d="M7.707 3.293a1 1 0 010 1.414L5.414 7H13a4 4 0 010 8H9a1 1 0 110-2h4a2 2 0 100-4H5.414l2.293 2.293a1 1 0 11-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                                        clip-rule="evenodd"/>
+                                </svg>
+                                Return
+                            </button>
 
-                    @endforelse
-                </tbody>
+                            {{-- REJECT --}}
+                            <button
+                                type="button"
+                                wire:click="reject({{ $req->id }})"
+                                wire:confirm="Are you sure you want to reject this requisition?"
+                                class="inline-flex w-full max-w-[100px] items-center justify-center gap-1
+                                    rounded-md bg-red-50 px-2 py-1.5
+                                    text-[10px] font-semibold text-red-700
+                                    hover:bg-red-100 transition"
+                            >
+                                <svg class="h-3.5 w-3.5 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd"
+                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                        clip-rule="evenodd"/>
+                                </svg>
+                                Reject
+                            </button>
 
-            </table>
-        </div>
+                        </div>
+
+                    </td>
+
+                </tr>
+
+            @empty
+
+                <tr>
+                    <td colspan="10" class="py-16 text-center">
+
+                        <p class="font-medium text-gray-700">
+                            No requisitions awaiting HRM approval
+                        </p>
+
+                        <p class="text-xs text-gray-500 mt-1">
+                            All caught up 🎉
+                        </p>
+
+                    </td>
+                </tr>
+
+            @endforelse
+
+        </tbody>
+
+    </table>
+
+</div>
+
 
         {{-- ===== MOBILE / TABLET CARDS ===== --}}
         <div class="lg:hidden divide-y divide-gray-100">
