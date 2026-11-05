@@ -183,6 +183,27 @@ class HrCasualManagement extends Component
         }
     }
 
+    private function loadExistingHrRates($requisitions): void
+    {
+        foreach ($requisitions as $req) {
+
+            // Load the previously saved daily rate
+            if (!array_key_exists($req->id, $this->rates ?? [])) {
+                $this->rates[$req->id] = $req->daily_rate;
+            }
+
+            // Load the previously saved NSSF rate
+            if (!array_key_exists($req->id, $this->nssfRates ?? [])) {
+                $this->nssfRates[$req->id] = $req->nssf_rate;
+            }
+
+            // Load the previously saved SHA rate
+            if (!array_key_exists($req->id, $this->shaRates ?? [])) {
+                $this->shaRates[$req->id] = $req->sha_rate;
+            }
+        }
+    }
+
     public function updatedhrSearch()
     {
         $this->resetPage();
@@ -637,6 +658,152 @@ class HrCasualManagement extends Component
         }
     }
 
+    public function resubmitToHrm($id)
+    {
+        $user = auth()->user();
+
+        // Only HR Representatives can resubmit.
+        abort_unless($user->hasRole('Hr'), 403);
+
+        // Validate the edited rates.
+        $this->validate([
+            "rates.$id" => ['required', 'numeric', 'min:1'],
+            "nssfRates.$id" => ['required', 'numeric', 'min:0'],
+            "shaRates.$id" => ['required', 'numeric', 'min:0'],
+        ], [
+            "rates.$id.required" => 'Please enter the daily rate.',
+            "rates.$id.min" => 'The daily rate must be greater than zero.',
+            "nssfRates.$id.required" => 'Please enter the NSSF rate.',
+            "shaRates.$id.required" => 'Please enter the SHA rate.',
+        ]);
+
+        try {
+            $requisition = DB::transaction(function () use ($id, $user) {
+
+                $req = Requisition::whereKey($id)
+                    ->lockForUpdate()
+                    ->firstOrFail();
+
+                // Ensure this is genuinely an HRM-returned requisition.
+                if (
+                    $req->status !== 'pending' ||
+                    $req->current_approval_stage !== 'hr_rep' ||
+                    $req->return_to_stage !== 'hr_rep' ||
+                    $req->returned_from_stage !== 'hrm'
+                ) {
+                    throw new \Exception(
+                        'This requisition is not awaiting HR Representative resubmission.'
+                    );
+                }
+
+                $dailyRate = (float) $this->rates[$id];
+                $nssfRate = (float) $this->nssfRates[$id];
+                $shaRate = (float) $this->shaRates[$id];
+
+                $casuals = (int) $req->no_of_casuals;
+                $duration = (int) $req->duration;
+
+                // Recalculate the estimated total.
+                $grossAmount = $dailyRate * $duration * $casuals;
+                $deductions = ($nssfRate + $shaRate) * $casuals;
+                $totalAmount = $grossAmount - $deductions;
+
+                if ($totalAmount < 0) {
+                    throw new \Exception(
+                        'The deductions cannot exceed the gross amount.'
+                    );
+                }
+
+                /*
+                * Preserve the original HRM return reason in the HRM
+                * approval history before clearing the active return fields.
+                *
+                * The previous HR Representative approval record remains
+                * untouched to preserve the approval history.
+                */
+
+                // Create a NEW approved HR Representative history record.
+                $req->approvals()->create([
+                    'approval_stage' => 'hr_rep',
+                    'approval_cycle' => $req->approval_cycle,
+                    'status' => 'approved',
+                    'approver_id' => $user->id,
+                    'comments' => 'Edited rates resubmitted to HRM.',
+                    'acted_at' => now(),
+                ]);
+
+                // Create a NEW pending HRM approval record.
+               $req->approvals()->create([
+                    'approval_stage' => 'hrm',
+                    'approval_cycle' => $req->approval_cycle,
+                    'status' => 'pending',
+                ]);
+
+                // Update the requisition without changing HOD or COO approvals.
+                $req->update([
+                    'daily_rate' => $dailyRate,
+                    'nssf_rate' => $nssfRate,
+                    'sha_rate' => $shaRate,
+                    'total_amount' => $totalAmount,
+
+                    'hr_approval_status' => true,
+                    'hr_rep_id' => $user->id,
+                    'hr_rep_approval_date' => now(),
+
+                    'current_approval_stage' => 'hrm',
+
+                    // Clear the active return information.
+                    // The return reason remains in the HRM history comments.
+                    'return_to_stage' => null,
+                    'returned_from_stage' => null,
+                    'returned_by' => null,
+                    'returned_at' => null,
+                    'return_reason' => null,
+                ]);
+
+                return $req->fresh();
+            });
+
+            /*
+            * Send the HRM approval email here.
+            * Reuse the same HRM email-recipient and Mailable logic
+            * that you already use in submitRate().
+            */
+
+            $this->dispatch(
+                'notify',
+                type: 'success',
+                title: 'Requisition Resubmitted',
+                message: 'The edited requisition has been successfully resubmitted to HRM.'
+            );
+
+            // Remove stale Livewire input values so the table reloads
+            // from the saved database values.
+            unset(
+                $this->rates[$id],
+                $this->nssfRates[$id],
+                $this->shaRates[$id]
+            );
+
+        } catch (\Throwable $e) {
+
+            Log::error('HR Representative requisition resubmission failed.', [
+                'requisition_id' => $id,
+                'user_id' => $user->id,
+                'error' => $e->getMessage(),
+            ]);
+
+            $this->dispatch(
+                'notify',
+                type: 'error',
+                title: 'Resubmission Failed',
+                message: $e instanceof \Exception
+                    ? $e->getMessage()
+                    : 'An error occurred while resubmitting the requisition.'
+            );
+        }
+    }
+
     public function setView($view)
     {  
         $this->view = $view;
@@ -720,11 +887,17 @@ class HrCasualManagement extends Component
             ->paginate(5);
     }
 
+    
     #[Layout('layouts.dashboard')]
     public function render()
     {
+        $hrRequisitions = $this->hrRequisitions;
+
+        // Populate saved rates without overwriting current user input
+        $this->loadExistingHrRates($hrRequisitions);
+
         return view('livewire.hr-casual-management', [
-            'hrRequisitions' => $this->hrRequisitions,
+            'hrRequisitions' => $hrRequisitions,
             'casualsList' => $this->casuals,
         ]);
     }

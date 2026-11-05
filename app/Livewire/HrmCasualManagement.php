@@ -297,19 +297,24 @@ class HrmCasualManagement extends Component
     #[layout('layouts.dashboard')]
     public function render()
     {
-        return view('livewire.hrm-casual-management',[
-            'hrm_requisitions' => Requisition::where('hr_approval_status', true)
-            ->where('hrm_approval_status', 'pending')
-            ->when($this->search, function ($query) {
-                $search = '%' . $this->search . '%';
+        return view('livewire.hrm-casual-management', [
+            'hrm_requisitions' => Requisition::query()
+                ->where('status', 'pending')
+                ->where('current_approval_stage', 'hrm')
 
-                $query->where(function ($q) use ($search) {
-                    $q->where('ref_number', 'like', $search)
-                        ->orWhereHas('requester', function ($q) use ($search) {
-                            $q->where('name', 'like', $search);
-                        });
-                });
-            })->latest()->paginate(10)
+                ->when($this->search, function ($query) {
+                    $search = '%' . $this->search . '%';
+
+                    $query->where(function ($q) use ($search) {
+                        $q->where('ref_number', 'like', $search)
+                            ->orWhereHas('requester', function ($q) use ($search) {
+                                $q->where('name', 'like', $search);
+                            });
+                    });
+                })
+
+                ->latest()
+                ->paginate(10),
         ]);
     }
 }

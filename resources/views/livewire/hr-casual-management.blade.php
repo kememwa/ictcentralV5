@@ -347,60 +347,30 @@
 
 
            
+            
             {{-- =========================================================
                 DESKTOP TABLE (lg and up)
             ========================================================= --}}
-            <div class="hidden lg:block w-full overflow-hidden">
+            <div class="hidden lg:block w-full overflow-x-auto rounded-lg border border-slate-200">
 
                 <table class="w-full table-fixed border-collapse text-xs">
 
                     {{-- TABLE HEADER --}}
                     <thead class="border-b border-slate-200 bg-slate-50/80">
+                        <tr class="text-left text-[10px] font-semibold uppercase tracking-wider text-slate-500">
 
-                        <tr class="text-left uppercase tracking-wider text-[10px] font-semibold text-slate-500">
-
-                            <th class="w-[11%] px-2 py-3">
-                                Requisition Num
-                            </th>
-
-                            <th class="w-[12%] px-2 py-3">
-                                Requested By
-                            </th>
-
-                            <th class="w-[5%] px-1 py-3 text-center">
-                                Casuals
-                            </th>
-
-                            <th class="w-[6%] px-1 py-3 text-center">
-                                Duration
-                            </th>
-
-                            <th class="w-[10%] px-1.5 py-3">
-                                Daily Rate
-                            </th>
-
-                            <th class="w-[8%] px-1.5 py-3">
-                                NSSF
-                            </th>
-
-                            <th class="w-[8%] px-1.5 py-3">
-                                SHA
-                            </th>
-
-                            <th class="w-[13%] px-2 py-3 text-right">
-                                Estimated Total
-                            </th>
-
-                            <th class="w-[17%] px-2 py-3 text-center">
-                                Status
-                            </th>
-
-                            <th class="w-[10%] px-1 py-3 text-center">
-                                Actions
-                            </th>
+                            <th class="w-[10%] px-2 py-3">Requisition Num</th>
+                            <th class="w-[11%] px-2 py-3">Requested By</th>
+                            <th class="w-[5%] px-1 py-3 text-center">Casuals</th>
+                            <th class="w-[5%] px-1 py-3 text-center">D</th>
+                            <th class="w-[10%] px-1.5 py-3">Daily Rate</th>
+                            <th class="w-[8%] px-1.5 py-3">NSSF</th>
+                            <th class="w-[8%] px-1.5 py-3">SHA</th>
+                            <th class="w-[12%] px-2 py-3 text-right">Estimated Total</th>
+                            <th class="w-[19%] px-2 py-3">Status / Return Reason</th>
+                            <th class="w-[12%] px-1 py-3 text-center">Actions</th>
 
                         </tr>
-
                     </thead>
 
                     {{-- TABLE BODY --}}
@@ -408,190 +378,136 @@
 
                         @forelse($this->hrRequisitions as $req)
 
+                            @php
+                                // Change this property if your database uses a different column name.
+                                $returnReason = $req->return_reason ?? null;
+
+                                $hasLongReason = $returnReason
+                                    && str_word_count(strip_tags($returnReason)) > 12;
+                            @endphp
+
                             <tr
                                 wire:key="hr-req-{{ $req->id }}"
-                                class="group align-middle transition-colors hover:bg-slate-50/70"
+                                class="group align-top transition-colors hover:bg-slate-50/70"
                             >
 
                                 {{-- REQUISITION NUMBER --}}
                                 <td class="px-2 py-3">
-
-                                    <p class="font-semibold text-blue-600 break-words">
+                                    <p class="break-words font-semibold leading-tight text-blue-600">
                                         {{ $req->ref_number }}
                                     </p>
 
-                                    <p class="mt-0.5 text-[9px] text-slate-400">
+                                    <p class="mt-1 text-[9px] text-slate-400">
                                         {{ $req->created_at->diffForHumans() }}
                                     </p>
-
                                 </td>
-
 
                                 {{-- REQUESTED BY --}}
                                 <td class="px-2 py-3">
-
                                     <div class="min-w-0">
-
-                                        <p class="font-medium text-slate-800 truncate"
-                                        title="{{ $req->requester->name ?? 'Unknown User' }}">
+                                        <p
+                                            class="truncate font-medium text-slate-800"
+                                            title="{{ $req->requester->name ?? 'Unknown User' }}"
+                                        >
                                             {{ $req->requester->name ?? 'Unknown User' }}
                                         </p>
 
                                         @if($req->requester?->department)
-
-                                            <p class="mt-0.5 text-[9px] text-slate-400 truncate"
-                                            title="{{ $req->requester->department->name }}">
+                                            <p
+                                                class="mt-1 truncate text-[9px] text-slate-400"
+                                                title="{{ $req->requester->department->name }}"
+                                            >
                                                 {{ $req->requester->department->name }}
                                             </p>
-
                                         @endif
-
                                     </div>
-
                                 </td>
-
 
                                 {{-- CASUALS --}}
                                 <td class="px-1 py-3 text-center">
-
                                     <span class="font-medium tabular-nums text-slate-700">
                                         {{ number_format($req->no_of_casuals) }}
                                     </span>
-
                                 </td>
-
 
                                 {{-- DURATION --}}
                                 <td class="px-1 py-3 text-center">
-
                                     <span class="font-medium tabular-nums text-slate-700">
                                         {{ $req->duration }}
                                     </span>
 
-                                    <span class="block text-[9px] text-slate-400">
+                                    <span class="mt-0.5 block text-[9px] text-slate-400">
                                         {{ $req->duration == 1 ? 'day' : 'days' }}
                                     </span>
-
                                 </td>
 
-
+                                
                                 {{-- DAILY RATE --}}
                                 <td class="px-1.5 py-3">
-
-                                    <div class="relative min-w-0">
-
-                                        <span class="pointer-events-none absolute inset-y-0 left-0
-                                            flex items-center pl-1.5 text-[8px] font-semibold text-slate-400">
-                                            KES
-                                        </span>
-
-                                        <input
-                                            type="number"
-                                            min="0"
-                                            step="any"
-                                            wire:model.live.debounce.300ms="rates.{{ $req->id }}"
-                                            placeholder="0.00"
-                                            class="block w-full min-w-0 rounded-md border border-slate-200
-                                                bg-white py-1.5 pl-7 pr-1 text-[10px] text-slate-700
-                                                placeholder:text-slate-300 focus:border-blue-500
-                                                focus:outline-none focus:ring-2 focus:ring-blue-500/10
-                                                @error('rates.'.$req->id)
-                                                    border-red-400 ring-1 ring-red-400
-                                                @enderror"
-                                        />
-
-                                    </div>
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        step="any"
+                                        wire:model.live.debounce.300ms="rates.{{ $req->id }}"
+                                        placeholder="0.00"
+                                        class="block w-full min-w-0 rounded-md border border-slate-200
+                                            bg-white px-2 py-2 text-xs font-semibold tabular-nums text-slate-800
+                                            placeholder:text-slate-300 focus:border-blue-500
+                                            focus:outline-none focus:ring-2 focus:ring-blue-500/10
+                                            @error('rates.'.$req->id) border-red-400 ring-1 ring-red-400 @enderror"
+                                    />
 
                                     @error("rates.$req->id")
-                                        <p class="mt-1 text-[9px] text-red-600">
-                                            {{ $message }}
-                                        </p>
+                                        <p class="mt-1 text-[9px] text-red-600">{{ $message }}</p>
                                     @enderror
-
                                 </td>
-
 
                                 {{-- NSSF --}}
                                 <td class="px-1.5 py-3">
-
-                                    <div class="relative min-w-0">
-
-                                        <span class="pointer-events-none absolute inset-y-0 left-0
-                                            flex items-center pl-1.5 text-[8px] font-semibold text-slate-400">
-                                            KES
-                                        </span>
-
-                                        <input
-                                            type="number"
-                                            min="0"
-                                            step="any"
-                                            wire:model.live.debounce.300ms="nssfRates.{{ $req->id }}"
-                                            placeholder="0.00"
-                                            class="block w-full min-w-0 rounded-md border border-slate-200
-                                                bg-white py-1.5 pl-7 pr-1 text-[10px] text-slate-700
-                                                placeholder:text-slate-300 focus:border-blue-500
-                                                focus:outline-none focus:ring-2 focus:ring-blue-500/10
-                                                @error('nssfRates.'.$req->id)
-                                                    border-red-400 ring-1 ring-red-400
-                                                @enderror"
-                                        />
-
-                                    </div>
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        step="any"
+                                        wire:model.live.debounce.300ms="nssfRates.{{ $req->id }}"
+                                        placeholder="0.00"
+                                        class="block w-full min-w-0 rounded-md border border-slate-200
+                                            bg-white px-2 py-2 text-xs font-semibold tabular-nums text-slate-800
+                                            placeholder:text-slate-300 focus:border-blue-500
+                                            focus:outline-none focus:ring-2 focus:ring-blue-500/10
+                                            @error('nssfRates.'.$req->id) border-red-400 ring-1 ring-red-400 @enderror"
+                                    />
 
                                     @error("nssfRates.$req->id")
-                                        <p class="mt-1 text-[9px] text-red-600">
-                                            {{ $message }}
-                                        </p>
+                                        <p class="mt-1 text-[9px] text-red-600">{{ $message }}</p>
                                     @enderror
-
                                 </td>
-
 
                                 {{-- SHA --}}
                                 <td class="px-1.5 py-3">
-
-                                    <div class="relative min-w-0">
-
-                                        <span class="pointer-events-none absolute inset-y-0 left-0
-                                            flex items-center pl-1.5 text-[8px] font-semibold text-slate-400">
-                                            KES
-                                        </span>
-
-                                        <input
-                                            type="number"
-                                            min="0"
-                                            step="any"
-                                            wire:model.live.debounce.300ms="shaRates.{{ $req->id }}"
-                                            placeholder="0.00"
-                                            class="block w-full min-w-0 rounded-md border border-slate-200
-                                                bg-white py-1.5 pl-7 pr-1 text-[10px] text-slate-700
-                                                placeholder:text-slate-300 focus:border-blue-500
-                                                focus:outline-none focus:ring-2 focus:ring-blue-500/10
-                                                @error('shaRates.'.$req->id)
-                                                    border-red-400 ring-1 ring-red-400
-                                                @enderror"
-                                        />
-
-                                    </div>
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        step="any"
+                                        wire:model.live.debounce.300ms="shaRates.{{ $req->id }}"
+                                        placeholder="0.00"
+                                        class="block w-full min-w-0 rounded-md border border-slate-200
+                                            bg-white px-2 py-2 text-xs font-semibold tabular-nums text-slate-800
+                                            placeholder:text-slate-300 focus:border-blue-500
+                                            focus:outline-none focus:ring-2 focus:ring-blue-500/10
+                                            @error('shaRates.'.$req->id) border-red-400 ring-1 ring-red-400 @enderror"
+                                    />
 
                                     @error("shaRates.$req->id")
-                                        <p class="mt-1 text-[9px] text-red-600">
-                                            {{ $message }}
-                                        </p>
+                                        <p class="mt-1 text-[9px] text-red-600">{{ $message }}</p>
                                     @enderror
-
                                 </td>
-
 
                                 {{-- ESTIMATED TOTAL --}}
                                 <td class="px-2 py-3 text-right">
-
                                     @if(!empty($rates[$req->id]) && is_numeric($rates[$req->id]))
 
-                                        <span class="font-semibold tabular-nums text-emerald-600
-                                            text-[10px] break-words">
-
-                                            KES {{ number_format(
+                                        <span class="break-words text-xs font-bold tabular-nums text-emerald-700">
+                                            {{ number_format(
                                                 (
                                                     (
                                                         (float) $rates[$req->id]
@@ -609,49 +525,79 @@
                                                     )
                                                 )
                                             ) }}
-
                                         </span>
 
                                     @else
-
                                         <span class="text-slate-400">—</span>
-
                                     @endif
-
                                 </td>
 
+                                {{-- STATUS AND RETURN REASON --}}
 
-                                {{-- STATUS --}}
-                                <td class="px-2 py-3 text-center">
+                                <td class="px-2 py-3">
+                                    <div class="min-w-0 text-left">
 
-                                    @if($req->hr_approval_status === 'returned')
+                                        @if(
+                                            $req->current_approval_stage === 'hr_rep' &&
+                                            $req->return_to_stage === 'hr_rep' &&
+                                            $req->returned_from_stage === 'hrm'
+                                        )
 
-                                        <span class="inline-flex max-w-full items-center justify-center
-                                            rounded-full bg-amber-100 px-2 py-1
-                                            text-[9px] font-semibold leading-tight text-amber-700">
-                                            Returned to You
-                                        </span>
+                                            {{-- Returned by HRM --}}
+                                            <p class="text-[10px] font-bold text-amber-700">
+                                                Returned by HRM
+                                            </p>
 
-                                    @else
+                                            @if($returnReason)
+                                                <div
+                                                    x-data="{ expanded: false }"
+                                                    class="mt-1 min-w-0"
+                                                >
+                                                    <p
+                                                        class="break-words text-[10px] leading-relaxed text-slate-600"
+                                                        :class="!expanded ? 'line-clamp-3' : ''"
+                                                    >
+                                                        {{ $returnReason }}
+                                                    </p>
 
-                                        <span class="inline-flex max-w-full items-center justify-center
-                                            rounded-full bg-blue-100 px-2 py-1
-                                            text-[9px] font-semibold leading-tight text-blue-700">
-                                            Pending HR Approval
-                                        </span>
+                                                    @if($hasLongReason)
+                                                        <button
+                                                            type="button"
+                                                            @click="expanded = !expanded"
+                                                            class="mt-1 text-[10px] font-semibold text-blue-600 hover:text-blue-800"
+                                                        >
+                                                            <span x-show="!expanded">Read more</span>
+                                                            <span x-show="expanded" x-cloak>Read less</span>
+                                                        </button>
+                                                    @endif
+                                                </div>
+                                            @endif
 
-                                    @endif
+                                        @elseif(
+                                            $req->status === 'pending' &&
+                                            $req->current_approval_stage === 'hr_rep'
+                                        )
 
+                                            <p class="text-[10px] font-semibold text-blue-700">
+                                                Pending HR Approval
+                                            </p>
+
+                                        @else
+
+                                            <p class="text-[10px] font-semibold text-slate-600">
+                                                {{ ucfirst(str_replace('_', ' ', $req->status)) }}
+                                            </p>
+
+                                        @endif
+
+                                    </div>
                                 </td>
-
 
                                 {{-- ACTIONS --}}
-                                <td class="px-1 py-3 text-center">
-
+                                <td class="px-1 py-3">
                                     <div class="flex items-center justify-center">
                                         @include('partials.hr-actions', ['req' => $req])
                                     </div>
-
                                 </td>
 
                             </tr>
@@ -659,21 +605,21 @@
                         @empty
 
                             <tr>
-
                                 <td colspan="10" class="px-4 py-16 text-center">
-
                                     <div class="flex flex-col items-center justify-center">
 
-                                        <div class="mb-3 flex h-10 w-10 items-center justify-center
-                                            rounded-full bg-slate-100">
-
-                                            <svg class="h-5 w-5 text-slate-400"
-                                                viewBox="0 0 20 20" fill="currentColor">
-                                                <path fill-rule="evenodd"
+                                        <div class="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-slate-100">
+                                            <svg
+                                                class="h-5 w-5 text-slate-400"
+                                                viewBox="0 0 20 20"
+                                                fill="currentColor"
+                                            >
+                                                <path
+                                                    fill-rule="evenodd"
                                                     d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.707a1 1 0 00-1.414-1.414L9 11.172 7.707 9.879a1 1 0 001.414 1.414l2 2a1 1 0 001.414 0l3.414-3.414z"
-                                                    clip-rule="evenodd"/>
+                                                    clip-rule="evenodd"
+                                                />
                                             </svg>
-
                                         </div>
 
                                         <p class="font-medium text-slate-700">
@@ -685,18 +631,15 @@
                                         </p>
 
                                     </div>
-
                                 </td>
-
                             </tr>
 
                         @endforelse
 
                     </tbody>
-
                 </table>
-
             </div>
+
 
 
             {{-- =========================================================

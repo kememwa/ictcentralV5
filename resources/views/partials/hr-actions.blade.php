@@ -56,23 +56,49 @@
     </button>
 
     {{-- TELEPORTED DROPDOWN --}}
-    <template x-teleport="body">
-        <div
-            x-show="moreOpen"
-            x-cloak
-            x-transition.opacity
-            @click.outside="moreOpen = false"
-            @keydown.escape.window="moreOpen = false"
-            :style="moreStyle"
-            class="fixed z-[9999] w-48 bg-white border border-gray-200
-                rounded-lg shadow-xl py-1"
-        >
+ <template x-teleport="body">
+    <div
+        x-show="moreOpen"
+        x-cloak
+        x-transition.opacity
+        @click.outside="moreOpen = false"
+        @keydown.escape.window="moreOpen = false"
+        :style="moreStyle"
+        class="fixed z-[9999] w-48 bg-white border border-gray-200
+            rounded-lg shadow-xl py-1"
+    >
 
-            {{-- APPROVE --}}
+        {{-- RESUBMIT / SUBMIT TO HRM --}}
+        @if(
+            $requisition->status === 'pending' &&
+            $requisition->current_approval_stage === 'hr_rep' &&
+            $requisition->return_to_stage === 'hr_rep' &&
+            $requisition->returned_from_stage === 'hrm'
+        )
+
+            <button
+                type="button"
+                wire:click="resubmitToHrm({{ $requisition->id }})"
+                wire:confirm="Are you sure you want to resubmit this edited requisition to HRM?"
+                @click="moreOpen = false"
+                class="flex w-full items-center gap-3 px-3 py-2.5
+                    text-sm text-blue-700 hover:bg-blue-50 transition"
+            >
+                <svg class="w-4 h-4 shrink-0" viewBox="0 0 20 20"
+                    fill="currentColor">
+                    <path fill-rule="evenodd"
+                        d="M3.5 10a6.5 6.5 0 0111.09-4.596L16 6.814V3h1.5v6.5H11V8h3.69l-1.16-1.16A5 5 0 105 10H3.5zm13 0A6.5 6.5 0 016.41 14.596L5 13.186V17H3.5v-6.5H10V12H6.31l1.16 1.16A5 5 0 0015 10h1.5z"
+                        clip-rule="evenodd"/>
+                </svg>
+                <span>Resubmit to HRM</span>
+            </button>
+
+        @else
+
             <button
                 type="button"
                 wire:click="submitRate({{ $requisition->id }})"
-                wire:confirm="Are you sure you want to approve this requisition?"
+                wire:confirm="Are you sure you want to submit this requisition to HRM?"
                 @click="moreOpen = false"
                 class="flex w-full items-center gap-3 px-3 py-2.5
                     text-sm text-green-700 hover:bg-green-50 transition"
@@ -86,67 +112,45 @@
                 <span>Submit to HRM</span>
             </button>
 
-            {{-- RETURN --}}
-            <button
-                type="button"
-                wire:click="openHrReturnModal({{ $requisition->id }})"
-                @click="moreOpen = false"
-                class="flex w-full items-center gap-3 px-3 py-2.5
-                    text-sm text-amber-700 hover:bg-amber-50 transition"
-            >
-                <svg class="w-4 h-4 shrink-0" viewBox="0 0 20 20"
-                    fill="currentColor">
-                    <path fill-rule="evenodd"
-                        d="M7.707 3.293a1 1 0 010 1.414L5.414 7H13a4 4 0 010 8H9a1 1 0 110-2h4a2 2 0 100-4H5.414l2.293 2.293a1 1 0 11-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                        clip-rule="evenodd"/>
-                </svg>
-                <span>Return</span>
-            </button>
+        @endif
 
-            {{-- REJECT --}}
-            <button
-                type="button"
-                wire:click="reject({{ $requisition->id }})"
-                wire:confirm="Are you sure you want to reject this requisition?"
-                @click="moreOpen = false"
-                class="flex w-full items-center gap-3 px-3 py-2.5
-                    text-sm text-red-700 hover:bg-red-50 transition"
-            >
-                <svg class="w-4 h-4 shrink-0" viewBox="0 0 20 20"
-                    fill="currentColor">
-                    <path fill-rule="evenodd"
-                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                        clip-rule="evenodd"/>
-                </svg>
-                <span>Reject</span>
-            </button>
+        <div class="my-1 border-t border-gray-100"></div>
 
-            <div class="my-1 border-t border-gray-100"></div>
+        {{-- RETURN --}}
+        <button
+            type="button"
+            wire:click="openHrReturnModal({{ $requisition->id }})"
+            @click="moreOpen = false"
+            class="flex w-full items-center gap-3 px-3 py-2.5
+                text-sm text-amber-700 hover:bg-amber-50 transition"
+        >
+            <svg class="w-4 h-4 shrink-0" viewBox="0 0 20 20"
+                fill="currentColor">
+                <path fill-rule="evenodd"
+                    d="M7.707 3.293a1 1 0 010 1.414L5.414 7H13a4 4 0 010 8H9a1 1 0 110-2h4a2 2 0 100-4H5.414l2.293 2.293a1 1 0 11-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                    clip-rule="evenodd"/>
+            </svg>
+            <span>Return</span>
+        </button>
 
-            {{-- EDIT & RESUBMIT --}}
-            @if(
-                $requisition->status === 'pending' &&
-                $requisition->current_approval_stage === 'hr_rep' &&
-                $requisition->return_to_stage === 'hr_rep' &&
-                $requisition->returned_from_stage === 'hrm'
-            )
-                {{-- EDIT & RESUBMIT --}}
-                <button
-                    type="button"
-                    wire:click="loadRequisition({{ $requisition->id }})"
-                    @click="moreOpen = false"
-                    class="flex w-full items-center gap-3 px-3 py-2.5
-                        text-sm text-blue-700 hover:bg-blue-50 transition"
-                >
-                    <svg class="w-4 h-4 shrink-0" viewBox="0 0 20 20"
-                        fill="currentColor">
-                        <path d="M13.586 3.586a2 2 0 012.828 2.828l-9.9 9.9-3.536.707.707-3.536 9.9-9.9z"/>
-                        <path d="M12.172 5l2.828 2.828"/>
-                    </svg>
-                    <span>Edit &amp; Resubmit</span>
-                </button>
-            @endif
+        {{-- REJECT --}}
+        <button
+            type="button"
+            wire:click="reject({{ $requisition->id }})"
+            wire:confirm="Are you sure you want to reject this requisition?"
+            @click="moreOpen = false"
+            class="flex w-full items-center gap-3 px-3 py-2.5
+                text-sm text-red-700 hover:bg-red-50 transition"
+        >
+            <svg class="w-4 h-4 shrink-0" viewBox="0 0 20 20"
+                fill="currentColor">
+                <path fill-rule="evenodd"
+                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                    clip-rule="evenodd"/>
+            </svg>
+            <span>Reject</span>
+        </button>
 
-        </div>
-    </template>
+    </div>
+</template>
 </div>
