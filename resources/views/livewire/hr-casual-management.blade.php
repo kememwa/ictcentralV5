@@ -1,4 +1,4 @@
-<div>
+<div >
 <div class="space-y-4">
 
     <x-page-header title="Casual Detail Management" subtitle="Review, approve and manage casual worker records">
@@ -346,58 +346,64 @@
         <div class="overflow-hidden">
 
 
+           
             {{-- =========================================================
                 DESKTOP TABLE (lg and up)
             ========================================================= --}}
-            <div class="hidden lg:block overflow-x-auto">
+            <div class="hidden lg:block w-full overflow-hidden">
 
-                <table class="w-full table-auto text-xs">
+                <table class="w-full table-fixed border-collapse text-xs">
 
+                    {{-- TABLE HEADER --}}
                     <thead class="border-b border-slate-200 bg-slate-50/80">
 
                         <tr class="text-left uppercase tracking-wider text-[10px] font-semibold text-slate-500">
 
-                            <th class="px-2.5 py-2.5 whitespace-nowrap">
+                            <th class="w-[11%] px-2 py-3">
                                 Requisition Num
                             </th>
 
-                            <th class="px-2.5 py-2.5 whitespace-nowrap">
+                            <th class="w-[12%] px-2 py-3">
                                 Requested By
                             </th>
 
-                            <th class="px-2 py-2.5 whitespace-nowrap text-center">
+                            <th class="w-[5%] px-1 py-3 text-center">
                                 Casuals
                             </th>
 
-                            <th class="px-2 py-2.5 whitespace-nowrap text-center">
+                            <th class="w-[6%] px-1 py-3 text-center">
                                 Duration
                             </th>
 
-                            <th class="px-1.5 py-2.5 w-[105px]">
+                            <th class="w-[10%] px-1.5 py-3">
                                 Daily Rate
                             </th>
 
-                            <th class="px-1.5 py-2.5 w-[105px]">
+                            <th class="w-[8%] px-1.5 py-3">
                                 NSSF
                             </th>
 
-                            <th class="px-1.5 py-2.5 w-[105px]">
+                            <th class="w-[8%] px-1.5 py-3">
                                 SHA
                             </th>
 
-                            <th class="px-2.5 py-2.5 whitespace-nowrap">
+                            <th class="w-[13%] px-2 py-3 text-right">
                                 Estimated Total
                             </th>
 
-                            <th class="px-2 py-2.5 w-[70px] whitespace-nowrap text-center">
-                                Action
+                            <th class="w-[17%] px-2 py-3 text-center">
+                                Status
+                            </th>
+
+                            <th class="w-[10%] px-1 py-3 text-center">
+                                Actions
                             </th>
 
                         </tr>
 
                     </thead>
 
-
+                    {{-- TABLE BODY --}}
                     <tbody class="divide-y divide-slate-100">
 
                         @forelse($this->hrRequisitions as $req)
@@ -408,9 +414,9 @@
                             >
 
                                 {{-- REQUISITION NUMBER --}}
-                                <td class="px-2.5 py-2.5 whitespace-nowrap">
+                                <td class="px-2 py-3">
 
-                                    <p class="font-medium text-blue-600">
+                                    <p class="font-semibold text-blue-600 break-words">
                                         {{ $req->ref_number }}
                                     </p>
 
@@ -422,17 +428,19 @@
 
 
                                 {{-- REQUESTED BY --}}
-                                <td class="px-2.5 py-2.5 whitespace-nowrap">
+                                <td class="px-2 py-3">
 
                                     <div class="min-w-0">
 
-                                        <p class="font-medium text-slate-800 truncate max-w-[150px]">
+                                        <p class="font-medium text-slate-800 truncate"
+                                        title="{{ $req->requester->name ?? 'Unknown User' }}">
                                             {{ $req->requester->name ?? 'Unknown User' }}
                                         </p>
 
                                         @if($req->requester?->department)
 
-                                            <p class="mt-0.5 text-[9px] text-slate-400 truncate max-w-[150px]">
+                                            <p class="mt-0.5 text-[9px] text-slate-400 truncate"
+                                            title="{{ $req->requester->department->name }}">
                                                 {{ $req->requester->department->name }}
                                             </p>
 
@@ -444,7 +452,7 @@
 
 
                                 {{-- CASUALS --}}
-                                <td class="px-2 py-2.5 text-center whitespace-nowrap">
+                                <td class="px-1 py-3 text-center">
 
                                     <span class="font-medium tabular-nums text-slate-700">
                                         {{ number_format($req->no_of_casuals) }}
@@ -454,13 +462,13 @@
 
 
                                 {{-- DURATION --}}
-                                <td class="px-2 py-2.5 text-center whitespace-nowrap">
+                                <td class="px-1 py-3 text-center">
 
                                     <span class="font-medium tabular-nums text-slate-700">
                                         {{ $req->duration }}
                                     </span>
 
-                                    <span class="ml-0.5 text-[9px] text-slate-400">
+                                    <span class="block text-[9px] text-slate-400">
                                         {{ $req->duration == 1 ? 'day' : 'days' }}
                                     </span>
 
@@ -468,14 +476,12 @@
 
 
                                 {{-- DAILY RATE --}}
-                                <td class="px-1.5 py-2.5">
+                                <td class="px-1.5 py-3">
 
-                                    <div class="relative">
+                                    <div class="relative min-w-0">
 
-                                        <span
-                                            class="pointer-events-none absolute inset-y-0 left-0 flex items-center
-                                                pl-2 text-[9px] font-semibold text-slate-400"
-                                        >
+                                        <span class="pointer-events-none absolute inset-y-0 left-0
+                                            flex items-center pl-1.5 text-[8px] font-semibold text-slate-400">
                                             KES
                                         </span>
 
@@ -485,11 +491,10 @@
                                             step="any"
                                             wire:model.live.debounce.300ms="rates.{{ $req->id }}"
                                             placeholder="0.00"
-                                            class="w-[105px] rounded-md border border-slate-200 bg-white
-                                                py-1.5 pl-9 pr-1.5 text-[11px] text-slate-700
-                                                placeholder:text-slate-300
-                                                focus:border-blue-500 focus:outline-none focus:ring-2
-                                                focus:ring-blue-500/10
+                                            class="block w-full min-w-0 rounded-md border border-slate-200
+                                                bg-white py-1.5 pl-7 pr-1 text-[10px] text-slate-700
+                                                placeholder:text-slate-300 focus:border-blue-500
+                                                focus:outline-none focus:ring-2 focus:ring-blue-500/10
                                                 @error('rates.'.$req->id)
                                                     border-red-400 ring-1 ring-red-400
                                                 @enderror"
@@ -507,14 +512,12 @@
 
 
                                 {{-- NSSF --}}
-                                <td class="px-1.5 py-2.5">
+                                <td class="px-1.5 py-3">
 
-                                    <div class="relative">
+                                    <div class="relative min-w-0">
 
-                                        <span
-                                            class="pointer-events-none absolute inset-y-0 left-0 flex items-center
-                                                pl-2 text-[9px] font-semibold text-slate-400"
-                                        >
+                                        <span class="pointer-events-none absolute inset-y-0 left-0
+                                            flex items-center pl-1.5 text-[8px] font-semibold text-slate-400">
                                             KES
                                         </span>
 
@@ -524,11 +527,10 @@
                                             step="any"
                                             wire:model.live.debounce.300ms="nssfRates.{{ $req->id }}"
                                             placeholder="0.00"
-                                            class="w-[105px] rounded-md border border-slate-200 bg-white
-                                                py-1.5 pl-9 pr-1.5 text-[11px] text-slate-700
-                                                placeholder:text-slate-300
-                                                focus:border-blue-500 focus:outline-none focus:ring-2
-                                                focus:ring-blue-500/10
+                                            class="block w-full min-w-0 rounded-md border border-slate-200
+                                                bg-white py-1.5 pl-7 pr-1 text-[10px] text-slate-700
+                                                placeholder:text-slate-300 focus:border-blue-500
+                                                focus:outline-none focus:ring-2 focus:ring-blue-500/10
                                                 @error('nssfRates.'.$req->id)
                                                     border-red-400 ring-1 ring-red-400
                                                 @enderror"
@@ -544,15 +546,14 @@
 
                                 </td>
 
+
                                 {{-- SHA --}}
-                                <td class="px-1.5 py-2.5">
+                                <td class="px-1.5 py-3">
 
-                                    <div class="relative">
+                                    <div class="relative min-w-0">
 
-                                        <span
-                                            class="pointer-events-none absolute inset-y-0 left-0 flex items-center
-                                                pl-2 text-[9px] font-semibold text-slate-400"
-                                        >
+                                        <span class="pointer-events-none absolute inset-y-0 left-0
+                                            flex items-center pl-1.5 text-[8px] font-semibold text-slate-400">
                                             KES
                                         </span>
 
@@ -562,11 +563,10 @@
                                             step="any"
                                             wire:model.live.debounce.300ms="shaRates.{{ $req->id }}"
                                             placeholder="0.00"
-                                            class="w-[105px] rounded-md border border-slate-200 bg-white
-                                                py-1.5 pl-9 pr-1.5 text-[11px] text-slate-700
-                                                placeholder:text-slate-300
-                                                focus:border-blue-500 focus:outline-none focus:ring-2
-                                                focus:ring-blue-500/10
+                                            class="block w-full min-w-0 rounded-md border border-slate-200
+                                                bg-white py-1.5 pl-7 pr-1 text-[10px] text-slate-700
+                                                placeholder:text-slate-300 focus:border-blue-500
+                                                focus:outline-none focus:ring-2 focus:ring-blue-500/10
                                                 @error('shaRates.'.$req->id)
                                                     border-red-400 ring-1 ring-red-400
                                                 @enderror"
@@ -582,14 +582,16 @@
 
                                 </td>
 
+
                                 {{-- ESTIMATED TOTAL --}}
-                                <td class="px-2.5 py-2.5 whitespace-nowrap">
+                                <td class="px-2 py-3 text-right">
 
                                     @if(!empty($rates[$req->id]) && is_numeric($rates[$req->id]))
 
-                                        <span class="font-semibold tabular-nums text-emerald-600">
-                                            KES
-                                            {{ number_format(
+                                        <span class="font-semibold tabular-nums text-emerald-600
+                                            text-[10px] break-words">
+
+                                            KES {{ number_format(
                                                 (
                                                     (
                                                         (float) $rates[$req->id]
@@ -607,12 +609,35 @@
                                                     )
                                                 )
                                             ) }}
+
                                         </span>
 
                                     @else
 
-                                        <span class="text-slate-400">
-                                            —
+                                        <span class="text-slate-400">—</span>
+
+                                    @endif
+
+                                </td>
+
+
+                                {{-- STATUS --}}
+                                <td class="px-2 py-3 text-center">
+
+                                    @if($req->hr_approval_status === 'returned')
+
+                                        <span class="inline-flex max-w-full items-center justify-center
+                                            rounded-full bg-amber-100 px-2 py-1
+                                            text-[9px] font-semibold leading-tight text-amber-700">
+                                            Returned to You
+                                        </span>
+
+                                    @else
+
+                                        <span class="inline-flex max-w-full items-center justify-center
+                                            rounded-full bg-blue-100 px-2 py-1
+                                            text-[9px] font-semibold leading-tight text-blue-700">
+                                            Pending HR Approval
                                         </span>
 
                                     @endif
@@ -620,59 +645,12 @@
                                 </td>
 
 
-                                {{-- ACTION --}}
-                                <td class="px-2 py-2.5 whitespace-nowrap text-center">
+                                {{-- ACTIONS --}}
+                                <td class="px-1 py-3 text-center">
 
-                                    <button
-                                        type="button"
-                                        wire:click="submitRate({{ $req->id }})"
-                                        wire:loading.attr="disabled"
-                                        wire:target="submitRate({{ $req->id }})"
-                                        title="Submit rate"
-                                        aria-label="Submit rate"
-                                        class="inline-flex h-8 w-8 items-center justify-center
-                                            rounded-lg border border-emerald-200 bg-white
-                                            text-emerald-600 transition
-                                            hover:bg-emerald-50 hover:text-emerald-700
-                                            focus:outline-none focus:ring-2
-                                            focus:ring-emerald-500/20
-                                            disabled:cursor-not-allowed disabled:opacity-50"
-                                    >
-
-                                        {{-- CHECK --}}
-                                        <svg
-                                            wire:loading.remove
-                                            wire:target="submitRate({{ $req->id }})"
-                                            class="h-4 w-4"
-                                            viewBox="0 0 20 20"
-                                            fill="currentColor"
-                                        >
-                                            <path
-                                                fill-rule="evenodd"
-                                                d="M16.704 4.884a1 1 0 01.012 1.414l-8.25 8.25a1 1 0 01-1.414 0l-3.75-3.75a1 1 0 011.414-1.414l3.043 3.043 7.543-7.543a1 1 0 011.402 0z"
-                                                clip-rule="evenodd"
-                                            />
-                                        </svg>
-
-                                        {{-- LOADING --}}
-                                        <svg
-                                            wire:loading
-                                            wire:target="submitRate({{ $req->id }})"
-                                            class="h-4 w-4 animate-spin"
-                                            viewBox="0 0 24 24"
-                                            fill="none"
-                                            stroke="currentColor"
-                                        >
-                                            <path
-                                                stroke-linecap="round"
-                                                stroke-linejoin="round"
-                                                stroke-width="2"
-                                                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9
-                                                m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                                            />
-                                        </svg>
-
-                                    </button>
+                                    <div class="flex items-center justify-center">
+                                        @include('partials.hr-actions', ['req' => $req])
+                                    </div>
 
                                 </td>
 
@@ -682,26 +660,20 @@
 
                             <tr>
 
-                                <td colspan="9" class="px-4 py-16 text-center">
+                                <td colspan="10" class="px-4 py-16 text-center">
 
                                     <div class="flex flex-col items-center justify-center">
 
-                                        <div
-                                            class="mb-3 flex h-10 w-10 items-center justify-center
-                                                rounded-full bg-slate-100"
-                                        >
-                                            <svg
-                                                class="h-5 w-5 text-slate-400"
-                                                viewBox="0 0 20 20"
-                                                fill="currentColor"
-                                            >
-                                                <path
-                                                    fill-rule="evenodd"
-                                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.707a1 1 0 00-1.414-1.414L9 11.172
-                                                    7.707 9.879a1 1 0 001.414 1.414l2 2a1 1 0 001.414 0l3.414-3.414z"
-                                                    clip-rule="evenodd"
-                                                />
+                                        <div class="mb-3 flex h-10 w-10 items-center justify-center
+                                            rounded-full bg-slate-100">
+
+                                            <svg class="h-5 w-5 text-slate-400"
+                                                viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd"
+                                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.707a1 1 0 00-1.414-1.414L9 11.172 7.707 9.879a1 1 0 001.414 1.414l2 2a1 1 0 001.414 0l3.414-3.414z"
+                                                    clip-rule="evenodd"/>
                                             </svg>
+
                                         </div>
 
                                         <p class="font-medium text-slate-700">
@@ -725,6 +697,7 @@
                 </table>
 
             </div>
+
 
             {{-- =========================================================
                 MOBILE / TABLET CARDS
