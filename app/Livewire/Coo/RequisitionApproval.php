@@ -11,6 +11,9 @@ use Illuminate\Support\Facades\Log;
 use App\Models\User;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\DB;
+use App\Models\RequisitionApproval as RequisitionApprovalModel;
+
+
 
 class RequisitionApproval extends Component 
 {
@@ -202,30 +205,112 @@ class RequisitionApproval extends Component
     {
         try {
 
-            $req = Requisition::findOrFail($id);
+            // Ensure the logged-in user is a COO or COO delegate
+            $user = auth()->user();
 
-            // Approve requisition as COO
-            $req->update([
-                'coo_approval_status' => true,
-                'coo_approval_date' => now(),
-                'coo_id' => auth()->user()->id,
-            ]);
+            $isCoo = $user->roles()
+                ->whereIn('name', ['Coo', 'coo delegate'])
+                ->exists();
 
-            // Find all HR users
+            if (!$isCoo) {
+                $this->dispatch(
+                    'notify',
+                    type: 'error',
+                    title: 'Unauthorized',
+                    message: 'You are not authorized to approve this requisition.'
+                );
+
+                return;
+            }
+
+            // Approve the requisition within a database transaction
+            $req = DB::transaction(function () use ($id, $user) {
+
+                $req = Requisition::whereKey($id)
+                    ->lockForUpdate()
+                    ->firstOrFail();
+
+                // Ensure the requisition is awaiting COO approval
+                if (
+                    $req->status !== 'pending' ||
+                    $req->current_approval_stage !== 'coo'
+                ) {
+                    throw new \Exception(
+                        'This requisition is no longer awaiting COO approval.'
+                    );
+                }
+
+                // Find the pending COO approval history record
+                $approval = RequisitionApprovalModel::where(
+                    'requisition_id',
+                    $req->id
+                )
+                    ->where('approval_stage', 'coo')
+                    ->where('approval_cycle', $req->approval_cycle)
+                    ->where('status', 'pending')
+                    ->lockForUpdate()
+                    ->firstOrFail();
+
+                // Update COO approval history
+                $approval->update([
+                    'approver_id' => $user->id,
+                    'status' => 'approved',
+                    'acted_at' => now(),
+                ]);
+
+                // Update the requisition's COO approval details
+                $req->update([
+                    'coo_approval_status' => true,
+                    'coo_approval_date' => now(),
+                    'coo_id' => $user->id,
+
+                    // Move to HR Representative
+                    'current_approval_stage' => 'hr_rep',
+                ]);
+
+                // Create the next approval history record for HR
+                RequisitionApprovalModel::create([
+                    'requisition_id' => $req->id,
+                    'approver_id' => null,
+                    'approval_stage' => 'hr_rep',
+                    'status' => 'pending',
+                    'approval_cycle' => $req->approval_cycle,
+                ]);
+
+                return $req->fresh();
+
+            });
+
+            // Find all HR Representative users
             $hrApprovers = User::whereHas('roles', function ($query) {
                 $query->where('name', 'hr');
             })
-            ->whereNotNull('email')
-            ->get();
+                ->whereNotNull('email')
+                ->get();
 
-            // Get HR email addresses
-            $emails = $hrApprovers->pluck('email')->toArray();
+            $emails = $hrApprovers->pluck('email')->unique()->values()->all();
 
-            // Send notification to HR
+            // Notify HR after the transaction has committed
             if (!empty($emails)) {
-                Mail::to($emails[0])
-                    ->cc(array_slice($emails, 1))
-                    ->queue(new HrApproveRequisition($req));
+
+                try {
+                    Mail::to($emails[0])
+                        ->cc(array_slice($emails, 1))
+                        ->queue(new HrApproveRequisition($req));
+
+                } catch (\Throwable $mailError) {
+
+                    Log::error('COO approval email notification failed', [
+                        'requisition_id' => $id,
+                        'error' => $mailError->getMessage(),
+                    ]);
+                }
+
+            } else {
+
+                Log::warning('No HR users found to receive COO approval notification.', [
+                    'requisition_id' => $id,
+                ]);
             }
 
             // Success notification
@@ -233,7 +318,7 @@ class RequisitionApproval extends Component
                 'notify',
                 type: 'success',
                 title: 'Approved',
-                message: 'Requisition approved successfully.'
+                message: 'Requisition approved successfully and forwarded to HR.'
             );
 
         } catch (\Throwable $e) {
@@ -254,7 +339,6 @@ class RequisitionApproval extends Component
             );
         }
     }
-
     #[Layout('layouts.dashboard')]
     public function render()
     {
@@ -279,5 +363,5 @@ class RequisitionApproval extends Component
                 ->paginate(10),
         ]);
     }
-    
+
 }
