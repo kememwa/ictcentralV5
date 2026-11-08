@@ -801,6 +801,41 @@ class HrCasualManagement extends Component
             * that you already use in submitRate().
             */
 
+            // Find HRM approvers
+            $hrmApprovers = User::whereHas('roles', function ($query) {
+                $query->where('name', 'hrm');
+            })
+                ->whereNotNull('email')
+                ->get();
+                
+            // Find HRM delegates
+            $hrmDelegates = User::whereHas('roles', function ($query) {
+                $query->where('name', 'hrm delegate');
+            })
+                ->whereNotNull('email')
+                ->get();
+
+            $hrmEmails = $hrmApprovers->pluck('email')
+                ->merge($hrmDelegates->pluck('email'))
+                ->unique()
+                ->values()
+                ->all();
+
+            // Notify HRM
+            if (!empty($hrmEmails)) {
+
+                Mail::to($hrmEmails[0])
+                    ->cc(array_slice($hrmEmails, 1))
+                    ->queue(new HrmApproveRequisition($req));
+
+            } else {
+
+                Log::warning('No HRM approvers found for requisition notification.', [
+                    'requisition_id' => $id,
+                ]);
+            }
+
+
             $this->dispatch(
                 'notify',
                 type: 'success',

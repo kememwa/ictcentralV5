@@ -166,12 +166,15 @@
                             </td>
 
                             {{-- ACTIONS --}}
-                            <td class="px-1 py-2.5">
-
+                            <td class="px-2 py-3 text-center">
                                 <div class="flex items-center justify-center">
-                                    @include('partials.hrm-actions', ['req' => $req])
+                                    @include('partials.requisition-actions', [
+                                        'req' => $req,
+                                        'approveMethod' => 'approveHrm',
+                                        'returnMethod' => 'openHrmReturnModal',
+                                        'rejectMethod' => 'reject',
+                                    ])
                                 </div>
-
                             </td>
 
                         </tr>

@@ -12,6 +12,7 @@ use Livewire\WithPagination;
 use App\Models\RequisitionApproval;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use App\Mail\RequisitionReturned;
 
 class HrmCasualManagement extends Component
 {
@@ -72,6 +73,7 @@ class HrmCasualManagement extends Component
         $this->dispatch('open-hrm-return-modal');
     }
 
+   
     public function returnHrm()
     {
         $this->validate([
@@ -79,7 +81,6 @@ class HrmCasualManagement extends Component
         ]);
 
         try {
-
             $user = auth()->user();
 
             // Verify HRM authorization
@@ -93,9 +94,12 @@ class HrmCasualManagement extends Component
                 );
             }
 
-            DB::transaction(function () use ($user) {
+            $id = $this->hrmReturnRequisitionId;
+            $returnReason = $this->hrmReturnReason;
 
-                $req = Requisition::whereKey($this->hrmReturnRequisitionId)
+            $req = DB::transaction(function () use ($user, $id, $returnReason) {
+
+                $req = Requisition::whereKey($id)
                     ->lockForUpdate()
                     ->firstOrFail();
 
@@ -104,7 +108,7 @@ class HrmCasualManagement extends Component
                     $req->status !== 'pending' ||
                     $req->current_approval_stage !== 'hrm'
                 ) {
-                    throw new \Exception(
+                    throw new \RuntimeException(
                         'This requisition is no longer awaiting HRM approval.'
                     );
                 }
@@ -124,7 +128,7 @@ class HrmCasualManagement extends Component
                 $approval->update([
                     'approver_id' => $user->id,
                     'status' => 'returned',
-                    'comments' => $this->hrmReturnReason,
+                    'comments' => $returnReason,
                     'acted_at' => now(),
                 ]);
 
@@ -138,11 +142,51 @@ class HrmCasualManagement extends Component
 
                     'returned_by' => $user->id,
                     'returned_at' => now(),
-                    'return_reason' => $this->hrmReturnReason,
+                    'return_reason' => $returnReason,
 
                     'hrm_approval_status' => 'returned',
                 ]);
+
+                return $req->fresh(['requester']);
             });
+
+            // Notify HR Representative via email
+            $requester = $req->requester;
+
+            $actionUrl = route('hr.casual.manage');
+
+            $hrApprovers = User::whereHas('roles', function ($query) {
+                $query->whereIn('name', ['Hr', 'hr']);
+            })
+                ->whereNotNull('email')
+                ->get();
+
+            $emails = $hrApprovers->pluck('email')->unique()->values()->all();
+
+            if (!empty($emails)) {
+                try {
+                    Mail::to($emails[0])
+                        ->cc(array_slice($emails, 1))
+                        ->send(new RequisitionReturned(
+                            requisition: $req,
+                            requester: $requester,
+                            returnReason: $returnReason,
+                            returnedBy: $user->name,
+                            actionUrl: $actionUrl,
+                        ));
+
+                } catch (\Throwable $mailException) {
+                    Log::error('HRM requisition returned email failed', [
+                        'requisition_id' => $req->id,
+                        'error' => $mailException->getMessage(),
+                    ]);
+                }
+
+            } else {
+                Log::warning('No HR Representative users found to receive HRM return notification.', [
+                    'requisition_id' => $id,
+                ]);
+            }
 
             // Reset modal properties
             $this->reset([
@@ -175,10 +219,13 @@ class HrmCasualManagement extends Component
                 'notify',
                 type: 'error',
                 title: 'Return Failed',
-                message: 'The requisition could not be returned. Please try again.'
+                message: $e instanceof \RuntimeException
+                    ? $e->getMessage()
+                    : 'The requisition could not be returned. Please try again.'
             );
         }
     }
+
 
     public function approveHrm($id)
     {
