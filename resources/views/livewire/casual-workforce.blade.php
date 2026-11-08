@@ -475,7 +475,7 @@
 
                         <tr>
 
-                            <td colspan="7" class="px-4 py-16 text-center">
+                            <td colspan="8" class="px-4 py-16 text-center">
 
                                 <div class="flex flex-col items-center justify-center">
 
