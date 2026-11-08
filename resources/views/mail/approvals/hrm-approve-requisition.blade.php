@@ -34,7 +34,8 @@
                             </p>
 
                             <p style="font-size: 15px; line-height: 1.6;">
-                                A casual requisition has been approved by the COO and is now awaiting HR approval.
+                                A new casual requisition has been submitted and is
+                                awaiting your approval.
                             </p>
 
                             {{-- Requisition Details --}}

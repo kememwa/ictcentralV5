@@ -25,6 +25,7 @@ class RequisitionReturned extends Mailable implements ShouldQueue
         public string $returnReason,
         public string $returnedBy,
         public string $actionUrl,
+        public string $recipientGreeting = '',
     ) {}
 
     /**

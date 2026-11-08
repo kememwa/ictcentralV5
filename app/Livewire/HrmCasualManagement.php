@@ -173,6 +173,7 @@ class HrmCasualManagement extends Component
                             returnReason: $returnReason,
                             returnedBy: $user->name,
                             actionUrl: $actionUrl,
+                            recipientGreeting: 'Team',
                         ));
 
                 } catch (\Throwable $mailException) {

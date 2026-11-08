@@ -807,7 +807,7 @@ class HrCasualManagement extends Component
             })
                 ->whereNotNull('email')
                 ->get();
-                
+
             // Find HRM delegates
             $hrmDelegates = User::whereHas('roles', function ($query) {
                 $query->where('name', 'hrm delegate');
@@ -826,7 +826,7 @@ class HrCasualManagement extends Component
 
                 Mail::to($hrmEmails[0])
                     ->cc(array_slice($hrmEmails, 1))
-                    ->queue(new HrmApproveRequisition($req));
+                    ->queue(new HrmApproveRequisition($requisition));
 
             } else {
 
