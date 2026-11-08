@@ -47,29 +47,45 @@
                         <tr>
                             <th class="px-3 py-2">Department Name</th>
                             <th class="px-3 py-2">HOD Name</th>
+                            <th class="px-3 py-2 text-center">Action</th>
                         </tr>
                     </thead>
 
                     <tbody class="divide-y divide-gray-100">
                         @forelse($departments as $department)
-                            <tr class="hover:bg-gray-50">
-                                <td class="px-3 py-2 hidden xl:table-cell text-gray-700">
+                            <tr wire:key="department-{{ $department->id }}" class="hover:bg-gray-50">
+
+                                <td class="px-3 py-2 text-gray-700">
                                     {{ $department->name }}
                                 </td>
-                                <td class="px-3 py-2 hidden xl:table-cell text-gray-700">
-                                    {{ $department->hod->name ?? 'N/A' }}
+
+                                <td class="px-3 py-2 text-gray-700">
+                                    {{ $department->hod?->name ?? 'N/A' }}
                                 </td>
+
+                                <td class="px-3 py-2 text-right">
+                                    <button
+                                        type="button"
+                                        wire:click="editDepartment({{ $department->id }})"
+                                        class="inline-flex items-center gap-1 rounded-md bg-blue-50 px-2.5 py-1.5 text-xs font-medium text-blue-700 hover:bg-blue-100"
+                                    >
+                                        <i class="fas fa-edit"></i>
+                                        Edit
+                                    </button>
+                                </td>
+
                             </tr>
-                            @empty
+
+                        @empty
                             <tr>
-                                <td colspan="9" class="py-12 text-center">
+                                <td colspan="3" class="py-12 text-center">
                                     <div class="flex flex-col items-center gap-2 text-gray-500">
                                         <svg class="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                                                 d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0l-2 7H6l-2-7m16 0H4"/>
                                         </svg>
-                                        <p class="font-medium text-gray-700 text-sm">No transactions found</p>
-                                        <p class="text-[11px]">Try adjusting your search or add a new transaction</p>
+                                        <p class="font-medium text-gray-700 text-sm">No departments found</p>
+                                        <p class="text-[11px]">Try adjusting your search or add a new department.</p>
                                     </div>
                                 </td>
                             </tr>
@@ -347,5 +363,367 @@
         </div>
     </div>
 </div>
+
+
+@if($showEditDepartmentModal)
+    <div
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+        wire:key="edit-department-modal"
+    >
+        <div class="w-full max-w-lg rounded-xl bg-white shadow-xl">
+
+            {{-- Modal Header --}}
+            <div class="flex items-center justify-between border-b border-gray-100 px-5 py-4">
+                <div>
+                    <h2 class="text-base font-semibold text-gray-800">
+                        Edit Department
+                    </h2>
+                    <p class="mt-0.5 text-xs text-gray-500">
+                        Update department details and its Head of Department.
+                    </p>
+                </div>
+
+                <button
+                    type="button"
+                    wire:click="$set('showEditDepartmentModal', false)"
+                    class="text-gray-400 hover:text-gray-700"
+                >
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            {{-- Modal Body --}}
+            <form wire:submit.prevent="updateDepartment" class="space-y-4 p-5">
+
+                {{-- Department Name --}}
+                <div>
+                    <label class="mb-1.5 block text-xs font-semibold text-gray-700">
+                        Department Name
+                    </label>
+
+                    <input
+                        type="text"
+                        wire:model="edit_department_name"
+                        placeholder="Enter department name"
+                        class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                    >
+
+                    @error('edit_department_name')
+                        <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                {{-- Head of Department --}}
+                <div class="relative">
+
+                    <label class="text-xs font-semibold text-gray-700 flex items-center gap-1">
+                        Head of Department
+                        <span class="text-gray-400 font-normal">(optional)</span>
+                    </label>
+
+                    <div class="relative mt-1.5">
+
+                        {{-- Search Input --}}
+                        <input
+                            type="text"
+                            wire:model.live.debounce.300ms="edit_searchHead"
+                            wire:keydown.escape="$set('edit_showHeadDropdown', false)"
+                            @focus="if($wire.edit_searchHead.length >= 2) $wire.set('edit_showHeadDropdown', true)"
+                            autocomplete="off"
+                            placeholder="Search employee by name or email..."
+                            class="w-full px-3.5 py-2.5 pl-10 pr-10 border border-gray-200 rounded-lg bg-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-all duration-200 placeholder:text-gray-400"
+                        />
+
+                        {{-- Search Icon / Loading Spinner --}}
+                        <div class="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none">
+
+                            <svg
+                                wire:loading.remove
+                                wire:target="edit_searchHead"
+                                class="w-4 h-4 text-gray-400"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                                />
+                            </svg>
+
+                            <svg
+                                wire:loading
+                                wire:target="edit_searchHead"
+                                class="animate-spin h-4 w-4 text-blue-600"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                            >
+                                <circle
+                                    class="opacity-25"
+                                    cx="12"
+                                    cy="12"
+                                    r="10"
+                                    stroke="currentColor"
+                                    stroke-width="4"
+                                />
+                                <path
+                                    class="opacity-75"
+                                    fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                />
+                            </svg>
+                        </div>
+
+                        {{-- Clear Search Text --}}
+                        @if(!empty($edit_searchHead))
+                            <button
+                                type="button"
+                                wire:click="$set('edit_searchHead', '')"
+                                wire:loading.attr="disabled"
+                                wire:target="edit_searchHead"
+                                class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                                title="Clear search"
+                            >
+                                <svg
+                                    class="w-4 h-4"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M6 18L18 6M6 6l12 12"
+                                    />
+                                </svg>
+                            </button>
+                        @endif
+
+                    </div>
+
+                    {{-- Employee Dropdown --}}
+                    @if($edit_showHeadDropdown)
+                        <div
+                            x-data
+                            @click.outside="$wire.set('edit_showHeadDropdown', false)"
+                            class="absolute z-[9999] mt-1.5 w-full bg-white border border-gray-200 rounded-lg shadow-xl max-h-60 overflow-y-auto"
+                        >
+
+                            {{-- Loading Skeleton --}}
+                            <div wire:loading wire:target="edit_searchHead" class="p-4 space-y-3">
+
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-full bg-gray-200 animate-pulse"></div>
+                                    <div class="flex-1">
+                                        <div class="h-4 bg-gray-200 rounded w-3/4 animate-pulse"></div>
+                                        <div class="h-3 bg-gray-100 rounded w-1/2 mt-2"></div>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-full bg-gray-200 animate-pulse"></div>
+                                    <div class="flex-1">
+                                        <div class="h-4 bg-gray-200 rounded w-2/3 animate-pulse"></div>
+                                        <div class="h-3 bg-gray-100 rounded w-1/3 mt-2"></div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            {{-- Search Results --}}
+                            <div wire:loading.remove wire:target="edit_searchHead">
+
+                                @if(count($edit_headResults))
+
+                                    <div class="py-1">
+
+                                        <div class="px-3 py-1.5 text-[10px] font-medium text-gray-400 uppercase tracking-wider border-b border-gray-100">
+                                            {{ count($edit_headResults) }}
+                                            employee{{ count($edit_headResults) > 1 ? 's' : '' }} found
+                                        </div>
+
+                                        @foreach($edit_headResults as $user)
+                                            <button
+                                                type="button"
+                                                wire:key="edit-head-{{ $user->id }}"
+                                                wire:click="selectEditHead({{ $user->id }})"
+                                                @click="$wire.set('edit_showHeadDropdown', false)"
+                                                class="w-full px-4 py-2.5 text-left hover:bg-blue-50 active:bg-blue-100 transition-colors duration-150 border-b border-gray-50 last:border-0 group"
+                                            >
+                                                <div class="flex items-center gap-3">
+
+                                                    <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-700 font-semibold flex items-center justify-center flex-shrink-0 text-sm">
+                                                        {{ strtoupper(substr($user->name, 0, 1)) }}
+                                                    </div>
+
+                                                    <div class="flex-1 min-w-0">
+                                                        <div class="font-medium text-sm text-gray-800 group-hover:text-blue-700 truncate">
+                                                            {{ $user->name }}
+                                                        </div>
+
+                                                        <div class="text-xs text-gray-500 truncate">
+                                                            {{ $user->email }}
+                                                        </div>
+                                                    </div>
+
+                                                    <svg
+                                                        class="w-4 h-4 text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        viewBox="0 0 24 24"
+                                                    >
+                                                        <path
+                                                            stroke-linecap="round"
+                                                            stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M9 5l7 7-7 7"
+                                                        />
+                                                    </svg>
+
+                                                </div>
+                                            </button>
+                                        @endforeach
+
+                                    </div>
+
+                                @elseif(strlen($edit_searchHead) >= 2)
+
+                                    {{-- No Results --}}
+                                    <div class="p-6 text-center">
+
+                                        <svg
+                                            class="w-10 h-10 mx-auto text-gray-300 mb-2"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                                            />
+                                        </svg>
+
+                                        <p class="text-sm text-gray-500">No employees found</p>
+                                        <p class="text-xs text-gray-400 mt-1">Try adjusting your search</p>
+
+                                    </div>
+
+                                @else
+
+                                    <div class="p-4 text-center text-sm text-gray-400">
+                                        Type at least 2 characters to search
+                                    </div>
+
+                                @endif
+
+                            </div>
+
+                        </div>
+                    @endif
+
+                    {{-- Selected Employee Display --}}
+                    @if($edit_department_head)
+                        <div class="mt-3 rounded-lg bg-green-50 border border-green-200 p-3 flex items-center gap-3">
+
+                            <div class="w-8 h-8 rounded-full bg-green-200 text-green-700 font-semibold flex items-center justify-center flex-shrink-0 text-sm">
+                                {{ strtoupper(substr($edit_searchHead, 0, 1)) }}
+                            </div>
+
+                            <div class="flex-1 min-w-0">
+                                <div class="text-xs text-green-600 font-medium">
+                                    Selected Head of Department
+                                </div>
+
+                                <div class="font-semibold text-green-800 truncate text-sm">
+                                    {{ $edit_searchHead }}
+                                </div>
+                            </div>
+
+                            {{-- Remove Selected HOD --}}
+                            <button
+                                type="button"
+                                wire:click="removeEditHead"
+                                class="text-green-600 hover:text-green-800 transition-colors"
+                                title="Remove selected HOD"
+                            >
+                                <svg
+                                    class="w-4 h-4"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M6 18L18 6M6 6l12 12"
+                                    />
+                                </svg>
+                            </button>
+
+                        </div>
+                    @endif
+
+                    {{-- Validation Error --}}
+                    @error('edit_department_head')
+                        <p class="text-xs text-red-500 mt-1.5 flex items-center gap-1">
+                            <svg
+                                class="w-3.5 h-3.5"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                                />
+                            </svg>
+                            {{ $message }}
+                        </p>
+                    @enderror
+
+                </div>
+
+                {{-- Modal Footer --}}
+                <div class="flex justify-end gap-2 border-t border-gray-100 pt-4">
+
+                    <button
+                        type="button"
+                        wire:click="$set('showEditDepartmentModal', false)"
+                        class="rounded-lg border border-gray-300 px-4 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-50"
+                    >
+                        Cancel
+                    </button>
+
+                    <button
+                        type="submit"
+                        wire:loading.attr="disabled"
+                        wire:target="updateDepartment"
+                        class="rounded-lg bg-blue-600 px-4 py-2 text-xs font-semibold text-white hover:bg-blue-700 disabled:opacity-50"
+                    >
+                        <span wire:loading.remove wire:target="updateDepartment">
+                            <i class="fas fa-save mr-1"></i>
+                            Save Changes
+                        </span>
+
+                        <span wire:loading wire:target="updateDepartment">
+                            <i class="fas fa-spinner fa-spin mr-1"></i>
+                            Updating...
+                        </span>
+                    </button>
+
+                </div>
+
+            </form>
+        </div>
+    </div>
+@endif
 
 </div>

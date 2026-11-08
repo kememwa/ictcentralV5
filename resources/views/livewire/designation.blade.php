@@ -55,7 +55,7 @@
                             <th class="px-3 py-2">Division Name</th>
                             <th class="px-3 py-2">Department Name</th>
                             <th class="px-3 py-2">Reports to</th>
-                            <th class="px-3 py-2">Edit</th>
+                            <th class="px-3 py-2">Action</th>
                         </tr>
                     </thead>
 
