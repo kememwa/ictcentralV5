@@ -43,7 +43,7 @@
                             </h2>
 
                             <p style="color:#475569; font-size:14px; line-height:1.7;">
-                                Hello <strong>{{ $requester->name }}</strong>,
+                                Dear <strong>{{ $requester->name }}</strong>,
                             </p>
 
                             <p style="color:#475569; font-size:14px; line-height:1.7;">
