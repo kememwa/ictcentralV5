@@ -12,7 +12,7 @@ use Illuminate\Queue\SerializesModels;
 use App\Models\Requisition;
 use App\Models\User;
 
-class RequisitionReturned extends Mailable
+class RequisitionReturned extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
