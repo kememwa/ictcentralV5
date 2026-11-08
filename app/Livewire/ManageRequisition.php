@@ -8,6 +8,7 @@ use App\Models\Requisition;
 use App\Models\User;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\CooApproveRequisition;
+use App\Mail\RequisitionReturned;
 use Illuminate\Support\Facades\Log;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\DB;
@@ -163,6 +164,7 @@ class ManageRequisition extends Component
 
 
 
+    
     public function returnRequisition($id)
     {
         $this->validate([
@@ -170,7 +172,10 @@ class ManageRequisition extends Component
         ]);
 
         try {
-            DB::transaction(function () use ($id) {
+
+            $returnReason = $this->returnReason;
+
+            $req = DB::transaction(function () use ($id, $returnReason) {
 
                 $req = Requisition::whereKey($id)
                     ->lockForUpdate()
@@ -195,7 +200,7 @@ class ManageRequisition extends Component
                 $approval->update([
                     'approver_id' => auth()->id(),
                     'status' => 'returned',
-                    'comments' => $this->returnReason,
+                    'comments' => $returnReason,
                     'acted_at' => now(),
                 ]);
 
@@ -203,11 +208,44 @@ class ManageRequisition extends Component
                     'status' => 'returned',
                     'returned_by' => auth()->id(),
                     'returned_at' => now(),
-                    'return_reason' => $this->returnReason,
+                    'return_reason' => $returnReason,
                     'returned_from_stage' => 'hod',
                     'return_to_stage' => 'requester',
                 ]);
+
+                return $req->fresh(['requester']);
             });
+
+            // REQUESTER
+            $requester = $req->requester;
+
+            // DYNAMIC ACTION URL
+            $actionUrl = route('casual-workforce');
+
+            // SEND EMAIL
+            if ($requester && !empty($requester->email)) {
+
+                try {
+
+                    Mail::to($requester->email)->send(
+                        new RequisitionReturned(
+                            requisition: $req,
+                            requester: $requester,
+                            returnReason: $returnReason,
+                            returnedBy: auth()->user()->name,
+                            actionUrl: $actionUrl,
+                        )
+                    );
+
+                } catch (\Throwable $mailException) {
+
+                    Log::error('Requisition returned email failed', [
+                        'requisition_id' => $id,
+                        'requester_email' => $requester->email,
+                        'error' => $mailException->getMessage(),
+                    ]);
+                }
+            }
 
             $this->dispatch(
                 'notify',
@@ -216,7 +254,10 @@ class ManageRequisition extends Component
                 message: 'The requisition has been returned to the requester.'
             );
 
-            $this->reset(['returnRequisitionId', 'returnReason']);
+            $this->reset([
+                'returnRequisitionId',
+                'returnReason',
+            ]);
 
         } catch (\Throwable $e) {
 
@@ -236,6 +277,7 @@ class ManageRequisition extends Component
             );
         }
     }
+
 
 
 

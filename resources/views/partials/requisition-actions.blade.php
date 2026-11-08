@@ -5,6 +5,9 @@
     'returnMethod' => 'openReturnModal',
     'rejectMethod' => 'reject',
     'approveLabel' => 'Approve',
+    'showApprove' => true,
+    'showReturn' => true,
+    'showReject' => true,
 ])
 
 @php
