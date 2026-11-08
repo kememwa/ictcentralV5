@@ -61,21 +61,14 @@
                 <thead class="border-b border-slate-200 bg-slate-50/80">
                     <tr class="text-left uppercase tracking-wider text-[10px] font-semibold text-slate-500">
 
-                        <th class="w-[12%] px-2 py-3">Requisition Num</th>
-
-                        <th class="w-[14%] px-2 py-3">Requested By</th>
-
+                        <th class="w-[13%] px-3 py-3">Requisition Num</th>
+                        <th class="w-[16%] px-3 py-3">Requested By</th>
                         <th class="w-[7%] px-1 py-3 text-center">Casuals</th>
-
                         <th class="w-[7%] px-1 py-3 text-center">Days</th>
-
-                        <th class="w-[21%] px-2 py-3">Reason</th>
-
-                        <th class="w-[9%] px-1 py-3 text-center">Start Date</th>
-
-                        <th class="w-[9%] px-1 py-3 text-center">End Date</th>
-
-                        <th class="w-[21%] px-1 py-3 text-center">Actions</th>
+                        <th class="w-[24%] px-3 py-3">Reason</th>
+                        <th class="w-[9%] px-2 py-3 text-center">Start Date</th>
+                        <th class="w-[9%] px-2 py-3 text-center">End Date</th>
+                        <th class="w-[15%] px-2 py-3 text-center">Actions</th>
 
                     </tr>
                 </thead>
@@ -156,79 +149,29 @@
                             {{-- Start Date --}}
                             <td class="px-1 py-3 text-center">
                                 <span class="text-[10px] font-medium text-slate-700">
-                                    {{ \Carbon\Carbon::parse($req->start_date)->format('d/m/y') }}
+                                    {{ \Carbon\Carbon::parse($req->start_date)->format('M d, Y') }}
                                 </span>
                             </td>
 
                             {{-- End Date --}}
                             <td class="px-1 py-3 text-center">
                                 <span class="text-[10px] font-medium text-slate-700">
-                                    {{ \Carbon\Carbon::parse($req->end_date)->format('d/m/y') }}
+                                    {{ \Carbon\Carbon::parse($req->end_date)->format('M d, Y') }}
                                 </span>
                             </td>
 
-                            {{-- Actions --}}
-                            <td class="px-1 py-2.5 align-top">
-
-                                <div class="flex flex-wrap items-center justify-center gap-1">
-
-                                    {{-- Approve --}}
-                                    <button
-                                        type="button"
-                                        wire:click="approveCoo({{ $req->id }})"
-                                        wire:confirm="Approve this requisition?"
-                                        class="inline-flex items-center gap-1 rounded-md
-                                            border border-emerald-200 bg-emerald-50
-                                            px-1.5 py-1 text-[9px] font-semibold
-                                            text-emerald-700 hover:bg-emerald-100 transition"
-                                    >
-                                        <svg class="h-3 w-3 shrink-0" viewBox="0 0 20 20" fill="currentColor">
-                                            <path fill-rule="evenodd"
-                                                d="M16.704 4.884a1 1 0 01.012 1.414l-8.25 8.25a1 1 0 01-1.414 0l-3.75-3.75a1 1 0 011.414-1.414l3.043 3.043 7.543-7.543a1 1 0 011.402 0z"
-                                                clip-rule="evenodd"/>
-                                        </svg>
-                                        Approve
-                                    </button>
-
-                                    {{-- Return --}}
-                                    <button
-                                        type="button"
-                                        wire:click="openCooReturnModal({{ $req->id }})"
-                                        title="Return to requester"
-                                        class="inline-flex items-center gap-1 rounded-md
-                                            border border-amber-200 bg-amber-50
-                                            px-1.5 py-1 text-[9px] font-semibold
-                                            text-amber-700 hover:bg-amber-100 transition"
-                                    >
-                                        <svg class="h-3 w-3 shrink-0" viewBox="0 0 20 20" fill="currentColor">
-                                            <path fill-rule="evenodd"
-                                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                                clip-rule="evenodd"/>
-                                        </svg>
-                                        Return
-                                    </button>
-
-                                    {{-- Reject --}}
-                                    <button
-                                        type="button"
-                                        wire:click="openCooRejectModal({{ $req->id }})"
-                                        title="Reject requisition"
-                                        class="inline-flex items-center gap-1 rounded-md
-                                            border border-rose-200 bg-rose-50
-                                            px-1.5 py-1 text-[9px] font-semibold
-                                            text-rose-700 hover:bg-rose-100 transition"
-                                    >
-                                        <svg class="h-3 w-3 shrink-0" viewBox="0 0 20 20" fill="currentColor">
-                                            <path fill-rule="evenodd"
-                                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 01-1.414-1.414L8.586 10l-4.293 4.293a1 1 0 01-1.414-1.414z"
-                                                clip-rule="evenodd"/>
-                                        </svg>
-                                        Reject
-                                    </button>
-
+                            {{-- ACTIONS --}}
+                            <td class="px-2 py-3 text-center">
+                                <div class="flex items-center justify-center">
+                                    @include('partials.requisition-actions', [
+                                        'req' => $req,
+                                        'approveMethod' => 'approveCoo',
+                                        'returnMethod' => 'openCooReturnModal',
+                                        'rejectMethod' => 'reject',
+                                    ])
                                 </div>
-
                             </td>
+
                         </tr>
 
                     @empty

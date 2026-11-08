@@ -12,6 +12,7 @@ use App\Models\User;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\DB;
 use App\Models\RequisitionApproval as RequisitionApprovalModel;
+use App\Mail\RequisitionReturned;
 
 
 
@@ -61,10 +62,11 @@ class RequisitionApproval extends Component
         ]);
 
         $id = $this->cooReturnRequisitionId;
+        $returnReason = $this->cooReturnReason;
 
         try {
 
-            DB::transaction(function () use ($id) {
+            $req = DB::transaction(function () use ($id) {
 
                 $req = Requisition::whereKey($id)
                     ->lockForUpdate()
@@ -145,7 +147,34 @@ class RequisitionApproval extends Component
                     'return_reason' => $this->cooReturnReason,
                 ]);
 
+                return $req->fresh(['requester']);
             });
+
+            // Send email notification to requester
+            $requester = $req->requester;
+
+            $actionUrl = route('casual-workforce');
+
+            if ($requester && !empty($requester->email)) {
+                try {
+                    Mail::to($requester->email)->send(
+                        new RequisitionReturned(
+                            requisition: $req,
+                            requester: $requester,
+                            returnReason: $returnReason,
+                            returnedBy: auth()->user()->name,
+                            actionUrl: $actionUrl,
+                        )
+                    );
+
+                } catch (\Throwable $mailException) {
+                    Log::error('Requisition returned email failed', [
+                        'requisition_id' => $id,
+                        'requester_email' => $requester->email,
+                        'error' => $mailException->getMessage(),
+                    ]);
+                }
+            }
 
             /*
             |--------------------------------------------------------------------------
