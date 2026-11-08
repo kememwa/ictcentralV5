@@ -180,6 +180,32 @@ trait RejectsRequisitions
                 return $req->fresh(['requester']);
             });
 
+            $requester = $req->requester;
+
+            $actionUrl = route('casual-workforce');
+
+            if ($requester && !empty($requester->email)) {
+                try {
+                    Mail::to($requester->email)->send(
+                        new RequisitionRejected(
+                            requisition: $req,
+                            requester: $requester,
+                            rejectionReason: $this->rejectionReason,
+                            rejectedBy: auth()->user()->name,
+                            actionUrl: $actionUrl,
+                        )
+                    );
+
+                } catch (\Throwable $mailException) {
+                    Log::error('Requisition rejected email failed', [
+                        'requisition_id' =>  $req->id,
+                        'requester_email' => $requester->email,
+                        'error' => $mailException->getMessage(),
+                    ]);
+                }
+            }
+
+
             $this->reset([
                 'rejectRequisitionId',
                 'rejectRequisitionRef',
