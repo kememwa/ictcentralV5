@@ -7,6 +7,8 @@ use App\Models\RequisitionApproval;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\RequisitionRejected;
 
 trait RejectsRequisitions
 {
@@ -198,13 +200,12 @@ trait RejectsRequisitions
 
                 } catch (\Throwable $mailException) {
                     Log::error('Requisition rejected email failed', [
-                        'requisition_id' =>  $req->id,
+                        'requisition_id' => $req->id,
                         'requester_email' => $requester->email,
                         'error' => $mailException->getMessage(),
                     ]);
                 }
             }
-
 
             $this->reset([
                 'rejectRequisitionId',

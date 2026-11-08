@@ -2,25 +2,25 @@
 
 namespace App\Mail;
 
+use App\Models\Requisition;
+use App\Models\User;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
-use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class RequisitionRejected extends Mailable
+class RequisitionRejected extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
-    /**
-     * Create a new message instance.
-     */
-    public function __construct()
-    {
-        //
-    }
+    public function __construct(
+        public Requisition $requisition,
+        public User $requester,
+        public string $rejectionReason,
+        public string $rejectedBy,
+        public string $actionUrl,
+    ) {}
 
     /**
      * Get the message envelope.
@@ -28,7 +28,7 @@ class RequisitionRejected extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Requisition Rejected',
+            subject: 'Requisition Rejected - ' . $this->requisition->ref_number,
         );
     }
 
@@ -38,14 +38,12 @@ class RequisitionRejected extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'view.name',
+            view: 'emails.requisitions.rejected',
         );
     }
 
     /**
      * Get the attachments for the message.
-     *
-     * @return array<int, Attachment>
      */
     public function attachments(): array
     {
