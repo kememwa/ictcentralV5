@@ -177,28 +177,16 @@
                                 {{ \Carbon\Carbon::parse($requisition->end_date)->format('M d, Y') }}
                             </td>
 
-                            {{-- Actions --}}
-                            <td class="px-4 py-3">
-                                <div class="flex items-center justify-end gap-2">
 
-                                    <button
-                                        type="button"
-                                        wire:click="approveRequest({{ $requisition->id }})"
-                                        wire:confirm="Approve this requisition?"
-                                        class="inline-flex items-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-700 transition hover:bg-emerald-100"
-                                    >  
-                                        Approve
-                                    </button>
-
-                                    <button
-                                        type="button"
-                                        wire:click="openReturnModal({{ $requisition->id }})"
-                                        
-                                        class="inline-flex items-center gap-1.5 rounded-lg border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-medium text-rose-700 transition hover:bg-rose-100"
-                                    >
-                                        Return
-                                    </button>
-
+                            {{-- ACTIONS --}}
+                            <td class="px-1 py-2.5">
+                                <div class="flex items-center justify-center">
+                                    @include('partials.requisition-actions', [
+                                        'req' => $requisition,
+                                        'approveMethod' => 'approveRequest',
+                                        'returnMethod' => 'openReturnModal',
+                                        'rejectMethod' => 'reject',
+                                    ])
                                 </div>
                             </td>
                         </tr>
