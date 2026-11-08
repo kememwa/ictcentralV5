@@ -13,6 +13,7 @@ use App\Mail\HrmApproveRequisition;
 use Illuminate\Support\Facades\Log;
 use App\Models\User;
 use App\Mail\CasualApproved;
+use App\Mail\RequisitionReturned;
 use App\Models\RequisitionApproval;
 use Illuminate\Support\Facades\DB;
 
@@ -82,8 +83,9 @@ class HrCasualManagement extends Component
 
         try {
             $user = auth()->user();
+            $returnReason = $this->hrReturnReason;
 
-            DB::transaction(function () use ($user) {
+            $req = DB::transaction(function () use ($user, $returnReason) {
 
                 $requisition = Requisition::whereKey(
                     $this->hrReturnRequisitionId
@@ -131,7 +133,7 @@ class HrCasualManagement extends Component
                 $approval->update([
                     'status' => 'returned',
                     'approver_id' => $user->id,
-                    'comments' => $this->hrReturnReason,
+                    'comments' => $returnReason,
                     'acted_at' => now(),
                 ]);
 
@@ -146,9 +148,38 @@ class HrCasualManagement extends Component
 
                     'returned_by' => $user->id,
                     'returned_at' => now(),
-                    'return_reason' => $this->hrReturnReason,
+                    'return_reason' => $returnReason,
                 ]);
+
+                return $requisition->fresh(['requester']);
             });
+
+            // Notify the requester via email
+            // Send email notification to requester
+            $requester = $req->requester;
+
+            $actionUrl = route('casual-workforce');
+
+            if ($requester && !empty($requester->email)) {
+                try {
+                    Mail::to($requester->email)->send(
+                        new RequisitionReturned(
+                            requisition: $req,
+                            requester: $requester,
+                            returnReason: $returnReason,
+                            returnedBy: auth()->user()->name,
+                            actionUrl: $actionUrl,
+                        )
+                    );
+
+                } catch (\Throwable $mailException) {
+                    Log::error('Requisition returned email failed', [
+                        'requisition_id' =>  $req->id,
+                        'requester_email' => $requester->email,
+                        'error' => $mailException->getMessage(),
+                    ]);
+                }
+            }
 
             $this->reset([
                 'hrReturnRequisitionId',
