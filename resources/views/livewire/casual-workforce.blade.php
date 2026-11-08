@@ -398,22 +398,68 @@
                                     <button
                                         type="button"
                                         wire:click="editReturnedRequisition({{ $req->id }})"
-                                        class="inline-flex items-center gap-1.5 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-[11px] font-medium text-amber-700 transition hover:bg-amber-100"
+                                        wire:loading.attr="disabled"
+                                        wire:target="editReturnedRequisition({{ $req->id }})"
+                                        class="inline-flex items-center justify-center gap-1.5 rounded-lg
+                                            border border-amber-200 bg-amber-50 px-3 py-2
+                                            text-[11px] font-medium text-amber-700
+                                            transition hover:bg-amber-100
+                                            disabled:cursor-not-allowed disabled:opacity-60"
                                     >
-                                        <svg
-                                            class="h-3.5 w-3.5"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
+
+                                        {{-- NORMAL STATE --}}
+                                        <span
+                                            wire:loading.remove
+                                            wire:target="editReturnedRequisition({{ $req->id }})"
+                                            class="inline-flex items-center gap-1.5"
                                         >
-                                            <path
-                                                stroke-linecap="round"
-                                                stroke-linejoin="round"
-                                                stroke-width="2"
-                                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"
-                                            />
-                                        </svg>
-                                        Edit & Resubmit
+                                            <svg
+                                                class="h-3.5 w-3.5"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    stroke-width="2"
+                                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"
+                                                />
+                                            </svg>
+
+                                            Edit & Resubmit
+                                        </span>
+
+                                        {{-- LOADING STATE --}}
+                                        <span
+                                            wire:loading.flex
+                                            wire:target="editReturnedRequisition({{ $req->id }})"
+                                            class="items-center gap-1.5"
+                                        >
+                                            <svg
+                                                class="h-3.5 w-3.5 animate-spin"
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <circle
+                                                    class="opacity-25"
+                                                    cx="12"
+                                                    cy="12"
+                                                    r="10"
+                                                    stroke="currentColor"
+                                                    stroke-width="4"
+                                                />
+
+                                                <path
+                                                    class="opacity-75"
+                                                    fill="currentColor"
+                                                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                                                />
+                                            </svg>
+
+                                            Loading...
+                                        </span>
+
                                     </button>
 
                                 @else
