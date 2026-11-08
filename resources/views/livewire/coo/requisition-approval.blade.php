@@ -167,7 +167,7 @@
                                         'req' => $req,
                                         'approveMethod' => 'approveCoo',
                                         'returnMethod' => 'openCooReturnModal',
-                                        'rejectMethod' => 'reject',
+                                        'rejectMethod' => 'openRejectModal',
                                     ])
                                 </div>
                             </td>
@@ -536,5 +536,7 @@
 
 
     </x-data-card>
+
+    @include('partials.reject-requisition-modal')
 
 </div>
