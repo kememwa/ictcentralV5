@@ -5,6 +5,7 @@ namespace App\Mail;
 use App\Models\Requisition;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
@@ -38,7 +39,7 @@ class RequisitionRejected extends Mailable implements ShouldQueue
     public function content(): Content
     {
         return new Content(
-            view: 'emails.requisitions.rejected',
+             view: 'mail.rejected.requisition-rejected',
         );
     }
 
