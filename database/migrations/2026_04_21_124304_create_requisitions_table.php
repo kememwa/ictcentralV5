@@ -117,6 +117,16 @@ public function up(): void
 
             $table->unsignedInteger('approval_cycle')->default(1);
 
+            //rejection tracking
+            $table->foreignId('rejected_by')
+            ->nullable()
+            ->constrained('users')
+            ->nullOnDelete();
+
+            $table->timestamp('rejected_at')->nullable();
+
+            $table->text('rejection_reason')->nullable();
+
             $table->timestamp('completed_at')->nullable();
             
 
