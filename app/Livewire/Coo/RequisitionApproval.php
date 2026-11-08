@@ -13,12 +13,19 @@ use Livewire\WithPagination;
 use Illuminate\Support\Facades\DB;
 use App\Models\RequisitionApproval as RequisitionApprovalModel;
 use App\Mail\RequisitionReturned;
+use App\Livewire\Concerns\RejectsRequisitions;
 
 
 
 class RequisitionApproval extends Component 
 {
     use WithPagination;
+    use RejectsRequisitions;
+
+    protected function rejectionStage(): string
+    {
+        return 'coo';
+    }
 
     public $search = '';
     public $actionFilter = '';
@@ -368,6 +375,7 @@ class RequisitionApproval extends Component
             );
         }
     }
+
     #[Layout('layouts.dashboard')]
     public function render()
     {

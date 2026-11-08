@@ -16,12 +16,19 @@ use App\Mail\CasualApproved;
 use App\Mail\RequisitionReturned;
 use App\Models\RequisitionApproval;
 use Illuminate\Support\Facades\DB;
+use App\Livewire\Concerns\RejectsRequisitions;
 
 
 
 class HrCasualManagement extends Component
 {
     use WithPagination;
+    use RejectsRequisitions;
+
+    protected function rejectionStage(): string
+    {
+        return 'hr_rep';
+    }
 
     // Casual data for adding new casuals
     public $casualData = [

@@ -12,12 +12,19 @@ use App\Mail\RequisitionReturned;
 use Illuminate\Support\Facades\Log;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\DB;
+use App\Livewire\Concerns\RejectsRequisitions;
 
 
 
 class ManageRequisition extends Component
 {
     use WithPagination;
+    use RejectsRequisitions;
+
+    protected function rejectionStage(): string
+    {
+        return 'hod';
+    }
 
 
     public $search = '';

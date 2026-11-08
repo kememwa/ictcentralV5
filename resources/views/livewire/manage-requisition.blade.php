@@ -185,7 +185,7 @@
                                         'req' => $requisition,
                                         'approveMethod' => 'approveRequest',
                                         'returnMethod' => 'openReturnModal',
-                                        'rejectMethod' => 'reject',
+                                        'rejectMethod' => 'openRejectModal',
                                     ])
                                 </div>
                             </td>
@@ -543,4 +543,6 @@
 
 
     </x-data-card>
+
+    @include('partials.reject-requisition-modal')
 </div>

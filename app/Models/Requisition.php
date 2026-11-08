@@ -54,6 +54,9 @@ class Requisition extends Model
         'return_reason',
         'resubmitted_at',
         'approval_cycle',
+        'rejected_by',
+        'rejected_at',
+        'rejection_reason',
         'completed_at',
     ];
 
@@ -72,6 +75,7 @@ class Requisition extends Model
             'returned_at' => 'datetime',
             'resubmitted_at' => 'datetime',
             'completed_at' => 'datetime',
+            'rejected_at' => 'datetime',
 
             'approval_cycle' => 'integer',
         ];

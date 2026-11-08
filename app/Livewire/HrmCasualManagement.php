@@ -13,10 +13,17 @@ use App\Models\RequisitionApproval;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use App\Mail\RequisitionReturned;
+use App\Livewire\Concerns\RejectsRequisitions;
 
 class HrmCasualManagement extends Component
 {
     use WithPagination;
+    use RejectsRequisitions;
+
+    protected function rejectionStage(): string
+    {
+        return 'hrm';
+    }
 
     public $search = '';
     public $actionFilter = '';

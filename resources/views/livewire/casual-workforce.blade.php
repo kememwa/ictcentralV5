@@ -305,13 +305,19 @@
 
                             </td>
 
-
                             {{-- =================================================
                                 STATUS
                             ================================================== --}}
                             <td class="px-4 py-3 whitespace-nowrap">
 
-                                @if($req->status === 'returned' && $req->return_to_stage === 'requester')
+                                @if($req->status === 'rejected')
+
+                                    <span class="inline-flex items-center gap-1.5 text-[11px] font-medium text-red-600">
+                                        <span class="h-1.5 w-1.5 rounded-full bg-red-500"></span>
+                                        Rejected
+                                    </span>
+
+                                @elseif($req->status === 'returned' && $req->return_to_stage === 'requester')
 
                                     <span class="inline-flex items-center gap-1.5 text-[11px] font-medium text-rose-600">
                                         <span class="h-1.5 w-1.5 rounded-full bg-rose-500"></span>
@@ -343,14 +349,46 @@
 
                             </td>
 
+                            {{-- =================================================
+                                REASON / RETURN / REJECTION
+                            ================================================== --}}
                             <td class="px-3 py-3 align-top">
 
-                                @if($req->status === 'returned' && $req->return_to_stage === 'requester')
+                                @if($req->status === 'rejected')
 
-                                    <div
-                                        x-data="{ open: false }"
-                                        class="min-w-0"
-                                    >
+                                    <div x-data="{ open: false }" class="min-w-0">
+
+                                        <p
+                                            class="text-[11px] leading-relaxed text-red-700 break-words [overflow-wrap:anywhere]"
+                                            :class="open ? '' : 'line-clamp-2'"
+                                        >
+                                            {{ $req->rejection_reason ?? 'No rejection reason provided.' }}
+                                        </p>
+
+                                        @if(mb_strlen($req->rejection_reason ?? '') > 110)
+
+                                            <button
+                                                type="button"
+                                                @click="open = !open"
+                                                class="mt-1 inline-block text-[10px] font-semibold text-red-600 hover:text-red-700 hover:underline"
+                                                x-text="open ? 'Read less' : 'Read more'"
+                                            ></button>
+
+                                        @endif
+
+                                        <p class="mt-1 text-[10px] text-slate-400">
+                                            Rejected by {{ $req->rejectedBy?->name ?? 'Approver' }}
+
+                                            @if($req->rejected_at)
+                                                · {{ $req->rejected_at->format('d M Y') }}
+                                            @endif
+                                        </p>
+
+                                    </div>
+
+                                @elseif($req->status === 'returned' && $req->return_to_stage === 'requester')
+
+                                    <div x-data="{ open: false }" class="min-w-0">
 
                                         <p
                                             class="text-[11px] leading-relaxed text-rose-700 break-words [overflow-wrap:anywhere]"
