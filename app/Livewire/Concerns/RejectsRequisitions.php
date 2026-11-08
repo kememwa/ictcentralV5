@@ -98,7 +98,7 @@ trait RejectsRequisitions
     {
         $this->validate([
             'rejectionReason' => [
-                'required',
+                
                 'string',
                 'min:5',
                 'max:2000',

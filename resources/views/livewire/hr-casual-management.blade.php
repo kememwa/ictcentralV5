@@ -596,7 +596,10 @@
                                 {{-- ACTIONS --}}
                                 <td class="px-1 py-3">
                                     <div class="flex items-center justify-center">
-                                        @include('partials.hr-actions', ['req' => $req])
+                                        @include('partials.hr-actions', [
+                                        'req' => $req,
+                                        'rejectMethod' => 'openRejectModal',
+                                        ])
                                     </div>
                                 </td>
 
@@ -2941,4 +2944,5 @@
     </div>
 </div>
 
+@include('partials.reject-requisition-modal')
 </div>

@@ -1,5 +1,7 @@
 
-@props(['req'])
+@props(['req',
+    'rejectMethod' => 'openRejectModal',
+    ])
 
 @php
     $requisition = $req ;
@@ -136,8 +138,7 @@
         {{-- REJECT --}}
         <button
             type="button"
-            wire:click="reject({{ $requisition->id }})"
-            wire:confirm="Are you sure you want to reject this requisition?"
+            wire:click="{{ $rejectMethod }}({{ $requisition->id }})"
             @click="moreOpen = false"
             class="flex w-full items-center gap-3 px-3 py-2.5
                 text-sm text-red-700 hover:bg-red-50 transition"
