@@ -39,7 +39,7 @@ class CooApproveRequisition extends Mailable implements ShouldQueue
     public function content(): Content
     {
         return new Content(
-            view: 'mail.approvals.hod-requisition-approval',
+            view: 'mail.approvals.coo-approve-requisition',
         );
     }
 
