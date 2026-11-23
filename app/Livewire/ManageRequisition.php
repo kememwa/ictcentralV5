@@ -301,8 +301,7 @@ class ManageRequisition extends Component
         return view('livewire.manage-requisition', [
             'requisitions' => Requisition::query()
 
-                // Only requisitions belonging to this department
-                ->where('department_id', $departmentId)
+                
 
                 // Only requisitions awaiting approval
                 ->where('status', 'pending')
