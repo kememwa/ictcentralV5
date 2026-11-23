@@ -139,7 +139,7 @@
                     </a>
                 </li>
 
-                @hasanyrole('SuperAdmin|Coo')
+                @hasanyrole('SuperAdmin|Coo|coo delegate')
                 <li>
                     <a wire:navigate href="{{ route('coo-approval') }}"
                     class="flex items-center gap-2 rounded-md px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-100 hover:text-slate-900">
@@ -166,7 +166,7 @@
                 </li>
                 @endhasanyrole
 
-                @hasanyrole('SuperAdmin|Hrm|hrm_delegate')
+                @hasanyrole('SuperAdmin|hrm|hrm_delegate')
                 <li>
                     <a wire:navigate href="{{route('hrm.casual.manage')}}"
                     class="flex items-center gap-2 rounded-md px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-100 hover:text-slate-900">
@@ -371,6 +371,5 @@
         </div>
     </div>
 </aside>
-
 
 </div>
