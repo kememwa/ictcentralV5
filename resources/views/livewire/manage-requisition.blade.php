@@ -2,7 +2,7 @@
 
    <x-page-header
         title="HOD Approval – Casual Requisitions"
-        subtitle="Review HR-approved rates and approve or reject requisitions">
+        subtitle="Review, Approve, Return or Reject Requisition">
 
     </x-page-header>
 
@@ -31,7 +31,7 @@
                         <input
                             type="text"
                             wire:model.live.debounce.300ms="search"
-                            placeholder="Search devices…"
+                            placeholder="Search Requisition…"
                             class="w-full rounded-lg border border-gray-200 bg-white py-2 pl-10 pr-3
                                 text-sm text-slate-700 placeholder:text-slate-400
                                 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"

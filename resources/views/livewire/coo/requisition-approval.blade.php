@@ -31,7 +31,7 @@
                         <input
                             type="text"
                             wire:model.live.debounce.300ms="search"
-                            placeholder="Search devices…"
+                            placeholder="Search requisition…"
                             class="w-full rounded-lg border border-gray-200 bg-white py-2 pl-10 pr-3
                                 text-sm text-slate-700 placeholder:text-slate-400
                                 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
