@@ -63,7 +63,7 @@ Route::middleware(['role:Hr|SuperAdmin'])->group(function () {
 });
 
 // HRM and SuperAdmin only
-Route::middleware(['role:Hrm|SuperAdmin|Hrm_delegate'])->group(function () {
+Route::middleware(['role:hrm|SuperAdmin|hrm_delegate'])->group(function () {
    Route::get('/hrm/casual/dashboard', HrmCasualManagement::class)->name('hrm.casual.manage');
 });
 
@@ -76,7 +76,7 @@ Route::middleware(['role:Hr|It|SuperAdmin'])->group(function () {
 
 
 // Coo and SuperAdmin only
-Route::middleware(['role:Coo|SuperAdmin'])->group(function () {
+Route::middleware(['role:Coo|SuperAdmin|coo delegate'])->group(function () {
     Route::get('/coo-approval', RequisitionApproval::class)->name('coo-approval');
 });
 
